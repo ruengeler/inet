@@ -22,8 +22,8 @@ namespace INETFw // load headers into a namespace, to avoid conflicts with platf
 #include "headers/bsdint.h"
 #include "headers/in.h"
 #include "headers/in_systm.h"
-#include "headers/ip.h"
-#include "headers/ip_icmp.h"
+#include "headers/header_ip.h"
+#include "headers/header_ip_icmp.h"
 };
 #include "IPv4Serializer.h"
 #include "ICMPSerializer.h"
