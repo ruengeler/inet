@@ -24,7 +24,7 @@
 
 #include "headers/defs.h"
 
-#include "headers/tcp.h"
+#include "headers/header_tcp.h"
 
 //forward declarations:
 class TCPSegment;
