@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211SCALARRADIOSIGNALRECEIVER_H_
-#define __INET_IEEE80211SCALARRADIOSIGNALRECEIVER_H_
+#ifndef __INET_IEEE80211SCALARRADIOSIGNALRECEIVER_H
+#define __INET_IEEE80211SCALARRADIOSIGNALRECEIVER_H
 
 #include "ScalarImplementation.h"
 #include "WifiPreambleType.h"

@@ -1,5 +1,5 @@
-#ifndef _MANET_COMPATIBILITY_H
-#define _MANET_COMPATIBILITY_H
+#ifndef __INET_COMPATIBILITY_H
+#define __INET_COMPATIBILITY_H
 
 //#ifdef _WIN32
 //#include <unistd.h>

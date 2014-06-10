@@ -5,8 +5,8 @@
  *      Author: alfonso
  */
 
-#ifndef __BATMANDATA_H__
-#define __BATMANDATA_H__
+#ifndef __INET_BATMAN_H
+#define __INET_BATMAN_H
 #include <set>
 #include <vector>
 #include <map>

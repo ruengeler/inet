@@ -2,8 +2,8 @@
 // This program is property of its copyright holder. All rights reserved.
 //
 
-#ifndef __INET_DYMODEFS_H_
-#define __INET_DYMODEFS_H_
+#ifndef __INET_DYMODEFS_H
+#define __INET_DYMODEFS_H
 
 #define DYMO_NAMESPACE_BEGIN namespace DYMO {
 #define DYMO_NAMESPACE_END }

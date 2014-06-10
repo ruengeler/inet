@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211RADIOCHANNEL_H_
-#define __INET_IEEE80211RADIOCHANNEL_H_
+#ifndef __INET_IEEE80211RADIOCHANNEL_H
+#define __INET_IEEE80211RADIOCHANNEL_H
 
 #include "RadioChannel.h"
 

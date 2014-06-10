@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IRADIOBACKGROUNDNOISE_H_
-#define __INET_IRADIOBACKGROUNDNOISE_H_
+#ifndef __INET_IRADIOBACKGROUNDNOISE_H
+#define __INET_IRADIOBACKGROUNDNOISE_H
 
 #include "IRadioSignalReception.h"
 #include "IRadioSignalListening.h"

@@ -13,8 +13,8 @@
  * Also we hope it will help in the developing of routing protocols using INET.
 */
 
-#ifndef __DSDV_2_H__
-#define __DSDV_2_H__
+#ifndef __INET_DSDV_2_H
+#define __INET_DSDV_2_H
 
 #include <stdio.h>
 #include <string.h>

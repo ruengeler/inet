@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IRADIOSIGNALPROPAGATION_H_
-#define __INET_IRADIOSIGNALPROPAGATION_H_
+#ifndef __INET_IRADIOSIGNALPROPAGATION_H
+#define __INET_IRADIOSIGNALPROPAGATION_H
 
 #include "IMobility.h"
 #include "IRadioSignalArrival.h"

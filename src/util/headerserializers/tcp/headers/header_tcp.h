@@ -16,8 +16,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OPPSIM_NETINET_TCP_H
-#define OPPSIM_NETINET_TCP_H
+#ifndef __INET_HEADER_TCP_H
+#define __INET_HEADER_TCP_H
 
 //#include "headers/defs.h"   // for endian macros
 

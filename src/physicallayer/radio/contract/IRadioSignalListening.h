@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IRADIOSIGNALLISTENING_H_
-#define __INET_IRADIOSIGNALLISTENING_H_
+#ifndef __INET_IRADIOSIGNALLISTENING_H
+#define __INET_IRADIOSIGNALLISTENING_H
 
 #include "Coord.h"
 #include "IPrintableObject.h"
