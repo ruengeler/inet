@@ -19,6 +19,7 @@
 #define __INET_RECEPTIONDECISION_H
 
 #include "inet/physicallayer/contract/IReceptionDecision.h"
+#include "ISignalPacketModel.h"
 
 namespace inet {
 
@@ -29,6 +30,7 @@ class INET_API ReceptionDecision : public IReceptionDecision, public cObject
   protected:
     const IReception *reception;
     const RadioReceptionIndication *indication;
+    const ISignalPacketModel *packetModel;
     const bool isSynchronizationPossible_;
     const bool isSynchronizationAttempted_;
     const bool isSynchronizationSuccessful_;
@@ -56,6 +58,10 @@ class INET_API ReceptionDecision : public IReceptionDecision, public cObject
     virtual bool isSynchronizationAttempted() const { return isSynchronizationAttempted_; }
 
     virtual bool isSynchronizationSuccessful() const { return isSynchronizationSuccessful_; }
+
+    virtual const ISignalPacketModel *getPacketModel() const { return packetModel; }
+
+    virtual const cPacket *getMacFrame() const;
 };
 
 } // namespace physicallayer
