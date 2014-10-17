@@ -38,6 +38,7 @@ class INET_API LayeredReceiver : public ScalarReceiver
 
   protected:
     virtual void initialize(int stage);
+    const IReceptionSymbolModel *createReceptionSymbolModel(const ITransmissionSymbolModel *symbolModel) const;
 
   public:
     LayeredReceiver();

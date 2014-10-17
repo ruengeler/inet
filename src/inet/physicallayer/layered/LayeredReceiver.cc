@@ -16,6 +16,11 @@
 //
 
 #include "inet/physicallayer/layered/LayeredReceiver.h"
+#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/layered/LayeredReception.h"
+#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/ReceptionDecision.h"
 
 namespace inet {
 
@@ -45,6 +50,11 @@ void LayeredReceiver::initialize(int stage)
     }
 }
 
+const IReceptionSymbolModel* LayeredReceiver::createReceptionSymbolModel(const ITransmissionSymbolModel* symbolModel) const
+{
+    const TransmissionSymbolModel *transmissionSymbolModel = dynamic_cast<const TransmissionSymbolModel*>(symbolModel);
+    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols(), 0, 0);
+}
 
 //const IListening *LayeredReceiver::createListening(const IRadio *radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
 //{
@@ -62,31 +72,23 @@ void LayeredReceiver::initialize(int stage)
 
 const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const std::vector<const IReception *> *interferingReceptions, const INoise *backgroundNoise) const
 {
-    throw cRuntimeError("Not yet implemented");
-//    const ITransmission *transmission = frame->getTransmission();
-//    const IListening *listening = createListening(transmission->getStartTime(), transmission->getEndTime(), transmission->getStartPosition(), transmission->getEndPosition());
-//
-//    const IXXX *receptionAndNoise = channel->receiveFromChannel(this, listening, transmission);
-//    const INoise *noise = receptionAndNoise->getNoise();
-//    const IReception *reception = receptionAndNoise->getReception();
-//    double snirMin = computeSNIR(reception, noise);
-//    bool isReceptionPossible = computeIsReceptionPossible(reception, interferingReceptions);
+    const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
+//    const INoise *noise = computeNoise(listening, interferingReceptions, backgroundNoise);
+    bool isReceptionAttempted = true;
+//    double snirMin = computeMinSNIR(reception, noise);
+    bool isReceptionPossible = computeIsReceptionPossible(listening, reception);
 //    bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
-//    return new RadioReceptionDecision(reception, isReceptionPossible, isReceptionSuccessful);
-//    const IReception *receptionXXX = NULL;
 //    const IReceptionAnalogModel *analogModel = NULL; // receptionXXX->getAnalogModel();
 //    const IReceptionSampleModel *sampleModel = analogDigitalConverter->convertAnalogToDigital(analogModel);
-//    const IReceptionSymbolModel *symbolModel = pulseFilter->filter(sampleModel);
-//    const IReceptionBitModel *bitModel = demodulator->demodulate(symbolModel);
-//    const IReceptionPacketModel *packetModel = decoder->decode(bitModel);
-//    simtime_t startTime = 0; // TODO:
-//    cPacket *packet = check_and_cast<cPacket *>(frame)->decapsulate();
-//    simtime_t endTime = startTime + analogModel->getDuration();
-//    IMobility *mobility = receiverAntenna->getMobility();
-//    Coord startPosition = mobility->getPosition(startTime);
-//    Coord endPosition = mobility->getPosition(endTime);
-//    const IReception *reception = createReception(transmission, packetModel, bitModel, symbolModel, sampleModel, analogModel, startTime, endTime, startPosition, endPosition);
-//    return new LayeredRadioReception(packetModel, bitModel, symbolModel, sampleModel, analogModel, radio, transmission, startTime, endTime, startPosition, endPosition);
+    const ITransmissionSymbolModel *symbolModel = transmission->getSymbolModel();
+    const IReceptionSymbolModel *receptionSymbolModel = createReceptionSymbolModel(symbolModel);
+    const IReceptionBitModel *bitModel = demodulator->demodulate(receptionSymbolModel);
+    const IReceptionPacketModel *packetModel = decoder->decode(bitModel);
+    const cPacket *macFrame = transmission->getMacFrame();
+    const IReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, packetModel->getForwardErrorCorrection(),
+                                                                              packetModel->getScrambling(), packetModel->getInterleaving(),
+                                                                              packetModel->getPER(), packetModel->isPacketErrorless());
+    return new ReceptionDecision(reception, NULL, hackedPacketModel, isReceptionPossible, isReceptionAttempted, true); // isReceptionSuccessful
 }
 
 } // namespace physicallayer
