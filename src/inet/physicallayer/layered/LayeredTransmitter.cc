@@ -36,10 +36,14 @@ void LayeredTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
-        encoder = check_and_cast<IEncoder *>(getSubmodule("encoder"));
-        modulator = check_and_cast<IModulator *>(getSubmodule("modulator"));
-        pulseShaper = check_and_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
-        digitalAnalogConverter = check_and_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
+        encoder = dynamic_cast<IEncoder *>(getSubmodule("encoder"));
+        modulator = dynamic_cast<IModulator *>(getSubmodule("modulator"));
+        pulseShaper = dynamic_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
+        digitalAnalogConverter = dynamic_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
+
+        power = par("power");
+        bandwidth = par("bandwidth");
+        carrierFrequency = par("carrierFrequency");
     }
 }
 
@@ -49,13 +53,36 @@ const ITransmissionPacketModel* LayeredTransmitter::createPacketModel(const cPac
     return packetModel;
 }
 
+const ITransmissionAnalogModel* LayeredTransmitter::createAnalogModel()
+{
+    simtime_t duration = 0; // TODO: calculate duration
+    const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarAnalogModel(duration, power, carrierFrequency, bandwidth);
+    return transmissionAnalogModel;
+}
+
 const ITransmission *LayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
 {
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
-    const ITransmissionBitModel *bitModel = encoder->encode(packetModel);
-    const ITransmissionSymbolModel *symbolModel = modulator->modulate(bitModel);
-    const ITransmissionSampleModel *sampleModel = pulseShaper->shape(symbolModel);
-    const ITransmissionAnalogModel *analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
+    ASSERT(packetModel != NULL);
+    const ITransmissionBitModel *bitModel = NULL;
+    if (encoder)
+        bitModel = encoder->encode(packetModel);
+    const ITransmissionSymbolModel *symbolModel = NULL;
+    if (modulator && bitModel)
+        symbolModel = modulator->modulate(bitModel);
+    else if (modulator && !bitModel)
+        throw cRuntimeError("Modulators need bit representation");
+    const ITransmissionSampleModel *sampleModel = NULL;
+    if (pulseShaper && symbolModel)
+        sampleModel = pulseShaper->shape(symbolModel);
+    else if (pulseShaper && !sampleModel)
+        throw cRuntimeError("Pulse shapers need symbol representation");
+    if (digitalAnalogConverter && sampleModel)
+        const ITransmissionAnalogModel *analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
+    else if (digitalAnalogConverter && !sampleModel)
+        throw cRuntimeError("Digital/analog converters need sample representation");
+    // TODO: analog model is obligatory
+    const ITransmissionAnalogModel *analogModel = createAnalogModel();
     IMobility *mobility = transmitter->getAntenna()->getMobility();
     // assuming movement and rotation during transmission is negligible
     const simtime_t endTime = startTime + analogModel->getDuration();

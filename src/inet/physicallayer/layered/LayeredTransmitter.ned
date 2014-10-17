@@ -30,6 +30,9 @@ module LayeredTransmitter like ITransmitter
         string modulatorType;
         string pulseShaperType;
         string digitalAnalogConverterType;
+        double power @unit(W);
+        double carrierFrequency @unit(Hz);
+        double bandwidth @unit(Hz);
         @class(LayeredTransmitter);
 
     submodules:

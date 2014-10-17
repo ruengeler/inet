@@ -35,10 +35,15 @@ class INET_API LayeredTransmitter : public TransmitterBase
     const IModulator *modulator;
     const IPulseShaper *pulseShaper;
     const IDigitalAnalogConverter *digitalAnalogConverter;
+    Hz carrierFrequency;
+    Hz bandwidth;
+    W power; // TODO: temporarily we added three parameters to describe the analog model, this parameters will probably move to
+             // the pulse shaper or the digitalAnalogConverter
 
   protected:
     virtual void initialize(int stage);
     virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
+    virtual const ITransmissionAnalogModel *createAnalogModel();
 
   public:
     LayeredTransmitter();
@@ -49,6 +54,10 @@ class INET_API LayeredTransmitter : public TransmitterBase
     virtual const IModulator *getModulator() const { return modulator; }
     virtual const IPulseShaper *getPulseShaper() const{ return pulseShaper; }
     virtual const IDigitalAnalogConverter *getDigitalAnalogConverter() const { return digitalAnalogConverter; }
+
+    const Hz& getBandwidth() const { return bandwidth; }
+    const Hz& getCarrierFrequency() const { return carrierFrequency; }
+    const W& getPower() const { return power; }
 };
 
 } // namespace physicallayer
