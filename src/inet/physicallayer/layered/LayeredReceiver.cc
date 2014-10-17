@@ -15,12 +15,13 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "inet/physicallayer/contract/IErrorModel.h"
+#include "inet/physicallayer/common/ReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredReceiver.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/LayeredReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
-#include "inet/physicallayer/common/ReceptionDecision.h"
 
 namespace inet {
 

@@ -20,12 +20,15 @@ package inet.physicallayer.layered;
 import inet.physicallayer.contract.IAnalogDigitalConverter;
 import inet.physicallayer.contract.IDecoder;
 import inet.physicallayer.contract.IDemodulator;
+import inet.physicallayer.contract.IErrorModel;
 import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
+
 
 module LayeredReceiver like IReceiver
 {
     parameters:
+        string errorModelType;
         string decoderType;
         string demodulatorType;
         string shaperFilterType;
@@ -36,7 +39,10 @@ module LayeredReceiver like IReceiver
         double bandwidth @unit(Hz);
         @class(LayeredReceiver);
 
-        submodules:
+    submodules:
+        errorModel: <errorModelType> like IErrorModel {
+            @display("p=219,50");
+        }
         decoder: <decoderType> like IDecoder {
             @display("p=100,50");
         }
