@@ -15,6 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "inet/physicallayer/contract/ISNIR.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
 #include "inet/physicallayer/common/ReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredReceiver.h"
@@ -22,6 +23,8 @@
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/LayeredReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/layered/LayeredSNIR.h"
 
 namespace inet {
 
@@ -39,6 +42,7 @@ void LayeredReceiver::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
+        errorModel = check_and_cast<ILayeredErrorModel *>(getSubmodule("errorModel"));
         decoder = check_and_cast<IDecoder *>(getSubmodule("decoder"));
         demodulator = check_and_cast<IDemodulator *>(getSubmodule("demodulator"));
         pulseFilter = check_and_cast<IPulseFilter *>(getSubmodule("pulseFilter"));
@@ -55,6 +59,18 @@ const IReceptionSymbolModel* LayeredReceiver::createReceptionSymbolModel(const I
 {
     const TransmissionSymbolModel *transmissionSymbolModel = dynamic_cast<const TransmissionSymbolModel*>(symbolModel);
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols(), 0, 0);
+}
+
+const IReceptionAnalogModel* LayeredReceiver::createReceptionAnalogModel(const ITransmissionAnalogModel* analogModel, const IReception *reception, const INoise *noise) const
+{
+    const ISNIR *snir = computeSNIR(reception, analogModel, noise);
+}
+
+const ISNIR* LayeredReceiver::computeSNIR(const IReception* reception, const ITransmissionAnalogModel* analogModel, const INoise* noise) const
+{
+    const LayeredReception *layeredReception = check_and_cast<LayeredReception *>(reception);
+    const ScalarNoise *scalarNoise = check_and_cast<ScalarNoise *>(noise);
+    return new LayeredSNIR(reception, scalarNoise);
 }
 
 //const IListening *LayeredReceiver::createListening(const IRadio *radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
@@ -74,13 +90,19 @@ const IReceptionSymbolModel* LayeredReceiver::createReceptionSymbolModel(const I
 const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const std::vector<const IReception *> *interferingReceptions, const INoise *backgroundNoise) const
 {
     const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
-//    const INoise *noise = computeNoise(listening, interferingReceptions, backgroundNoise);
+    const LayeredReception *layeredReception = dynamic_cast<const LayeredTransmission*>(reception);
+    const ITransmissionAnalogModel *analogModel = transmission->getAnalogModel();
+    const IReceptionAnalogModel *receptionAnalogModel = createReceptionAnalogModel(analogModel);
+    const ITransmissionSampleModel *sampleModel = transmission->getSampleModel();
+    const ITransmissionSymbolModel *symbolModel = transmission->getSymbolModel();
+    const IReceptionAnalogModel *receptionAnalogModel = transmission;
+    const IReceptionSampleModel *receptionSampleModel;
+    const INoise *noise = computeNoise(listening, interferingReceptions, backgroundNoise);
     bool isReceptionAttempted = true;
-//    double snirMin = computeMinSNIR(reception, noise);
     bool isReceptionPossible = computeIsReceptionPossible(listening, reception);
-//    bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
-//    const IReceptionAnalogModel *analogModel = NULL; // receptionXXX->getAnalogModel();
-//    const IReceptionSampleModel *sampleModel = analogDigitalConverter->convertAnalogToDigital(analogModel);
+    // bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
+    // const IReceptionAnalogModel *analogModel = NULL; // receptionXXX->getAnalogModel();
+    // const IReceptionSampleModel *sampleModel = analogDigitalConverter->convertAnalogToDigital(analogModel);
     const ITransmissionSymbolModel *symbolModel = transmission->getSymbolModel();
     const IReceptionSymbolModel *receptionSymbolModel = createReceptionSymbolModel(symbolModel);
     const IReceptionBitModel *bitModel = demodulator->demodulate(receptionSymbolModel);

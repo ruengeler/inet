@@ -22,6 +22,7 @@
 #include "inet/physicallayer/contract/IDemodulator.h"
 #include "inet/physicallayer/contract/IPulseFilter.h"
 #include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
+#include "inet/physicallayer/contract/IErrorModel.h"
 #include "inet/physicallayer/scalar/ScalarReceiver.h"
 
 namespace inet {
@@ -31,6 +32,7 @@ namespace physicallayer {
 class INET_API LayeredReceiver : public ScalarReceiver
 {
   protected:
+    const ILayeredErrorModel *errorModel;
     const IDecoder *decoder;
     const IDemodulator *demodulator;
     const IPulseFilter *pulseFilter;
@@ -38,7 +40,9 @@ class INET_API LayeredReceiver : public ScalarReceiver
 
   protected:
     virtual void initialize(int stage);
-    const IReceptionSymbolModel *createReceptionSymbolModel(const ITransmissionSymbolModel *symbolModel) const;
+    virtual const IReceptionSymbolModel *createReceptionSymbolModel(const ITransmissionSymbolModel *symbolModel) const;
+    virtual const IReceptionAnalogModel *createReceptionAnalogModel(const ITransmissionAnalogModel *analogModel, const IReception *reception, const INoise *noise) const;
+    virtual const ISNIR *computeSNIR(const IReception *reception, const ITransmissionAnalogModel *analogModel, const INoise *noise) const;
 
   public:
     LayeredReceiver();
