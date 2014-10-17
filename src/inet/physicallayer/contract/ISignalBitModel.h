@@ -74,7 +74,7 @@ class INET_API IReceptionBitModel : public virtual ISignalBitModel
      */
     virtual int getBitErrorCount() const = 0;
     /*
-     *
+     * Returns the modulation type used by the actual demodulator.
      */
     virtual const IModulation *getModulation() const = 0;
 };
