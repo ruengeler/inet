@@ -23,35 +23,24 @@
 #include "inet/physicallayer/contract/ISignalSymbolModel.h"
 #include "inet/physicallayer/contract/ISignalSampleModel.h"
 #include "inet/physicallayer/contract/ISignalAnalogModel.h"
-#include "inet/physicallayer/base/ReceptionBase.h"
+#include "inet/physicallayer/scalar/ScalarReception.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API LayeredReception : public ReceptionBase
+// revise name LayeredScalarReception would be better
+class INET_API LayeredReception : public ScalarReception
 {
   protected:
-    const IReceptionPacketModel *packetModel;
-    const IReceptionBitModel    *bitModel;
-    const IReceptionSymbolModel *symbolModel;
-    const IReceptionSampleModel *sampleModel;
     const IReceptionAnalogModel *analogModel;
 
   public:
-    LayeredReception(const IReceptionPacketModel *packetModel, const IReceptionBitModel *bitModel, const IReceptionSymbolModel *symbolModel, const IReceptionSampleModel *sampleModel, const IReceptionAnalogModel *analogModel, const IRadio *radio, const ITransmission *transmission, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation) :
-        ReceptionBase(radio, transmission, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation),
-        packetModel(packetModel),
-        bitModel(bitModel),
-        symbolModel(symbolModel),
-        sampleModel(sampleModel),
+    LayeredReception(const IReceptionAnalogModel *analogModel, const IRadio *radio, const ITransmission *transmission, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, const Hz carrierFrequency, const Hz bandwidth, const W power) :
+        ScalarReception(radio, transmission, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, carrierFrequency, bandwidth, power),
         analogModel(analogModel)
     {}
 
-    virtual const IReceptionPacketModel *getPacketModel() const { return packetModel; }
-    virtual const IReceptionBitModel    *getBitModel()    const { return bitModel; }
-    virtual const IReceptionSymbolModel *getSymbolModel() const { return symbolModel; }
-    virtual const IReceptionSampleModel *getSampleModel() const { return sampleModel; }
     virtual const IReceptionAnalogModel *getAnalogModel() const { return analogModel; }
 };
 
