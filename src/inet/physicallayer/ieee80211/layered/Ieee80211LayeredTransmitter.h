@@ -38,6 +38,10 @@ class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
         int codeRateK;
         int codeRateN;
 
+        Hz bandwidth;
+        Hz carrierFrequency;
+        W power;
+
     protected:
         virtual void initialize(int stage);
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;

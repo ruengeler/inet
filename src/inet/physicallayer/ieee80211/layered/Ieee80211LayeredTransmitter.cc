@@ -43,6 +43,9 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
         digitalAnalogConverter = check_and_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
         const char *codeRate = par("codeRate").stringValue();
         setCodeRateParameters(codeRate);
+        power = W(par("power"));
+        bandwidth = Hz(par("bandwidth"));
+        carrierFrequency = Hz(par("carrierFrequency"));
     }
 }
 
@@ -88,7 +91,7 @@ const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadi
     const Coord endPosition = mobility->getCurrentPosition();
     const EulerAngles startOrientation = mobility->getCurrentAngularPosition();
     const EulerAngles endOrientation = mobility->getCurrentAngularPosition();
-    return new LayeredTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation);
+    return new LayeredTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, bandwidth, carrierFrequency, power);
 }
 
 } // namespace physicallayer
