@@ -29,5 +29,10 @@ BPSKModulation::BPSKModulation() : APSKModulationBase(encodingTable, 1, 2, kMOD)
 {
 }
 
+double BPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
+{
+    return 0.5 * exp(-snir * bandwidth / bitrate);
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */

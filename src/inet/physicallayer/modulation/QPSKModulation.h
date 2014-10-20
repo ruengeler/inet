@@ -34,6 +34,7 @@ class INET_API QPSKModulation : public APSKModulationBase
 
     public:
         QPSKModulation();
+        double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } /* namespace physicallayer */

@@ -28,5 +28,10 @@ QPSKModulation::QPSKModulation() : APSKModulationBase(encodingTable, 2, 4, kMOD)
 {
 }
 
+double QPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
+{
+    throw cRuntimeError("Unimplemented");
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */

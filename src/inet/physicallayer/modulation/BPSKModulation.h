@@ -34,6 +34,7 @@ class INET_API BPSKModulation : public APSKModulationBase
 
     public:
         BPSKModulation();
+        double calculateBER(double snir, double bandwidth, double bitrate) const;
 
 };
 

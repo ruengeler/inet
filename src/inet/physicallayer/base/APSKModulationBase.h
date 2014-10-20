@@ -46,6 +46,7 @@ class INET_API APSKModulationBase : public IAPSKModulation
       virtual double getNormalizationFactor() const { return normalizationFactor; }
       virtual const APSKSymbol *mapToConstellationDiagram(const ShortBitVector& symbol) const;
       virtual ShortBitVector demapToBitRepresentation(const APSKSymbol *symbol) const;
+      virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
 };
 
 } /* namespace physicallayer */

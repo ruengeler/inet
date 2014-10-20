@@ -39,5 +39,10 @@ QAM64Modulation::QAM64Modulation() : APSKModulationBase(encodingTable, 6, 64, kM
 {
 }
 
+double QAM64Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
+{
+    throw cRuntimeError("Unimplemented.");
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */

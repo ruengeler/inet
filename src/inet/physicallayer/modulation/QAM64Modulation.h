@@ -34,6 +34,7 @@ class INET_API QAM64Modulation : public APSKModulationBase
 
     public:
         QAM64Modulation();
+        double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } /* namespace physicallayer */

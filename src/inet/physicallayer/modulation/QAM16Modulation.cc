@@ -34,5 +34,10 @@ QAM16Modulation::QAM16Modulation() : APSKModulationBase(encodingTable, 4,16, kMO
 
 }
 
+double QAM16Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
+{
+    return 0.5 * (1 - 1 / sqrt(pow(2.0, 4))) * erfc(snir * bandwidth / bitrate);
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */
