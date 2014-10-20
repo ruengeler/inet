@@ -19,6 +19,10 @@
 #define __INET_IERRORMODEL_H
 
 #include "ISNIR.h"
+#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/layered/SignalSampleModel.h"
+#include "inet/physicallayer/layered/SignalSymbolModel.h"
 
 namespace inet {
 
