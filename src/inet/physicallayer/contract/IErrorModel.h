@@ -43,11 +43,8 @@ class INET_API ILayeredErrorModel : public IErrorModel
 {
   public:
     virtual IReceptionPacketModel *computePacketModel(const ISNIR *snir) const = 0;
-
     virtual IReceptionBitModel *computeBitModel(const ITransmissionBitModel *transmissionBitModel, const ISNIR *snir) const = 0;
-
     virtual IReceptionSymbolModel *computeSymbolModel(const ITransmissionSymbolModel *transmissionSymbolModel, const ISNIR *snir) const = 0;
-
     virtual IReceptionSampleModel *computeSampleModel(const ITransmissionSampleModel *tranmssionSampleModel, const ISNIR *snir) const = 0;
 };
 
