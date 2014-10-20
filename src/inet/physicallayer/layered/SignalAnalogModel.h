@@ -19,7 +19,6 @@
 #define __INET_SIGNALANALOGMODEL_H
 
 #include "inet/physicallayer/contract/ISignalAnalogModel.h"
-#include "inet/physicallayer/contract/ISNIR.h"
 
 namespace inet {
 
@@ -73,17 +72,18 @@ class INET_API ScalarTransmissionAnalogModel : public ScalarAnalogModel, public 
 class INET_API ScalarReceptionAnalogModel : public ScalarAnalogModel, public virtual IReceptionAnalogModel
 {
   protected:
-    const ISNIR *snir;
+    const double snir;
 
   public:
-    ScalarReceptionAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth, const ISNIR *snir) :
+    ScalarReceptionAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth, double snir) :
         ScalarAnalogModel(duration, power, carrierFrequency, bandwidth),
         snir(snir)
     {}
+
     /**
      * Returns the signal to noise plus interference ratio.
      */
-    virtual const ISNIR *getSNIR() const { return snir; }
+    virtual double getSNIR() const { return snir; }
 };
 
 } // namespace physicallayer
