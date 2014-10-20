@@ -19,6 +19,7 @@
 #define __INET_ISIGNALANALOGMODEL_H
 
 #include "inet/physicallayer/contract/IPrintableObject.h"
+#include "inet/physicallayer/contract/ISNIR.h"
 
 namespace inet {
 
@@ -44,7 +45,7 @@ class INET_API IReceptionAnalogModel : public virtual ISignalAnalogModel
     /**
      * Returns the signal to noise plus interference ratio.
      */
-    virtual double getSNIR() const = 0;
+    virtual const ISNIR *getSNIR() const = 0;
 };
 
 } // namespace physicallayer
