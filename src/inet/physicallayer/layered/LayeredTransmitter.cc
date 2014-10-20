@@ -19,6 +19,7 @@
 #include "inet/physicallayer/layered/LayeredTransmitter.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/layered/SignalAnalogModel.h"
 
 namespace inet {
 
@@ -41,9 +42,9 @@ void LayeredTransmitter::initialize(int stage)
         pulseShaper = dynamic_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
         digitalAnalogConverter = dynamic_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
 
-        power = par("power");
-        bandwidth = par("bandwidth");
-        carrierFrequency = par("carrierFrequency");
+        power = W(par("power"));
+        bandwidth = Hz(par("bandwidth"));
+        carrierFrequency = Hz(par("carrierFrequency"));
     }
 }
 
@@ -53,10 +54,10 @@ const ITransmissionPacketModel* LayeredTransmitter::createPacketModel(const cPac
     return packetModel;
 }
 
-const ITransmissionAnalogModel* LayeredTransmitter::createAnalogModel()
+const ITransmissionAnalogModel* LayeredTransmitter::createAnalogModel() const
 {
     simtime_t duration = 0; // TODO: calculate duration
-    const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarAnalogModel(duration, power, carrierFrequency, bandwidth);
+    const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionAnalogModel(duration, power, carrierFrequency, bandwidth);
     return transmissionAnalogModel;
 }
 
@@ -77,12 +78,13 @@ const ITransmission *LayeredTransmitter::createTransmission(const IRadio *transm
         sampleModel = pulseShaper->shape(symbolModel);
     else if (pulseShaper && !sampleModel)
         throw cRuntimeError("Pulse shapers need symbol representation");
+    const ITransmissionAnalogModel *analogModel = NULL;
     if (digitalAnalogConverter && sampleModel)
-        const ITransmissionAnalogModel *analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
+        analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
     else if (digitalAnalogConverter && !sampleModel)
         throw cRuntimeError("Digital/analog converters need sample representation");
     // TODO: analog model is obligatory
-    const ITransmissionAnalogModel *analogModel = createAnalogModel();
+    analogModel = createAnalogModel();
     IMobility *mobility = transmitter->getAntenna()->getMobility();
     // assuming movement and rotation during transmission is negligible
     const simtime_t endTime = startTime + analogModel->getDuration();

@@ -43,7 +43,7 @@ class INET_API LayeredTransmitter : public TransmitterBase
   protected:
     virtual void initialize(int stage);
     virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
-    virtual const ITransmissionAnalogModel *createAnalogModel();
+    virtual const ITransmissionAnalogModel *createAnalogModel() const;
 
   public:
     LayeredTransmitter();
