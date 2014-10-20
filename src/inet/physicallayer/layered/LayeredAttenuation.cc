@@ -27,7 +27,12 @@ Define_Module(LayeredAttenuation);
 
 const ScalarReceptionAnalogModel* LayeredAttenuation::computeReceptionAnalogModel(const ScalarTransmissionAnalogModel* analogModel) const
 {
-
+    double snir = -1; // TODO: calculate
+    simtime_t duration = 0;
+    W power = analogModel->getPower();
+    Hz carrierFrequency = analogModel->getCarrierFrequency();
+    Hz bandwidth = analogModel->getBandwidth();
+    return new const ScalarReceptionAnalogModel(duration, power, carrierFrequency, bandwidth, snir);
 }
 
 const IReception* LayeredAttenuation::computeReception(const IRadio* receiverRadio, const ITransmission* transmission) const
