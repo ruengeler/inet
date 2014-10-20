@@ -24,6 +24,7 @@
 #include "inet/physicallayer/layered/LayeredReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/LayeredSNIR.h"
 
 namespace inet {
@@ -68,9 +69,9 @@ const IReceptionAnalogModel* LayeredReceiver::createReceptionAnalogModel(const I
 
 const ISNIR* LayeredReceiver::computeSNIR(const IReception* reception, const ITransmissionAnalogModel* analogModel, const INoise* noise) const
 {
-    const LayeredReception *layeredReception = check_and_cast<LayeredReception *>(reception);
-    const ScalarNoise *scalarNoise = check_and_cast<ScalarNoise *>(noise);
-    return new LayeredSNIR(reception, scalarNoise);
+    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
+    const ScalarNoise *scalarNoise = check_and_cast<const ScalarNoise *>(noise);
+    return new LayeredSNIR(layeredReception, scalarNoise);
 }
 
 //const IListening *LayeredReceiver::createListening(const IRadio *radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
@@ -90,27 +91,27 @@ const ISNIR* LayeredReceiver::computeSNIR(const IReception* reception, const ITr
 const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const std::vector<const IReception *> *interferingReceptions, const INoise *backgroundNoise) const
 {
     const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
-    const LayeredReception *layeredReception = dynamic_cast<const LayeredTransmission*>(reception);
+    const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
     const ITransmissionAnalogModel *analogModel = transmission->getAnalogModel();
-    const IReceptionAnalogModel *receptionAnalogModel = createReceptionAnalogModel(analogModel);
     const ITransmissionSampleModel *sampleModel = transmission->getSampleModel();
     const ITransmissionSymbolModel *symbolModel = transmission->getSymbolModel();
-    const IReceptionAnalogModel *receptionAnalogModel = transmission;
-    const IReceptionSampleModel *receptionSampleModel;
-    const INoise *noise = computeNoise(listening, interferingReceptions, backgroundNoise);
+    const ITransmissionPacketModel *packetModel = transmission->getPacketModel();
+    const IReceptionSampleModel *receptionSampleModel = NULL;
+//    const INoise *noise = computeNoise(listening, interferingReceptions);
+    const INoise *noise = NULL;
     bool isReceptionAttempted = true;
     bool isReceptionPossible = computeIsReceptionPossible(listening, reception);
     // bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
     // const IReceptionAnalogModel *analogModel = NULL; // receptionXXX->getAnalogModel();
+    const IReceptionAnalogModel *receptionAnalogModel = createReceptionAnalogModel(analogModel, reception, noise);
     // const IReceptionSampleModel *sampleModel = analogDigitalConverter->convertAnalogToDigital(analogModel);
-    const ITransmissionSymbolModel *symbolModel = transmission->getSymbolModel();
     const IReceptionSymbolModel *receptionSymbolModel = createReceptionSymbolModel(symbolModel);
     const IReceptionBitModel *bitModel = demodulator->demodulate(receptionSymbolModel);
-    const IReceptionPacketModel *packetModel = decoder->decode(bitModel);
+    const IReceptionPacketModel *receptionPacketModel = decoder->decode(bitModel);
     const cPacket *macFrame = transmission->getMacFrame();
-    const IReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, packetModel->getForwardErrorCorrection(),
-                                                                              packetModel->getScrambling(), packetModel->getInterleaving(),
-                                                                              packetModel->getPER(), packetModel->isPacketErrorless());
+    const IReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getForwardErrorCorrection(),
+                                                                              receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
+                                                                              receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
     return new ReceptionDecision(reception, NULL, hackedPacketModel, isReceptionPossible, isReceptionAttempted, true); // isReceptionSuccessful
 }
 
