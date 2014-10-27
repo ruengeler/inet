@@ -36,16 +36,16 @@ module LayeredTransmitter like ITransmitter
         @class(LayeredTransmitter);
 
     submodules:
-        encoder: <encoderType> like IEncoder {
+        encoder: <encoderType> like IEncoder if encoderType != "" {
             @display("p=100,50");
         }
-        modulator: <modulatorType> like IModulator {
+        modulator: <modulatorType> like IModulator if modulatorType != "" {
             @display("p=100,150");
         }
-        pulseShaper: <pulseShaperType> like IPulseShaper {
+        pulseShaper: <pulseShaperType> like IPulseShaper if pulseShaperType != "" {
             @display("p=100,250");
         }
-        digitalAnalogConverter: <digitalAnalogConverterType> like IDigitalAnalogConverter {
+        digitalAnalogConverter: <digitalAnalogConverterType> like IDigitalAnalogConverter if digitalAnalogConverterType != "" {
             @display("p=100,350");
         }
 }
