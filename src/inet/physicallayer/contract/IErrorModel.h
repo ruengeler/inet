@@ -42,10 +42,10 @@ class INET_API IErrorModel : public IPrintableObject
 class INET_API ILayeredErrorModel : public IErrorModel
 {
   public:
-    virtual IReceptionPacketModel *computePacketModel(const ITransmissionPacketModel *transmissionBitModel, const ISNIR *snir) const = 0;
-    virtual IReceptionBitModel *computeBitModel(const ITransmissionBitModel *transmissionBitModel, const ISNIR *snir) const = 0;
-    virtual IReceptionSymbolModel *computeSymbolModel(const ITransmissionSymbolModel *transmissionSymbolModel, const ISNIR *snir) const = 0;
-    virtual IReceptionSampleModel *computeSampleModel(const ITransmissionSampleModel *tranmssionSampleModel, const ISNIR *snir) const = 0;
+    virtual const IReceptionPacketModel *computePacketModel(const ITransmissionPacketModel *transmissionBitModel, const ISNIR *snir) const = 0;
+    virtual const IReceptionBitModel *computeBitModel(const ITransmissionBitModel *transmissionBitModel, const ISNIR *snir) const = 0;
+    virtual const IReceptionSymbolModel *computeSymbolModel(const ITransmissionSymbolModel *transmissionSymbolModel, const ISNIR *snir) const = 0;
+    virtual const IReceptionSampleModel *computeSampleModel(const ITransmissionSampleModel *tranmssionSampleModel, const ISNIR *snir) const = 0;
 };
 
 } // namespace physicallayer
