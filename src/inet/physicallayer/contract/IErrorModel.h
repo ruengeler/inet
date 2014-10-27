@@ -19,10 +19,7 @@
 #define __INET_IERRORMODEL_H
 
 #include "ISNIR.h"
-#include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
-#include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/layered/LayeredTransmission.h"
 
 namespace inet {
 
@@ -42,10 +39,10 @@ class INET_API IErrorModel : public IPrintableObject
 class INET_API ILayeredErrorModel : public IErrorModel
 {
   public:
-    virtual const IReceptionPacketModel *computePacketModel(const ITransmissionPacketModel *transmissionBitModel, const ISNIR *snir) const = 0;
-    virtual const IReceptionBitModel *computeBitModel(const ITransmissionBitModel *transmissionBitModel, const ISNIR *snir) const = 0;
-    virtual const IReceptionSymbolModel *computeSymbolModel(const ITransmissionSymbolModel *transmissionSymbolModel, const ISNIR *snir) const = 0;
-    virtual const IReceptionSampleModel *computeSampleModel(const ITransmissionSampleModel *tranmssionSampleModel, const ISNIR *snir) const = 0;
+    virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
 };
 
 } // namespace physicallayer

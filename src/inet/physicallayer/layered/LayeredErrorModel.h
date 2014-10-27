@@ -26,10 +26,10 @@ namespace physicallayer {
 class INET_API LayeredErrorModel : public ILayeredErrorModel
 {
     public:
-        virtual const IReceptionPacketModel *computePacketModel(const ITransmissionPacketModel *transmissionPacketModel, const ISNIR *snir) const;
-        virtual const IReceptionBitModel *computeBitModel(const ITransmissionBitModel *transmissionBitModel, const ISNIR *snir) const;
-        virtual const IReceptionSymbolModel *computeSymbolModel(const ITransmissionSymbolModel *transmissionSymbolModel, const ISNIR *snir) const;
-        virtual const IReceptionSampleModel *computeSampleModel(const ITransmissionSampleModel *tranmssionSampleModel, const ISNIR *snir) const;
+        virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
 };
 
 } /* namespace physicallayer */

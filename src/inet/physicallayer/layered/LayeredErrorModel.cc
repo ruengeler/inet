@@ -18,24 +18,30 @@
 #include "inet/physicallayer/layered/LayeredErrorModel.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/layered/SignalSampleModel.h"
+#include "inet/physicallayer/layered/SignalSymbolModel.h"
 
 namespace inet {
 namespace physicallayer {
 
-const IReceptionBitModel* LayeredErrorModel::computeBitModel(const ITransmissionBitModel* transmissionBitModel, const ISNIR* snir) const
+const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
     int bitLength = transmissionBitModel->getBitLength();
     double bitrate = transmissionBitModel->getBitRate();
     const BitVector *bits = transmissionBitModel->getBits();
-    const IModulation *modulation = transmissionBitModel->getModulation();
+    ASSERT(transmission->getSymbolModel() != NULL);
+    const TransmissionSymbolModel *symbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
+    const IModulation *modulation = symbolModel->getModulation();
     double ber;
     int bitErrorCount;
-    const LayeredTransmission *layeredTransmission = check_and_cast<const LayeredTransmission* >(snir->getReception()->getTransmission());
     if (dynamic_cast<const IAPSKModulation *>(modulation))
     {
         const IAPSKModulation *apskModulation = (const IAPSKModulation *) modulation;
         // TODO: separate header and payload
-        ber = apskModulation->calculateBER(snir->getMin(), layeredTransmission->getBandwidth().get(), bitrate);
+        ber = apskModulation->calculateBER(snir->getMin(), transmission->getBandwidth().get(), bitrate);
         bitErrorCount = ber * bitLength;
     }
     else
@@ -43,34 +49,34 @@ const IReceptionBitModel* LayeredErrorModel::computeBitModel(const ITransmission
     return new const ReceptionBitModel(bitLength, bitrate, bits, modulation, ber, bitErrorCount);
 }
 
-const IReceptionSymbolModel* LayeredErrorModel::computeSymbolModel(const ITransmissionSymbolModel* transmissionSymbolModel, const ISNIR* snir) const
+const IReceptionSymbolModel* LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    const ITransmissionSymbolModel *transmissionSymbolModel = transmission->getSymbolModel();
     const double ser = -1; // TODO: error model
     const double symbolErrorCount = -1; // TODO: error model
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols(), ser, symbolErrorCount);
-
 }
 
-const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const ITransmissionSampleModel* tranmssionSampleModel, const ISNIR* snir) const
+const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
-    int sampleLength = tranmssionSampleModel->getSampleLength();
-    double sampleRate = tranmssionSampleModel->getSampleRate();
-    const std::vector<W> *samples = tranmssionSampleModel->getSamples();
+    const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
+    int sampleLength = transmissionSampleModel->getSampleLength();
+    double sampleRate = transmissionSampleModel->getSampleRate();
+    const std::vector<W> *samples = transmissionSampleModel->getSamples();
     W rssi = W(0); // TODO: error model
     return new const ReceptionSampleModel(sampleLength, sampleRate, samples, rssi);
 }
 
-const IReceptionPacketModel* LayeredErrorModel::computePacketModel(const ITransmissionPacketModel* transmissionPacketModel, const ISNIR* snir) const
+const IReceptionPacketModel* LayeredErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    const ITransmissionPacketModel *transmissionPacketModel = transmission->getPacketModel();
     const cPacket *packet = transmissionPacketModel->getPacket();
     double per = -1;
     bool packetErrorless = true;
     if (per != 0)
         packetErrorless = false;
-// TODO:   forwardErrorCorrection, scrambling, interleaving
     return new const ReceptionPacketModel(packet, NULL, NULL, NULL, per, packetErrorless);
 }
-
 
 } /* namespace physicallayer */
 } /* namespace inet */
