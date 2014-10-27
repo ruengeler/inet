@@ -34,14 +34,11 @@ namespace physicallayer {
 class INET_API ISignalBitModel : public IPrintableObject
 {
   public:
-    // TODO: separate header and payload
-    virtual int getBitLength() const = 0;
-
-    // TODO: separate header and payload
-    virtual double getBitRate() const = 0;
-
+    virtual int getHeaderBitLength() const = 0;
+    virtual double getHeaderBitRate() const = 0;
+    virtual int getPayloadBitLength() const = 0;
+    virtual double getPayloadBitRate() const = 0;
     virtual const BitVector *getBits() const = 0;
-
 };
 
 class INET_API ITransmissionBitModel : public virtual ISignalBitModel

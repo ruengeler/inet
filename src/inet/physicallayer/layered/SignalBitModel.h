@@ -30,25 +30,33 @@ class INET_API SignalBitModel : public virtual ISignalBitModel
 {
   protected:
     const BitVector *bits;
-    const int bitLength;
-    const double bitRate;
+    const int headerBitLength;
+    const double headerBitRate;
+    const int payloadBitLength;
+    const double payloadBitRate;
 
   public:
     SignalBitModel() :
         bits(&BitVector::UNDEF),
-        bitLength(-1),
-        bitRate(sNaN)
+        headerBitLength(-1),
+        headerBitRate(sNaN),
+        payloadBitLength(-1),
+        payloadBitRate(sNaN)
     {}
 
-    SignalBitModel(int bitLength, double bitRate, const BitVector *bits) :
+    SignalBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits) :
         bits(bits),
-        bitLength(bitLength),
-        bitRate(bitRate)
+        headerBitLength(headerBitLength),
+        headerBitRate(headerBitRate),
+        payloadBitLength(payloadBitLength),
+        payloadBitRate(payloadBitRate)
     {}
 
     virtual void printToStream(std::ostream &stream) const;
-    virtual int getBitLength() const { return bitLength; }
-    virtual double getBitRate() const { return bitRate; }
+    virtual int getHeaderBitLength() const { return headerBitLength; }
+    virtual double getHeaderBitRate() const { return headerBitRate; }
+    virtual int getPayloadBitLength() const { return payloadBitLength; }
+    virtual double getPayloadBitRate() const { return payloadBitRate; }
     virtual const BitVector* getBits() const { return bits; }
 };
 
@@ -64,8 +72,8 @@ class INET_API TransmissionBitModel : public SignalBitModel, public virtual ITra
         SignalBitModel()
     {}
 
-    TransmissionBitModel(int bitLength, double bitRate, const BitVector *bits, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scramblerInfo, const IInterleaving *interleaverInfo) :
-        SignalBitModel(bitLength, bitRate, bits),
+    TransmissionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scramblerInfo, const IInterleaving *interleaverInfo) :
+        SignalBitModel(headerBitLength, payloadBitLength, headerBitRate, payloadBitRate, bits),
         forwardErrorCorrection(forwardErrorCorrection),
         scrambling(scramblerInfo),
         interleaving(interleaverInfo)
@@ -91,8 +99,8 @@ class INET_API ReceptionBitModel : public SignalBitModel, public virtual IRecept
         bitErrorCount(-1)
     {}
 
-    ReceptionBitModel(int bitLength, double bitRate, const BitVector *bits, const IModulation *modulation, double ber, int bitErrorCount) :
-        SignalBitModel(bitLength, bitRate, bits),
+    ReceptionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IModulation *modulation, double ber, int bitErrorCount) :
+        SignalBitModel(headerBitLength, payloadBitLength, headerBitRate, payloadBitRate, bits),
         modulation(modulation),
         ber(ber),
         bitErrorCount(bitErrorCount)
