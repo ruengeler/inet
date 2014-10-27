@@ -59,41 +59,6 @@ void LayeredReceiver::initialize(int stage)
     }
 }
 
-const IReceptionSymbolModel* LayeredReceiver::createReceptionSymbolModel(const ITransmissionSymbolModel* symbolModel) const
-{
-    const TransmissionSymbolModel *transmissionSymbolModel = dynamic_cast<const TransmissionSymbolModel*>(symbolModel);
-    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols(), 0, 0);
-}
-
-const IReceptionSampleModel* LayeredReceiver::createReceptionSampleModel(const ITransmissionSampleModel* sampleModel) const
-{
-    throw cRuntimeError("Unimplemented");
-    int sampleLength = sampleModel->getSampleLength();
-    double sampleRate = sampleModel->getSampleRate();
-    const std::vector<W> *samples = sampleModel->getSamples();
-    W rssi = W(0); // TODO: error model
-    return new const ReceptionSampleModel(sampleLength, sampleRate, samples, rssi);
-}
-
-const IReceptionBitModel* LayeredReceiver::createReceptionBitModel(const ITransmissionBitModel* bitModel) const
-{
-    throw cRuntimeError("Unimplemented");
-    int bitLength = bitModel->getBitLength();
-    double bitRate = bitModel->getBitRate();
-    const BitVector *bits = bitModel->getBits();
-    const IModulation *modulation = NULL; // TODO: TransmissionBitModel doesn't include this info
-    double ber = -1; // TODO: ber, bitErrorCount -> error module should provide some statistical
-    int bitErrorCount = -1;
-    return new const ReceptionBitModel(bitLength, bitRate, bits, modulation, ber, bitErrorCount);
-}
-
-
-const IReceptionPacketModel* LayeredReceiver::createReceptionPacketModel(const ITransmissionPacketModel* packetModel) const
-{
-
-}
-
-
 const ISNIR* LayeredReceiver::computeSNIR(const IReception *reception, const IListening *listening, const IInterference *interference) const
 {
     const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
@@ -156,108 +121,52 @@ const INoise *LayeredReceiver::computeNoise(const IListening *listening, const I
 
 const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
 {
-//    const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
-//    const IReceptionAnalogModel *receptionAnalogModel = NULL;
-//    const IReceptionSampleModel *receptionSampleModel = NULL;
-//    const IReceptionSymbolModel *receptionSymbolModel = NULL;
-//    const IReceptionBitModel *receptionBitModel = NULL;
-//    const IReceptionPacketModel *receptionPacketModel = NULL;
-//    if (analogDigitalConverter)
-//    {
-//        const IReceptionAnalogModel *totalAnalogModel = NULL; // TODO: interference + receptionAnalogModel;
-//        receptionSampleModel = analogDigitalConverter->convertAnalogToDigital(totalAnalogModel);
-//    }
-//    if (pulseFilter)
-//    {
-//        if (!receptionSampleModel)
-//        {
-//            const ISNIR *snir = computeSNIR(reception, listening, interference);
-//            receptionSampleModel = errorModel->computeSampleModel(transmission->getSampleModel(), snir);
-//        }
-//        receptionSymbolModel = pulseFilter->filter(receptionSampleModel);
-//    }
-//    if (demodulator)
-//    {
-//        if (!receptionSymbolModel)
-//        {
-//            const ISNIR *snir = computeSNIR(reception, listening, interference);
-//            receptionSymbolModel = errorModel->computeSymbolModel(transmission->getSymbolModel(), snir);
-//        }
-//        receptionBitModel = demodulator->demodulate(receptionSymbolModel);
-//    }
-//    if (decoder)
-//    {
-//        if (!receptionBitModel)
-//        {
-//            const ISNIR *snir = computeSNIR(reception, listening, interference);
-//            receptionBitModel = errorModel->computeBitModel(transmission->getBitModel(), snir);
-//        }
-//        receptionPacketModel = decoder->decode(receptionBitModel);
-//    }
-//    if (!receptionPacketModel)
-//        throw
-
-
     const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
     const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
-    ASSERT(receptionAnalogModel != NULL); // analog model is obligatory
+    if (!receptionAnalogModel)
+        throw cRuntimeError("Reception analog model is obligatory");
     const IReceptionSampleModel *receptionSampleModel = NULL;
+    const IReceptionSymbolModel *receptionSymbolModel = NULL;
+    const IReceptionBitModel *receptionBitModel = NULL;
+    const IReceptionPacketModel *receptionPacketModel = NULL;
     if (analogDigitalConverter)
     {
-//        TODO: calculate totalAnalogModel -> convertAnalogToDigital(totalAnalogModel)
-        receptionSampleModel = analogDigitalConverter->convertAnalogToDigital(receptionAnalogModel);
+//        const IReceptionAnalogModel *totalAnalogModel = NULL; // TODO: interference + receptionAnalogModel;
+//        receptionSampleModel = analogDigitalConverter->convertAnalogToDigital(totalAnalogModel);
     }
-    else
+    if (pulseFilter)
     {
-        const ITransmissionSampleModel *sampleModel = transmission->getSampleModel();
-        if (sampleModel)
-            receptionSampleModel = createReceptionSampleModel(sampleModel);
-    }
-    const IReceptionSymbolModel *receptionSymbolModel = NULL;
-    if (pulseFilter && receptionSampleModel)
+        if (!receptionSampleModel)
+        {
+            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            ASSERT(transmission->getSampleModel() != NULL);
+            receptionSampleModel = errorModel->computeSampleModel(transmission->getSampleModel(), snir);
+        }
         receptionSymbolModel = pulseFilter->filter(receptionSampleModel);
-    else if (pulseFilter && !receptionSampleModel)
-        throw cRuntimeError("Pulse filter is present but there is no sample model");
-    else
+    }
+    if (demodulator)
     {
-        const ITransmissionSymbolModel *symbolModel = transmission->getSymbolModel();
-        if (symbolModel)
+        if (!receptionSymbolModel)
         {
             const ISNIR *snir = computeSNIR(reception, listening, interference);
-            receptionSymbolModel = errorModel->computeSymbolModel(symbolModel, snir);
+            ASSERT(transmission->getSymbolModel() != NULL);
+            receptionSymbolModel = errorModel->computeSymbolModel(transmission->getSymbolModel(), snir);
         }
-    }
-    const IReceptionBitModel *receptionBitModel = NULL;
-    if (demodulator && receptionSymbolModel)
         receptionBitModel = demodulator->demodulate(receptionSymbolModel);
-    else if (demodulator && !receptionSymbolModel)
-        throw cRuntimeError("Demodulator is present but there is no symbol model");
-    else
+    }
+    if (decoder)
     {
-        const ITransmissionBitModel *bitModel = transmission->getBitModel();
-        if (bitModel)
+        if (!receptionBitModel)
         {
             const ISNIR *snir = computeSNIR(reception, listening, interference);
-            receptionBitModel = errorModel->computeBitModel(bitModel, snir);
+            ASSERT(transmission->getBitModel() != NULL);
+            receptionBitModel = errorModel->computeBitModel(transmission->getBitModel(), snir);
         }
-    }
-    const IReceptionPacketModel *receptionPacketModel = NULL;
-    if (decoder && receptionBitModel)
         receptionPacketModel = decoder->decode(receptionBitModel);
-    else if (decoder && !receptionBitModel)
-        throw cRuntimeError("Decoder is present but there is not bit representation");
-    else
-    {
-        const ITransmissionPacketModel *packetModel = transmission->getPacketModel();
-        if (packetModel)
-        {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
-            receptionPacketModel = errorModel->computePacketModel(packetModel, snir);
-        }
-        else
-            throw cRuntimeError("Packet model is obligatory");
     }
+    if (!receptionPacketModel)
+        throw cRuntimeError("Packet model is obligatory");
     // FIXME: !!HACK!!
     const cPacket *macFrame = transmission->getMacFrame();
     const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getForwardErrorCorrection(),

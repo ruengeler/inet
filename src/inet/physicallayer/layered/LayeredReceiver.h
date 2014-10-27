@@ -41,17 +41,6 @@ class INET_API LayeredReceiver : public ScalarReceiver
   protected:
     virtual void initialize(int stage);
 
-    /*
-     * These functions do the "transmission to reception" conversations.
-     * If the actual radio architecture does not implement some domains you should
-     * implement to corresponding function that can bridge these missing domains.
-     */
-    virtual const IReceptionPacketModel *createReceptionPacketModel(const ITransmissionPacketModel *packetModel) const;
-    virtual const IReceptionBitModel *createReceptionBitModel(const ITransmissionBitModel *bitModel) const;
-    virtual const IReceptionSampleModel *createReceptionSampleModel(const ITransmissionSampleModel *sampleModel) const;
-    virtual const IReceptionSymbolModel *createReceptionSymbolModel(const ITransmissionSymbolModel *symbolModel) const;
-    virtual const IReceptionAnalogModel *createReceptionAnalogModel(const ITransmissionAnalogModel *analogModel, const IReception *reception, const IListening *listening, const IInterference *interference) const;
-
     virtual const ISNIR *computeSNIR(const IReception *reception, const IListening *listening, const IInterference *interference) const;
     const INoise *computeNoise(const IListening *listening, const IInterference *interference) const;
 
