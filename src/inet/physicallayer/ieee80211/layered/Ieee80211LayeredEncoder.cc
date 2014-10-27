@@ -79,7 +79,8 @@ const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmission
     for (unsigned int i = 0; i < encodedDataField.getSize(); i++)
         encodedBits->appendBit(encodedDataField.getBit(i));
     // TODO: bitrate
-    return new TransmissionBitModel(encodedBits->getSize(), bitRate, encodedBits, dataFECEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
+    // FIXME: modulation
+    return new TransmissionBitModel(encodedBits->getSize(), bitRate, encodedBits, NULL, dataFECEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
 }
 
 } /* namespace physicallayer */

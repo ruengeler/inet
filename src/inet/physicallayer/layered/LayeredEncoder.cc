@@ -49,7 +49,8 @@ const ITransmissionBitModel *LayeredEncoder::encode(const ITransmissionPacketMod
     BitVector *interleavedBits = new BitVector(fecEncodedBits);
     if (interleaver)
         *interleavedBits = interleaver->interleave(fecEncodedBits);
-    return new TransmissionBitModel(interleavedBits->getSize(), bitRate, interleavedBits, fecEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
+    // FIXME: modulation
+    return new TransmissionBitModel(interleavedBits->getSize(), bitRate, interleavedBits, NULL, fecEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
 }
 
 } // namespace physicallayer
