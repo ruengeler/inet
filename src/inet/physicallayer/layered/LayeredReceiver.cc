@@ -130,6 +130,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     const IReceptionSymbolModel *receptionSymbolModel = NULL;
     const IReceptionBitModel *receptionBitModel = NULL;
     const IReceptionPacketModel *receptionPacketModel = NULL;
+    RadioReceptionIndication *receptionIndication = new RadioReceptionIndication();
     if (analogDigitalConverter)
     {
 //        const IReceptionAnalogModel *totalAnalogModel = NULL; // TODO: interference + receptionAnalogModel;
@@ -140,9 +141,11 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
         if (!receptionSampleModel)
         {
             const ISNIR *snir = computeSNIR(reception, listening, interference);
+            receptionIndication->setMinSNIR(snir->getMin());
             ASSERT(transmission->getSampleModel() != NULL);
             receptionSampleModel = errorModel->computeSampleModel(transmission->getSampleModel(), snir);
         }
+        receptionIndication->setMinRSSI(receptionSampleModel->getRSSI());
         receptionSymbolModel = pulseFilter->filter(receptionSampleModel);
     }
     if (demodulator)
@@ -153,6 +156,8 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
             ASSERT(transmission->getSymbolModel() != NULL);
             receptionSymbolModel = errorModel->computeSymbolModel(transmission->getSymbolModel(), snir);
         }
+        receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
+        receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
         receptionBitModel = demodulator->demodulate(receptionSymbolModel);
     }
     if (decoder)
@@ -163,10 +168,13 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
             ASSERT(transmission->getBitModel() != NULL);
             receptionBitModel = errorModel->computeBitModel(transmission->getBitModel(), snir);
         }
+        receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
+        receptionIndication->setBitErrorRate(receptionBitModel->getBER());
         receptionPacketModel = decoder->decode(receptionBitModel);
     }
     if (!receptionPacketModel)
         throw cRuntimeError("Packet model is obligatory");
+    receptionIndication->setPacketErrorRate(receptionPacketModel->getPER());
     // FIXME: !!HACK!!
     const cPacket *macFrame = transmission->getMacFrame();
     const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getForwardErrorCorrection(),
@@ -178,7 +186,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
 //    double snirMin = totalAnalogModel ...;
     double snirMin = 0; // TODO
     bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
-    return new ReceptionDecision(reception, NULL, hackedPacketModel, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful);
+    return new ReceptionDecision(reception, receptionIndication, hackedPacketModel, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful);
 }
 
 } // namespace physicallayer
