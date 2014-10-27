@@ -31,7 +31,6 @@ class INET_API IAPSKModulation : public IPrintableObject, public IModulation
         virtual int getCodeWordLength() const = 0;
         virtual int getConstellationSize() const = 0;
         virtual double getNormalizationFactor() const = 0;
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
 };
 
 } /* namespace physicallayer */

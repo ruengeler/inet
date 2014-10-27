@@ -27,6 +27,7 @@ class INET_API IModulation
 {
     public:
         virtual ~IModulation() {}
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
 };
 
 } /* namespace physicallayer */
