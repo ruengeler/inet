@@ -143,7 +143,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
             const ISNIR *snir = computeSNIR(reception, listening, interference);
             receptionIndication->setMinSNIR(snir->getMin());
             ASSERT(transmission->getSampleModel() != NULL);
-            receptionSampleModel = errorModel->computeSampleModel(transmission->getSampleModel(), snir);
+            receptionSampleModel = errorModel->computeSampleModel(transmission, snir);
         }
         receptionIndication->setMinRSSI(receptionSampleModel->getRSSI());
         receptionSymbolModel = pulseFilter->filter(receptionSampleModel);
@@ -154,7 +154,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
         {
             const ISNIR *snir = computeSNIR(reception, listening, interference);
             ASSERT(transmission->getSymbolModel() != NULL);
-            receptionSymbolModel = errorModel->computeSymbolModel(transmission->getSymbolModel(), snir);
+            receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
         receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
         receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
@@ -166,7 +166,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
         {
             const ISNIR *snir = computeSNIR(reception, listening, interference);
             ASSERT(transmission->getBitModel() != NULL);
-            receptionBitModel = errorModel->computeBitModel(transmission->getBitModel(), snir);
+            receptionBitModel = errorModel->computeBitModel(transmission, snir);
         }
         receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
         receptionIndication->setBitErrorRate(receptionBitModel->getBER());
