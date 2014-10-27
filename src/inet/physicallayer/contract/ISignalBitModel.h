@@ -59,6 +59,10 @@ class INET_API ITransmissionBitModel : public virtual ISignalBitModel
      *
      */
     virtual const IInterleaving *getInterleaving() const = 0;
+    /*
+     *
+     */
+    virtual const IModulation *getModulation() const = 0;
 };
 
 class INET_API IReceptionBitModel : public virtual ISignalBitModel
