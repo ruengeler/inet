@@ -40,10 +40,7 @@ class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
         Hz bandwidth;
         Hz carrierFrequency;
         Hz channelSpacing;
-        bps bitrate;
         W power;
-        int rate;
-
     protected:
         virtual void initialize(int stage);
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;

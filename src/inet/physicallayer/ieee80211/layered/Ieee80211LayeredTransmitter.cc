@@ -45,15 +45,14 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
         channelSpacing = Hz(par("channelSpacing"));
-        bitrate = bps(par("bitrate"));
-        rate = calculateRateField(channelSpacing, bitrate).toDecimal();
     }
 }
 
 const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(const cPacket* macFrame) const
 {
-    // const RadioTransmissionRequest *controlInfo = dynamic_cast<const RadioTransmissionRequest *>(macFrame->getControlInfo());
-    // bps bitRate = controlInfo->getBitrate(); // TODO: Calculate the convolutional code rate from bitRate
+    const RadioTransmissionRequest *controlInfo = dynamic_cast<const RadioTransmissionRequest *>(macFrame->getControlInfo());
+    bps bitRate = controlInfo->getBitrate();
+    int rate = calculateRateField(channelSpacing, bitRate).toDecimal();
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;

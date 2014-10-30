@@ -29,6 +29,5 @@ module Ieee80211LayeredTransmitter extends LayeredTransmitter
         encoderType = "Ieee80211LayeredEncoder";
         modulatorType = "Ieee80211OFDMModulator";
         double channelSpacing @unit(Hz);
-        double bitrate @unit(bps);
         @class(Ieee80211LayeredTransmitter);
 }
