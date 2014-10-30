@@ -46,7 +46,7 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
         carrierFrequency = Hz(par("carrierFrequency"));
         channelSpacing = Hz(par("channelSpacing"));
         bitrate = bps(par("bitrate"));
-        int rate = calculateRateField(channelSpacing, bitrate).toDecimal();
+        rate = calculateRateField(channelSpacing, bitrate).toDecimal();
     }
 }
 
