@@ -23,6 +23,7 @@
 #include "inet/physicallayer/contract/IPulseShaper.h"
 #include "inet/physicallayer/contract/IDigitalAnalogConverter.h"
 #include "inet/physicallayer/layered/LayeredTransmitter.h"
+#include "inet/common/ShortBitVector.h"
 
 namespace inet {
 
