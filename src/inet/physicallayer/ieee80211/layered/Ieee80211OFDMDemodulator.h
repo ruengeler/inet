@@ -42,7 +42,7 @@ class INET_API Ieee80211OFDMDemodulator : public cSimpleModule, public IDemodula
         BitVector demodulateField(const OFDMSymbol *signalSymbol, const APSKModulationBase *modulationScheme) const;
         BitVector demodulateDataSymbol(const OFDMSymbol *dataSymbol) const;
         BitVector demodulateSignalSymbol(const OFDMSymbol *signalSymbol) const;
-        const IReceptionBitModel *createBitModel(const BitVector *bitRepresentation) const;
+        const IReceptionBitModel *createBitModel(const BitVector *bitRepresentation, int signalFieldBitLength, double signalFieldBitRate, int dataFieldBitLength, double dataFieldBitRate) const;
         bool isPilotOrDcSubcarrier(int i) const;
 
     public:
