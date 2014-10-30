@@ -41,11 +41,12 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
         modulator = check_and_cast<IModulator *>(getSubmodule("modulator"));
         pulseShaper = check_and_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
         digitalAnalogConverter = check_and_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
-        const char *codeRate = par("codeRate").stringValue();
-        setCodeRateParameters(codeRate);
         power = W(par("power"));
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
+        channelSpacing = Hz(par("channelSpacing"));
+        bitrate = bps(par("bitrate"));
+        int rate = calculateRateField(channelSpacing, bitrate).toDecimal();
     }
 }
 
@@ -57,24 +58,81 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(c
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
     Ieee80211PHYFrame * phyFrame = new Ieee80211PHYFrame();
-    phyFrame->setRate1(codeRateK);
-    phyFrame->setRate2(codeRateN);
+    phyFrame->setRate(rate);
     phyFrame->setLength(macFrame->getByteLength());
     phyFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
     phyFrame->setBitLength(phyFrame->getLength() + plcpHeaderLength);
     const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame);
     return packetModel;
 }
-
-void Ieee80211LayeredTransmitter::setCodeRateParameters(const char *codeRate)
+ShortBitVector Ieee80211LayeredTransmitter::calculateRateField(Hz channelSpacing, bps bitrate) const
 {
-    cStringTokenizer tokenizer(codeRate,"/");
-    if (tokenizer.hasMoreTokens())
-        codeRateK = atoi(tokenizer.nextToken());
-    if (tokenizer.hasMoreTokens())
-        codeRateN = atoi(tokenizer.nextToken());
+    if (channelSpacing == MHz(20))
+    {
+        if (bitrate == bps(6000000))
+            return ShortBitVector("1101");
+        else if (bitrate == bps(9000000))
+            return ShortBitVector("1111");
+        else if (bitrate == bps(12000000))
+            return ShortBitVector("0101");
+        else if (bitrate == bps(18000000))
+            return ShortBitVector("0111");
+        else if (bitrate == bps(24000000))
+            return ShortBitVector("1001");
+        else if (bitrate == bps(36000000))
+            return ShortBitVector("1011");
+        else if (bitrate == bps(48000000))
+            return ShortBitVector("0001");
+        else if (bitrate == bps(54000000))
+            return ShortBitVector("0011");
+        else
+            throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+    }
+    else if (channelSpacing == MHz(10))
+    {
+        if (bitrate == bps(3000000))
+            return ShortBitVector("1101");
+        else if (bitrate == bps(4500000))
+            return ShortBitVector("1111");
+        else if (bitrate == bps(6000000))
+            return ShortBitVector("0101");
+        else if (bitrate == bps(9000000))
+            return ShortBitVector("0111");
+        else if (bitrate == bps(12000000))
+            return ShortBitVector("1001");
+        else if (bitrate == bps(18000000))
+            return ShortBitVector("1011");
+        else if (bitrate == bps(24000000))
+            return ShortBitVector("0001");
+        else if (bitrate == bps(27000000))
+            return ShortBitVector("0011");
+        else
+            throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+    }
+    else if (channelSpacing == MHz(5))
+    {
+       if (bitrate == bps(1500000))
+           return ShortBitVector("1101");
+       else if (bitrate == bps(2250000))
+           return ShortBitVector("1111");
+       else if (bitrate == bps(3000000))
+           return ShortBitVector("0101");
+       else if (bitrate == bps(4500000))
+           return ShortBitVector("0111");
+       else if (bitrate == bps(6000000))
+           return ShortBitVector("1001");
+       else if (bitrate == bps(9000000))
+           return ShortBitVector("1011");
+       else if (bitrate == bps(12000000))
+           return ShortBitVector("0001");
+       else if (bitrate == bps(13500000))
+           return ShortBitVector("0011");
+       else
+           throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+    }
     else
-        throw cRuntimeError("Code rate parameter parsing failed");
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+    return ShortBitVector("0000");
 }
 
 const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const

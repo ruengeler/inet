@@ -17,12 +17,12 @@
 
 namespace inet::physicallayer;
 
-// The rate1 and rate2 (RATE) indicate the convolutional code rate parameter
-// k and n, respectively.
-//
-// The length (LENGTH) field is a 12-bit integer indicates the number of
+// The length field is a 12-bit integer indicates the number of
 // octets in the PSDU that the MAC is currently requesting the PHY to
 // transmit.
+//
+// The rate field (18.3.4.2 RATE field) is a 4-bit integer carries
+// information about the modulation and coding.
 //
 // There are other fields which are not explicitly represented here,
 // for e.g. Parity, Reserved, SERVICE, Pad Bits.
@@ -35,7 +35,6 @@ namespace inet::physicallayer;
 //
 packet Ieee80211PHYFrame
 {
-    int rate1;
-    int rate2;
+    int rate;
     int length;
 }

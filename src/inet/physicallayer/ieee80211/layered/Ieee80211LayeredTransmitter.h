@@ -35,17 +35,18 @@ class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
         const IModulator *modulator;
         const IPulseShaper *pulseShaper;
         const IDigitalAnalogConverter *digitalAnalogConverter;
-        int codeRateK;
-        int codeRateN;
 
         Hz bandwidth;
         Hz carrierFrequency;
+        Hz channelSpacing;
+        bps bitrate;
         W power;
+        int rate;
 
     protected:
         virtual void initialize(int stage);
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
-        void setCodeRateParameters(const char *codeRate);
+        ShortBitVector calculateRateField(Hz channelSpacing, bps bitrate) const;
 
     public:
         Ieee80211LayeredTransmitter();
