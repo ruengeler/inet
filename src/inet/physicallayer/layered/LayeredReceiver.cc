@@ -156,8 +156,9 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
             ASSERT(transmission->getSymbolModel() != NULL);
             receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
-        receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
-        receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
+        // FIXME: delete ser from reception indication?
+//        receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
+//        receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
         receptionBitModel = demodulator->demodulate(receptionSymbolModel);
     }
     if (decoder)
@@ -168,8 +169,9 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
             ASSERT(transmission->getBitModel() != NULL);
             receptionBitModel = errorModel->computeBitModel(transmission, snir);
         }
-        receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
-        receptionIndication->setBitErrorRate(receptionBitModel->getBER());
+        // FIXME: delete ber from reception indication?
+//        receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
+//        receptionIndication->setBitErrorRate(receptionBitModel->getBER());
         receptionPacketModel = decoder->decode(receptionBitModel);
     }
     if (!receptionPacketModel)

@@ -46,8 +46,8 @@ void APSKModulator::initialize(int stage)
 const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitModel *bitModel) const
 {
     const int codeWordLength = modulationScheme->getCodeWordLength();
-    const int symbolLength = preambleSymbolLength + (bitModel->getBitLength() + codeWordLength - 1) / codeWordLength;
-    const double symbolRate = bitModel->getBitRate() / codeWordLength;
+    const int symbolLength = preambleSymbolLength + (bitModel->getHeaderBitLength() + bitModel->getPayloadBitLength() + codeWordLength - 1) / codeWordLength;
+    const double symbolRate = (bitModel->getPayloadBitLength() + bitModel->getHeaderBitRate()) / codeWordLength;
     const BitVector *bits = bitModel->getBits();
     std::vector<const ISymbol*> *symbols = new std::vector<const ISymbol*>(); // FIXME: Sample model should delete it
     ShortBitVector subcarrierBits;
