@@ -23,12 +23,12 @@ import inet.physicallayer.contract.IModulator;
 import inet.physicallayer.contract.IPulseShaper;
 import inet.physicallayer.layered.LayeredTransmitter;
 
-
 module Ieee80211LayeredTransmitter extends LayeredTransmitter
 {
     parameters:
         encoderType = "Ieee80211LayeredEncoder";
         modulatorType = "Ieee80211OFDMModulator";
-        string codeRate; // "1/2", "3/4", ...
+        double channelSpacing @unit(Hz);
+        double bitrate @unit(bps);
         @class(Ieee80211LayeredTransmitter);
 }
