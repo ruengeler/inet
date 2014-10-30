@@ -133,12 +133,6 @@ void Ieee80211OFDMModulator::modulateDataField(const BitVector& dataField, std::
             symbolID++;
         }
     }
-
-    // TODO: For each group of subcarriers -26 to 26, convert the subcarriers to time domain using inverse
-    // Fourier transform. Prepend to the Fourier-transformed waveform a circular extension of itself thus
-    // forming a GI, and truncate the resulting periodic waveform to a single OFDM symbol length by
-    // applying time domain windowing.
-
 }
 
 void Ieee80211OFDMModulator::insertPilotSubcarriers(OFDMSymbol *ofdmSymbol, int symbolID) const
