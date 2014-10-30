@@ -25,6 +25,9 @@ namespace physicallayer {
 
 class INET_API LayeredErrorModel : public ILayeredErrorModel
 {
+    protected:
+        void corruptBits(BitVector *bits, double ber, int begin, int end) const;
+
     public:
         virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
         virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;

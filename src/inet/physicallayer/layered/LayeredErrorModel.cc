@@ -26,6 +26,16 @@
 namespace inet {
 namespace physicallayer {
 
+void LayeredErrorModel::corruptBits(BitVector *bits, double ber, int begin, int end) const
+{
+    for (int i = begin; i != end; i++)
+    {
+        double p = uniform(0,1);
+        if (p <= ber)
+            bits->toggleBit(i);
+    }
+}
+
 const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
