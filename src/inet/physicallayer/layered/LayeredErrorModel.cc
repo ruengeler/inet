@@ -39,32 +39,32 @@ void LayeredErrorModel::corruptBits(BitVector *bits, double ber, int begin, int 
 const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
-    int bitLength = transmissionBitModel->getBitLength();
-    double bitrate = transmissionBitModel->getBitRate();
-    const BitVector *bits = transmissionBitModel->getBits();
+    int headerBitLength = transmissionBitModel->getHeaderBitLength();
+    double headerBitRate = transmissionBitModel->getHeaderBitRate();
+    int payloadBitLength = transmissionBitModel->getPayloadBitLength();
+    double payloadBitRate = transmissionBitModel->getPayloadBitRate();
     ASSERT(transmission->getSymbolModel() != NULL);
     const TransmissionSymbolModel *symbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
     const IModulation *modulation = symbolModel->getModulation();
-    double ber;
-    int bitErrorCount;
+    const BitVector *bits = transmissionBitModel->getBits();
+    BitVector *corruptedBits = new BitVector(*bits);
     if (dynamic_cast<const IAPSKModulation *>(modulation))
     {
         const IAPSKModulation *apskModulation = (const IAPSKModulation *) modulation;
-        // TODO: separate header and payload
-        ber = apskModulation->calculateBER(snir->getMin(), transmission->getBandwidth().get(), bitrate);
-        bitErrorCount = ber * bitLength;
+        double ber = apskModulation->calculateBER(snir->getMin(), transmission->getBandwidth().get(), payloadBitRate);
+        corruptBits(corruptedBits, ber, 0, corruptedBits->getSize()); // TODO: separate signal and header?
     }
     else
         throw cRuntimeError("Unknown modulation");
-    return new const ReceptionBitModel(bitLength, bitrate, bits, modulation, ber, bitErrorCount);
+    return new const ReceptionBitModel(headerBitLength, headerBitRate, payloadBitLength, payloadBitRate, corruptedBits, modulation);
 }
 
 const IReceptionSymbolModel* LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionSymbolModel *transmissionSymbolModel = transmission->getSymbolModel();
-    const double ser = -1; // TODO: error model
-    const double symbolErrorCount = -1; // TODO: error model
-    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols(), ser, symbolErrorCount);
+    // TODO: SER?
+    // TODO: implement symbol error model
+    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols());
 }
 
 const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
