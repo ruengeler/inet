@@ -47,7 +47,7 @@ const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredTransm
     const TransmissionSymbolModel *symbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
     const IModulation *modulation = symbolModel->getModulation();
     const BitVector *bits = transmissionBitModel->getBits();
-    BitVector *corruptedBits = new BitVector(*bits);
+    BitVector *corruptedBits = new BitVector(*bits); // FIXME: memory leak
     if (dynamic_cast<const IAPSKModulation *>(modulation))
     {
         const IAPSKModulation *apskModulation = (const IAPSKModulation *) modulation;
