@@ -60,19 +60,10 @@ class INET_API TransmissionSymbolModel : public SignalSymbolModel, public virtua
 
 class INET_API ReceptionSymbolModel : public SignalSymbolModel, public virtual IReceptionSymbolModel
 {
-  protected:
-    const double ser;
-    const double symbolErrorCount;
-
   public:
-    ReceptionSymbolModel(int symbolLength, double symbolRate, const std::vector<const ISymbol*> *symbols, double ser, double symbolErrorCount) :
-        SignalSymbolModel(symbolLength, symbolRate, symbols),
-        ser(ser),
-        symbolErrorCount(symbolErrorCount)
+    ReceptionSymbolModel(int symbolLength, double symbolRate, const std::vector<const ISymbol*> *symbols) :
+        SignalSymbolModel(symbolLength, symbolRate, symbols)
     {}
-
-    virtual double getSER() const { return ser; }
-    virtual int getSymbolErrorCount() const { return symbolErrorCount; }
 };
 
 } // namespace physicallayer

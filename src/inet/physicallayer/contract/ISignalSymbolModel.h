@@ -47,16 +47,6 @@ class INET_API ITransmissionSymbolModel : public virtual ISignalSymbolModel
 
 class INET_API IReceptionSymbolModel : public virtual ISignalSymbolModel
 {
-  public:
-    /**
-     * Returns the symbol error rate (probability).
-     */
-    virtual double getSER() const = 0;
-
-    /**
-     * Returns the actual number of erroneous symbols.
-     */
-    virtual int getSymbolErrorCount() const = 0;
 };
 
 } // namespace physicallayer

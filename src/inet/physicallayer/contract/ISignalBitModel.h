@@ -61,15 +61,6 @@ class INET_API ITransmissionBitModel : public virtual ISignalBitModel
 class INET_API IReceptionBitModel : public virtual ISignalBitModel
 {
   public:
-    /**
-     * Returns the bit error rate (probability).
-     */
-    virtual double getBER() const = 0;
-
-    /**
-     * Returns the actual number of erroneous bits.
-     */
-    virtual int getBitErrorCount() const = 0;
     /*
      * Returns the modulation type used by the actual demodulator.
      */

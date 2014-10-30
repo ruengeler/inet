@@ -88,26 +88,18 @@ class INET_API ReceptionBitModel : public SignalBitModel, public virtual IRecept
 {
   protected:
     const IModulation *modulation;
-    const double ber;
-    const int bitErrorCount;
 
   public:
     ReceptionBitModel() :
         SignalBitModel(),
-        modulation(NULL),
-        ber(sNaN),
-        bitErrorCount(-1)
+        modulation(NULL)
     {}
 
-    ReceptionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IModulation *modulation, double ber, int bitErrorCount) :
+    ReceptionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IModulation *modulation) :
         SignalBitModel(headerBitLength, payloadBitLength, headerBitRate, payloadBitRate, bits),
-        modulation(modulation),
-        ber(ber),
-        bitErrorCount(bitErrorCount)
+        modulation(modulation)
     {}
 
-    virtual double getBER() const { return ber; }
-    virtual int getBitErrorCount() const { return bitErrorCount; }
     const IModulation *getModulation() const { return modulation; }
 };
 
