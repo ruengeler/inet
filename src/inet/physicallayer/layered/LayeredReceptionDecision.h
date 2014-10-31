@@ -44,7 +44,6 @@ class INET_API LayeredReceptionDecision : public ReceptionDecision
 
         virtual void printToStream(std::ostream& stream) const { stream << "Layered Reception Decision"; }
         LayeredReceptionDecision(const IReception *reception, const RadioReceptionIndication *indication, const IReceptionPacketModel *packetModel, const IReceptionBitModel *bitModel, const IReceptionSymbolModel *symbolModel, const IReceptionSampleModel *sampleModel, const IReceptionAnalogModel *analogModel, bool isReceptionPossible, bool isReceptionAttempted, bool isReceptionSuccessful);
-        virtual ~LayeredReceptionDecision();
 };
 
 } /* namespace physicallayer */
