@@ -141,10 +141,26 @@ ShortBitVector Ieee80211LayeredTransmitter::calculateRateField(Hz channelSpacing
 const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
 {
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
-    const ITransmissionBitModel *bitModel = encoder->encode(packetModel);
-    const ITransmissionSymbolModel *symbolModel = modulator->modulate(bitModel);
-    const ITransmissionSampleModel *sampleModel = pulseShaper->shape(symbolModel);
-    const ITransmissionAnalogModel *analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
+    ASSERT(packetModel != NULL);
+    const ITransmissionBitModel *bitModel = NULL;
+    if (encoder)
+        bitModel = encoder->encode(packetModel);
+    const ITransmissionSymbolModel *symbolModel = NULL;
+    if (modulator && bitModel)
+        symbolModel = modulator->modulate(bitModel);
+    else if (modulator && !bitModel)
+        throw cRuntimeError("Modulators need bit representation");
+    const ITransmissionSampleModel *sampleModel = NULL;
+    if (pulseShaper && symbolModel)
+        sampleModel = pulseShaper->shape(symbolModel);
+    else if (pulseShaper && !sampleModel)
+        throw cRuntimeError("Pulse shapers need symbol representation");
+    const ITransmissionAnalogModel *analogModel = NULL;
+    if (digitalAnalogConverter && sampleModel)
+        analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
+    else if (digitalAnalogConverter && !sampleModel)
+        throw cRuntimeError("Digital/analog converters need sample representation");
+    analogModel = createAnalogModel(); // FIXME
     IMobility *mobility = transmitter->getAntenna()->getMobility();
     // assuming movement and rotation during transmission is negligible
     const simtime_t endTime = startTime + analogModel->getDuration();
