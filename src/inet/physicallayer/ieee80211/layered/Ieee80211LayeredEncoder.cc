@@ -16,6 +16,8 @@
 //
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
+#include "inet/common/ShortBitVector.h"
 
 namespace inet {
 namespace physicallayer {
@@ -56,10 +58,51 @@ BitVector Ieee80211LayeredEncoder::dataFieldEncode(const BitVector& dataField) c
    return interleavedBits;
 }
 
+// FIXME: HACK
+BitVector Ieee80211LayeredEncoder::serialize(const cPacket* packet) const
+{
+    // HACK: Here we just compute the bit-correct PLCP header
+    // and then we fill the remaining with random bits
+    const Ieee80211PHYFrame *phyFrame = check_and_cast<const Ieee80211PHYFrame*>(packet);
+    BitVector serializedPacket;
+    // RATE, 4 bits
+    ShortBitVector rate(phyFrame->getRate());
+    for (unsigned int i = 0; i < rate.getSize(); i++)
+        serializedPacket.appendBit(rate.getBit(i));
+    // Reserved, 1 bit
+    serializedPacket.appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
+    // Length, 12 bits
+    ShortBitVector length(phyFrame->getLength(), 12); // == macFrame->getByteLength()
+    for (unsigned int i = 0; i < length.getSize(); i++)
+        serializedPacket.appendBit(length.getBit(i));
+    // Parity, 1 bit
+    serializedPacket.appendBit(0); // whatever (at least for now)
+    // Tail, 6 bit
+    serializedPacket.appendBit(0, 6); // The bits 18–23 constitute the SIGNAL TAIL field, and all 6 bits shall be set to 0
+    // Service, 16 bit
+    // The bits from 0–6 of the SERVICE field, which are transmitted first, are set to 0s
+    // and are used to synchronize the descrambler in the receiver. The remaining 9 bits
+    // (7–15) of the SERVICE field shall be reserved for future use. All reserved bits shall
+    // be set to 0.
+    serializedPacket.appendBit(0, 16);
+    ASSERT(serializedPacket.getSize() != 40);
+    for (unsigned int i = 0; i < length.toDecimal() * 8; i++)
+        serializedPacket.appendBit(rand() % 2);
+    return serializedPacket;
+}
+// FIXME: HACK
+
+double Ieee80211LayeredEncoder::getBitRate(const BitVector& packet) const
+{
+    throw cRuntimeError("Unimplemented");
+    return -1;
+}
+
 const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmissionPacketModel* packetModel) const
 {
     const cPacket *packet = packetModel->getPacket();
-    BitVector serializedPacket = serializer->serialize(packet);
+//    BitVector serializedPacket = serializer->serialize(packet);
+    BitVector serializedPacket = serialize(packet); // FIXME: HACK, this packet needs a ieee80211 serializer
     // The SIGNAL field is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1), Tail (6),
     // fields, so the SIGNAL field is 24 bits long.
     BitVector signalField;
@@ -78,9 +121,8 @@ const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmission
         encodedBits->appendBit(encodedSignalField.getBit(i));
     for (unsigned int i = 0; i < encodedDataField.getSize(); i++)
         encodedBits->appendBit(encodedDataField.getBit(i));
-    // TODO: compute bitrates
-    double dataFieldBitRate = 0;
-    double signalFieldBitRate = 0;
+    double dataFieldBitRate = 36000000; // FIXME: this is not a constant, we set it to 36Mb/s for testing purposes
+    double signalFieldBitRate = 1000000; // The PLCP header and preamble are always transmitted at 1 Mb/s
     return new TransmissionBitModel(encodedDataField.getSize(), dataFieldBitRate, encodedSignalField.getSize(), signalFieldBitRate, encodedBits, dataFECEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
 }
 

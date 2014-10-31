@@ -42,6 +42,8 @@ class INET_API Ieee80211LayeredEncoder : public LayeredEncoder
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual BitVector signalFieldEncode(const BitVector& signalField) const;
         virtual BitVector dataFieldEncode(const BitVector& dataField) const;
+        virtual BitVector serialize(const cPacket *packet) const; // FIXME: temporary function
+        double getBitRate(const BitVector& packet) const;
 
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
