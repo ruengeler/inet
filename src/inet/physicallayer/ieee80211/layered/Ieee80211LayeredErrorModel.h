@@ -25,6 +25,11 @@ namespace physicallayer {
 
 class INET_API Ieee80211LayeredErrorModel : public LayeredErrorModel
 {
+    protected:
+        virtual int numInitStages() const { return NUM_INIT_STAGES; }
+        virtual void initialize(int stage);
+        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
+
     public:
         virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
         virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const;

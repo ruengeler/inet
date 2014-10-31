@@ -27,6 +27,8 @@
 namespace inet {
 namespace physicallayer {
 
+Define_Module(Ieee80211LayeredErrorModel);
+
 const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
@@ -59,6 +61,11 @@ const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(cons
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols());
 }
 
+void Ieee80211LayeredErrorModel::initialize(int stage)
+{
+
+}
+
 const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
@@ -80,7 +87,6 @@ const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(cons
         packetErrorless = false;
     return new const ReceptionPacketModel(packet, NULL, NULL, NULL, per, packetErrorless);
 }
-
 
 } /* namespace physicallayer */
 } /* namespace inet */

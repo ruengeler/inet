@@ -23,9 +23,12 @@
 namespace inet {
 namespace physicallayer {
 
-class INET_API LayeredErrorModel : public ILayeredErrorModel
+class INET_API LayeredErrorModel : public ILayeredErrorModel, public cSimpleModule
 {
     protected:
+        virtual int numInitStages() const { return NUM_INIT_STAGES; }
+        virtual void initialize(int stage);
+        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
         void corruptBits(BitVector *bits, double ber, int begin, int end) const;
 
     public:

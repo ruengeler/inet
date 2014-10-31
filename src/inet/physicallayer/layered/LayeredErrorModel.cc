@@ -67,6 +67,11 @@ const IReceptionSymbolModel* LayeredErrorModel::computeSymbolModel(const Layered
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols());
 }
 
+void LayeredErrorModel::initialize(int stage)
+{
+    throw cRuntimeError("Unimplemented");
+}
+
 const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
