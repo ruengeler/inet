@@ -41,6 +41,7 @@ class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
         Hz carrierFrequency;
         Hz channelSpacing;
         W power;
+
     protected:
         virtual void initialize(int stage);
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
@@ -48,11 +49,12 @@ class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
 
     public:
         Ieee80211LayeredTransmitter();
-        virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const = 0;
+        virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;
         virtual const IEncoder *getEncoder() const { return encoder; }
         virtual const IModulator *getModulator() const { return modulator; }
         virtual const IPulseShaper *getPulseShaper() const{ return pulseShaper; }
         virtual const IDigitalAnalogConverter *getDigitalAnalogConverter() const { return digitalAnalogConverter; }
+        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredTransmitter"; }
 };
 
 } // namespace physicallayer

@@ -25,6 +25,8 @@ namespace inet {
 
 namespace physicallayer {
 
+Define_Module(Ieee80211LayeredTransmitter);
+
 Ieee80211LayeredTransmitter::Ieee80211LayeredTransmitter() :
     encoder(NULL),
     modulator(NULL),
@@ -64,6 +66,8 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(c
     const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame);
     return packetModel;
 }
+
+
 ShortBitVector Ieee80211LayeredTransmitter::calculateRateField(Hz channelSpacing, bps bitrate) const
 {
     if (channelSpacing == MHz(20))

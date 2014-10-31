@@ -48,7 +48,7 @@ class INET_API LayeredTransmitter : public TransmitterBase
   public:
     LayeredTransmitter();
 
-    virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const = 0;
+    virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;
 
     virtual const IEncoder *getEncoder() const { return encoder; }
     virtual const IModulator *getModulator() const { return modulator; }
@@ -58,6 +58,7 @@ class INET_API LayeredTransmitter : public TransmitterBase
     const Hz& getBandwidth() const { return bandwidth; }
     const Hz& getCarrierFrequency() const { return carrierFrequency; }
     const W& getPower() const { return power; }
+    virtual void printToStream(std::ostream& stream) const { stream << "LayeredTransmitter"; }
 };
 
 } // namespace physicallayer
