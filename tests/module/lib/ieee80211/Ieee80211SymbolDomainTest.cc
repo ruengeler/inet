@@ -64,7 +64,7 @@ void Ieee80211SymbolDomainTest::test() const
     serializer->setDummyOutputBits(input);
     const ITransmissionBitModel *bitModel = ieee80211LayeredEncoder->encode(&packetModel);
     const ITransmissionSymbolModel *transmissionSymbolModel = ieee80211OFDMModulator->modulate(bitModel);
-    ReceptionSymbolModel receptionSymbolModel(0, 0, transmissionSymbolModel->getSymbols(), 0, 0);
+    ReceptionSymbolModel receptionSymbolModel(0, 0, transmissionSymbolModel->getSymbols());
     const IReceptionBitModel *receptionBitModel = ieee80211OFDMDemodulator->demodulate(&receptionSymbolModel);
     const IReceptionPacketModel *receptionPacketModel = ieee80211LayeredDecoder->decode(receptionBitModel);
     delete bitModel;
