@@ -23,13 +23,13 @@
 #include "inet/physicallayer/contract/IPulseFilter.h"
 #include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
-#include "inet/physicallayer/scalar/ScalarReceiver.h"
+#include "inet/physicallayer/base/SNIRReceiverBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API LayeredReceiver : public ScalarReceiver
+class INET_API LayeredReceiver: public SNIRReceiverBase
 {
   protected:
     const ILayeredErrorModel *errorModel;
@@ -38,21 +38,36 @@ class INET_API LayeredReceiver : public ScalarReceiver
     const IPulseFilter *pulseFilter;
     const IAnalogDigitalConverter *analogDigitalConverter;
 
+    W energyDetection;
+    W sensitivity;
+    Hz carrierFrequency;
+    Hz bandwidth;
+    double snirThreshold;
+
   protected:
     virtual void initialize(int stage);
-
+    virtual bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const; // FIXME: copy
     virtual const ISNIR *computeSNIR(const IReception *reception, const IListening *listening, const IInterference *interference) const;
+    virtual const ISNIR *computeSNIR(const IReception *reception, const INoise *noise) const;
     const INoise *computeNoise(const IListening *listening, const IInterference *interference) const;
+    virtual bool computeIsReceptionSuccessful(const ISNIR *snir) const;
 
   public:
     LayeredReceiver();
 
     virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
+    virtual const IListening *createListening(const IRadio *radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
+    virtual const IListeningDecision *computeListeningDecision(const IListening *listening, const IInterference *interference) const;
 
     virtual const IDecoder *getDecoder() const { return decoder; }
     virtual const IDemodulator *getDemodulator() const { return demodulator; }
     virtual const IPulseFilter *getPulseFilter() const { return pulseFilter; }
     virtual const IAnalogDigitalConverter *getAnalogDigitalConverter() const { return analogDigitalConverter; }
+
+    virtual W getMinReceptionPower() const { return sensitivity; }
+    virtual Hz getCarrierFrequency() const { return carrierFrequency; }
+    virtual void setCarrierFrequency(Hz carrierFrequency) { this->carrierFrequency = carrierFrequency; }
+    virtual void setBandwidth(Hz bandwidth) { this->bandwidth = bandwidth; }
 };
 
 } // namespace physicallayer
