@@ -28,5 +28,8 @@ import inet.physicallayer.layered.LayeredReceiver;
 module Ieee80211LayeredReceiver extends LayeredReceiver
 {
     parameters:
+        errorModelType = "Ieee80211LayeredErrorModel";
+        decoderType = "Ieee80211LayeredDecoder";
+        demodulatorType = "Ieee80211OFDMDemodulator";
         @class(Ieee80211LayeredReceiver);
 }
