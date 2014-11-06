@@ -62,24 +62,42 @@ const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(cons
     const IModulation *modulation = transmissionSymbolModel->getModulation();
     const APSKModulationBase *apskModulation = check_and_cast<const APSKModulationBase *>(modulation);
 //    http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double ser = 0.001; // FIXME: modulation->calculateSER();
+    double ser = 0.05; // FIXME: modulation->calculateSER();
+    unsigned int dataFieldConstellationSize = apskModulation->getConstellationSize();
+    unsigned int signalFieldConstellationSize = BPSKModulation::singleton.getConstellationSize();
+    const APSKSymbol *constellationDiagramForDataField = apskModulation->getEncodingTable();
+    const APSKSymbol *constellationDiagramForSignalField = BPSKModulation::singleton.getEncodingTable();
     const std::vector<const ISymbol*> *symbols = transmissionSymbolModel->getSymbols();
-    unsigned int constellationSize = apskModulation->getConstellationSize();
     std::vector<const ISymbol*> *corruptedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
-    const APSKSymbol *constellationDiagram = apskModulation->getEncodingTable();
     for (unsigned int i = 0; i < symbols->size(); i++)
     {
         double p = uniform(0,1);
         if (p <= ser)
         {
-            int corruptedSymbolIndex = intuniform(0, constellationSize - 1); // TODO: it can be equal to the current symbol
-            const ISymbol *corruptedSymbol = &constellationDiagram[corruptedSymbolIndex];
-            corruptedSymbols->push_back(corruptedSymbol);
+            const OFDMSymbol *ofdmSymbol = check_and_cast<const OFDMSymbol *>(symbols->at(i));
+            int corruptedSubcarrierSymbolIndex;
+            const APSKSymbol *corruptedSubcarrierSymbol;
+            // TODO: factor
+            if (i > 0)
+            {
+                corruptedSubcarrierSymbolIndex = intuniform(0, dataFieldConstellationSize - 1); // TODO: it can be equal to the current symbol
+                corruptedSubcarrierSymbol = &constellationDiagramForDataField[corruptedSubcarrierSymbolIndex];
+            }
+            else // Only the first symbol is signal field symbol
+            {
+                corruptedSubcarrierSymbolIndex = intuniform(0, signalFieldConstellationSize - 1); // TODO: it can be equal to the current symbol
+                corruptedSubcarrierSymbol = &constellationDiagramForSignalField[corruptedSubcarrierSymbolIndex];
+            }
+            int corruptedSubcarrierPosition = intuniform(0, ofdmSymbol->symbolSize() - 1);
+            // TODO: Should we corrupt other subcarrier symbols?
+            std::vector<const APSKSymbol *> subcarrierSymbols = ofdmSymbol->getSubCarrierSymbols();
+            subcarrierSymbols[corruptedSubcarrierPosition] = corruptedSubcarrierSymbol;
+            OFDMSymbol *corruptedOfdmSymbol = new OFDMSymbol(subcarrierSymbols);
+            corruptedSymbols->push_back(corruptedOfdmSymbol);
         }
         else
             corruptedSymbols->push_back(symbols->at(i));
     }
-
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
 }
 
