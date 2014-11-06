@@ -35,6 +35,7 @@ class INET_API Ieee80211LayeredErrorModel : public LayeredErrorModel
         virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
         virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
         virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
+        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211 Layered Error Model"; }
 };
 
 } /* namespace physicallayer */

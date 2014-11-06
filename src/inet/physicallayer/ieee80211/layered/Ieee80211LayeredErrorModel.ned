@@ -23,5 +23,5 @@ import inet.physicallayer.contract.IErrorModel;
 module Ieee80211LayeredErrorModel like IErrorModel
 {
     parameters:
-        @class(Iee80211LayeredErrorModel);
+        @class(Ieee80211LayeredErrorModel);
 }
