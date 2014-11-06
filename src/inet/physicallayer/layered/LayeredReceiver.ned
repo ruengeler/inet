@@ -37,22 +37,23 @@ module LayeredReceiver like IReceiver
         double sensitivity @unit(dBm); // TODO: @unit(W) + dBm/dBW <--> W
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
+        double snirThreshold @unit(dB);
         @class(LayeredReceiver);
 
     submodules:
-        errorModel: <errorModelType> like IErrorModel {
+        errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
             @display("p=219,50");
         }
-        decoder: <decoderType> like IDecoder {
+        decoder: <decoderType> like IDecoder if decoderType != "" {
             @display("p=100,50");
         }
-        demodulator: <demodulatorType> like IDemodulator {
+        demodulator: <demodulatorType> like IDemodulator if demodulatorType != "" {
             @display("p=100,150");
         }
-        shaperFilter: <shaperFilterType> like IPulseFilter {
+        shaperFilter: <shaperFilterType> like IPulseFilter if shaperFilterType != "" {
             @display("p=100,250");
         }
-        analogDigitalConverter: <analogDigitalConverterType> like IAnalogDigitalConverter {
+        analogDigitalConverter: <analogDigitalConverterType> like IAnalogDigitalConverter if analogDigitalConverterType != "" {
             @display("p=100,350");
         }
 }
