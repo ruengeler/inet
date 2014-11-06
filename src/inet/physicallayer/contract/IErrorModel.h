@@ -36,7 +36,7 @@ class INET_API IErrorModel : public IPrintableObject
 };
 
 // TODO: move ILayeredErrorModel after the layered radio is merged in
-class INET_API ILayeredErrorModel
+class INET_API ILayeredErrorModel : public IPrintableObject
 {
   public:
     virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
