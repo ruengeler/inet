@@ -26,6 +26,8 @@
 #include "inet/physicallayer/contract/IInterleaver.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 
 namespace inet {
 namespace physicallayer {
@@ -44,6 +46,8 @@ class INET_API Ieee80211LayeredEncoder : public LayeredEncoder
         virtual BitVector dataFieldEncode(const BitVector& dataField) const;
         virtual BitVector serialize(const cPacket *packet) const; // FIXME: temporary function
         double getBitRate(const BitVector& packet) const;
+        const APSKModulationBase* getModulationFromSignalFieldRate(const ShortBitVector& rate) const;
+        const Ieee80211ConvolutionalCode* getFecFromSignalFieldRate(const ShortBitVector& rate) const;
 
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
