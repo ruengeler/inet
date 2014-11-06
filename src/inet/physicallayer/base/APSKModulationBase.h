@@ -41,6 +41,7 @@ class INET_API APSKModulationBase : public IAPSKModulation
           normalizationFactor(normalizationFactor)
       {}
       virtual void printToStream(std::ostream &stream) const;
+      virtual const APSKSymbol *getEncodingTable() const { return encodingTable; }
       virtual int getCodeWordLength() const { return codeWordLength; }
       virtual int getConstellationSize() const { return constellationSize; }
       virtual double getNormalizationFactor() const { return normalizationFactor; }
