@@ -33,9 +33,8 @@
 #define SIGNAL_LENGTH_FIELD_START 5
 #define SIGNAL_LENGTH_FIELD_END 16
 #define SIGNAL_PARITY_FIELD 17
-#define PPDU_SERVICE_FIELD_LENGTH 16
+#define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
-#define SYMBOLS_PER_DATA_FIELD 6
 
 namespace inet {
 namespace physicallayer {
@@ -47,7 +46,7 @@ void Ieee80211LayeredDecoder::initialize(int stage)
     if (stage == INITSTAGE_LOCAL)
     {
         // TODO: maybe they should be modules
-        deserializer = check_and_cast<DummySerializer *>(getSubmodule("deserializer")); // FIXME
+        deserializer = dynamic_cast<DummySerializer *>(getSubmodule("deserializer")); // FIXME
         descrambling = new Ieee80211Scrambling("1011101", "0001001");
         descrambler = new Ieee80211Scrambler(descrambling);
         signalFECDecoder = new ConvolutionalCoder(new Ieee80211ConvolutionalCode(1,2));
@@ -103,7 +102,7 @@ const IReceptionPacketModel* Ieee80211LayeredDecoder::decode(const IReceptionBit
     Ieee80211Interleaver deinterleaver(deinterleaving);
     ConvolutionalCoder fecDecoder(fec);
     unsigned int psduLengthInBits = getSignalFieldLength(decodedSignalField) * 8;
-    unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_LENGTH + PPDU_TAIL_BITS_LENGTH;
+    unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_BITS_LENGTH + PPDU_TAIL_BITS_LENGTH;
     dataFieldLengthInBits += calculatePadding(dataFieldLengthInBits, modulationScheme, fec);
     ASSERT(dataFieldLengthInBits % fec->getCodeRatePuncturingK() == 0);
     unsigned int encodedDataFieldLengthInBits = dataFieldLengthInBits * fec->getCodeRatePuncturingN() / fec->getCodeRatePuncturingK();
@@ -150,10 +149,9 @@ BitVector Ieee80211LayeredDecoder::decodeDataField(const BitVector& dataField, c
 const IReceptionPacketModel* Ieee80211LayeredDecoder::createPacketModel(const BitVector& decodedBits, const Ieee80211Scrambling *scrambling, const Ieee80211ConvolutionalCode *fec, const Ieee80211Interleaving *interleaving) const
 {
     double per = -1;
-    bool packetErrorless = false; // TODO: compute packet error rate, packetErrorLess
-    const cPacket *packet = deserializer->deserialize(decodedBits);
-    return new ReceptionPacketModel(packet, fec, scrambling, interleaving, per, packetErrorless);
-    return NULL;
+    bool packetErrorless = true; // TODO: compute packet error rate, packetErrorLess
+//    const cPacket *packet = deserializer->deserialize(decodedBits); // FIXME
+    return new ReceptionPacketModel(NULL, fec, scrambling, interleaving, per, packetErrorless);
 }
 
 ShortBitVector Ieee80211LayeredDecoder::getSignalFieldRate(const BitVector& signalField) const
@@ -178,13 +176,7 @@ unsigned int Ieee80211LayeredDecoder::calculatePadding(unsigned int dataFieldLen
     ASSERT(dataModulationScheme != NULL);
     unsigned int codedBitsPerOFDMSymbol = dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
     unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
-    if (dataFieldLengthInBits / SYMBOLS_PER_DATA_FIELD > dataBitsPerOFDMSymbol)
-    {
-        throw cRuntimeError("Incorrect data field length = %d", dataFieldLengthInBits);
-        return -1;
-    }
-    else
-        return SYMBOLS_PER_DATA_FIELD * dataBitsPerOFDMSymbol - dataFieldLengthInBits;
+    return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
 }
 
 Ieee80211LayeredDecoder::~Ieee80211LayeredDecoder()
