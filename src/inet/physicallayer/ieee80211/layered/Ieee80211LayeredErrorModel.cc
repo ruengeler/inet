@@ -23,6 +23,7 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/modulation/OFDMSymbol.h"
 
 namespace inet {
 namespace physicallayer {
@@ -57,8 +58,29 @@ const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const Laye
 const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     // TODO: implement error model
-    const ITransmissionSymbolModel *transmissionSymbolModel = transmission->getSymbolModel();
-    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), transmissionSymbolModel->getSymbols());
+    const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
+    const IModulation *modulation = transmissionSymbolModel->getModulation();
+    const APSKModulationBase *apskModulation = check_and_cast<const APSKModulationBase *>(modulation);
+//    http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
+    double ser = 0.001; // FIXME: modulation->calculateSER();
+    const std::vector<const ISymbol*> *symbols = transmissionSymbolModel->getSymbols();
+    unsigned int constellationSize = apskModulation->getConstellationSize();
+    std::vector<const ISymbol*> *corruptedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
+    const APSKSymbol *constellationDiagram = apskModulation->getEncodingTable();
+    for (unsigned int i = 0; i < symbols->size(); i++)
+    {
+        double p = uniform(0,1);
+        if (p <= ser)
+        {
+            int corruptedSymbolIndex = intuniform(0, constellationSize - 1); // TODO: it can be equal to the current symbol
+            const ISymbol *corruptedSymbol = &constellationDiagram[corruptedSymbolIndex];
+            corruptedSymbols->push_back(corruptedSymbol);
+        }
+        else
+            corruptedSymbols->push_back(symbols->at(i));
+    }
+
+    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
 }
 
 void Ieee80211LayeredErrorModel::initialize(int stage)
