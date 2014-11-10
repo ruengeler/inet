@@ -29,7 +29,16 @@ LayeredSNIR::LayeredSNIR(const LayeredReception *reception, const ScalarNoise *n
 
 double LayeredSNIR::getMin() const
 {
-    throw cRuntimeError("unimplemented");
+    if (isNaN(minSNIR))
+        minSNIR = computeMin();
+    return minSNIR;
+}
+
+double LayeredSNIR::computeMin() const
+{
+    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
+    const ScalarNoise *scalarNoise= check_and_cast<const ScalarNoise *>(noise);
+    return unit(layeredReception->getPower() / scalarNoise->computeMaxPower(reception->getStartTime(), reception->getEndTime())).get();
 }
 
 LayeredSNIR::~LayeredSNIR()

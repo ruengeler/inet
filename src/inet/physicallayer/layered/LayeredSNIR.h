@@ -28,6 +28,12 @@ namespace physicallayer {
 
 class INET_API LayeredSNIR : public SNIRBase
 {
+    protected:
+        mutable double minSNIR;
+
+    protected:
+        double computeMin() const;
+
     public:
         LayeredSNIR(const LayeredReception *reception, const ScalarNoise *noise);
         virtual void printToStream(std::ostream& stream) const;
