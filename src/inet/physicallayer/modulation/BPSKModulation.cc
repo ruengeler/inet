@@ -34,5 +34,12 @@ double BPSKModulation::calculateBER(double snir, double bandwidth, double bitrat
     return 0.5 * exp(-snir * bandwidth / bitrate);
 }
 
+double BPSKModulation::calculateSER(double snir) const
+{
+    // TODO: revise
+    double c = erfc(kMOD * sqrt(snir));
+    return 2 * (1 - 1 / sqrt(2)) * erfc(kMOD * sqrt(snir)) - (1 - 2 / sqrt(2) + 1 / 2) * c * c;
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */

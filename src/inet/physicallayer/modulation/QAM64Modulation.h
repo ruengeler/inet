@@ -31,10 +31,12 @@ class INET_API QAM64Modulation : public APSKModulationBase
     protected:
         static const APSKSymbol encodingTable[64];
         static const double kMOD;
+        static const int m;
 
     public:
         QAM64Modulation();
         double calculateBER(double snir, double bandwidth, double bitrate) const;
+        double calculateSER(double snir) const;
 };
 
 } /* namespace physicallayer */

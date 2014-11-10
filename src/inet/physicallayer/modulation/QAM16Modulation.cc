@@ -21,6 +21,7 @@ namespace inet {
 namespace physicallayer {
 
 const double QAM16Modulation::kMOD = 1/sqrt(10);
+const int QAM16Modulation::m = 16;
 const APSKSymbol QAM16Modulation::encodingTable[] = {kMOD * APSKSymbol(-3, -3), kMOD * APSKSymbol(3, -3), kMOD * APSKSymbol(-1, -3),
                                                      kMOD * APSKSymbol(1, -3), kMOD * APSKSymbol(-3, 3), kMOD * APSKSymbol(3, 3),
                                                      kMOD * APSKSymbol(-1, 3), kMOD * APSKSymbol(1, 3), kMOD * APSKSymbol(-3, -1),
@@ -37,6 +38,13 @@ QAM16Modulation::QAM16Modulation() : APSKModulationBase(encodingTable, 4,16, kMO
 double QAM16Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
     return 0.5 * (1 - 1 / sqrt(pow(2.0, 4))) * erfc(snir * bandwidth / bitrate);
+}
+
+double QAM16Modulation::calculateSER(double snir) const
+{
+    // TODO: revise
+    double c = erfc(kMOD * sqrt(snir));
+    return 2 * (1 - 1 / sqrt(m)) * erfc(kMOD * sqrt(snir)) - (1 - 2 / sqrt(m) + 1 / m) * c * c;
 }
 
 } /* namespace physicallayer */

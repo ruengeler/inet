@@ -21,6 +21,8 @@ namespace inet {
 namespace physicallayer {
 
 const double QAM64Modulation::kMOD = 1 / sqrt(42);
+const int QAM16Modulation::m = 64;
+
 const APSKSymbol QAM64Modulation::encodingTable[] = {kMOD * APSKSymbol(-7, -7), kMOD * APSKSymbol(7, -7), kMOD * APSKSymbol(-1, -7), kMOD * APSKSymbol(1, -7), kMOD * APSKSymbol(-5, -7),
                                                      kMOD * APSKSymbol(5, -7), kMOD * APSKSymbol(-3, -7), kMOD * APSKSymbol(3, -7), kMOD * APSKSymbol(-7, 7), kMOD * APSKSymbol(7, 7),
                                                      kMOD * APSKSymbol(-1, 7), kMOD * APSKSymbol(1, 7), kMOD * APSKSymbol(-5, 7), kMOD * APSKSymbol(5, 7), kMOD * APSKSymbol(-3, 7),
@@ -42,6 +44,12 @@ QAM64Modulation::QAM64Modulation() : APSKModulationBase(encodingTable, 6, 64, kM
 double QAM64Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
     throw cRuntimeError("Unimplemented.");
+}
+
+double QAM64Modulation::calculateSER(double snir) const
+{
+    double c = erfc(kMOD * sqrt(snir));
+    return 2 * (1 - 1 / sqrt(m)) * erfc(kMOD * sqrt(snir)) - (1 - 2 / sqrt(m) + 1 / m) * c * c;
 }
 
 } /* namespace physicallayer */

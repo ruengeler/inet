@@ -33,5 +33,11 @@ double QPSKModulation::calculateBER(double snir, double bandwidth, double bitrat
     throw cRuntimeError("Unimplemented");
 }
 
+double QPSKModulation::calculateSER(double snir) const
+{
+    double c = erfc(kMOD * sqrt(snir));
+    return 2 * (1 - 1 / sqrt(4)) * erfc(kMOD * sqrt(snir)) - (1 - 2 / sqrt(4) + 1 / 4) * c * c;
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */
