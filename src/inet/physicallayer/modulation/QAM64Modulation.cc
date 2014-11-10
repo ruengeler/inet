@@ -21,7 +21,7 @@ namespace inet {
 namespace physicallayer {
 
 const double QAM64Modulation::kMOD = 1 / sqrt(42);
-const int QAM16Modulation::m = 64;
+const int QAM64Modulation::m = 64;
 
 const APSKSymbol QAM64Modulation::encodingTable[] = {kMOD * APSKSymbol(-7, -7), kMOD * APSKSymbol(7, -7), kMOD * APSKSymbol(-1, -7), kMOD * APSKSymbol(1, -7), kMOD * APSKSymbol(-5, -7),
                                                      kMOD * APSKSymbol(5, -7), kMOD * APSKSymbol(-3, -7), kMOD * APSKSymbol(3, -7), kMOD * APSKSymbol(-7, 7), kMOD * APSKSymbol(7, 7),
