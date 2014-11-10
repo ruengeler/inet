@@ -44,7 +44,7 @@ double QAM16Modulation::calculateSER(double snir) const
 {
     // TODO: revise
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1 / sqrt(m)) * erfc(kMOD * sqrt(snir)) - (1 - 2 / sqrt(m) + 1 / m) * c * c;
+    return 2 * (1 - 1 / sqrt(m)) * c - (1 - 2 / sqrt(m) + 1 / m) * c * c;
 }
 
 } /* namespace physicallayer */
