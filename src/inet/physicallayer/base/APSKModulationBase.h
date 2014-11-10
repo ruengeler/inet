@@ -28,7 +28,7 @@ namespace physicallayer {
 class INET_API APSKModulationBase : public IAPSKModulation
 {
     protected:
-        const APSKSymbol *encodingTable;
+        const APSKSymbol *encodingTable; // TODO: maybe rename to constellationDiagram
         const int codeWordLength;
         const int constellationSize;
         double normalizationFactor;
@@ -48,6 +48,7 @@ class INET_API APSKModulationBase : public IAPSKModulation
       virtual const APSKSymbol *mapToConstellationDiagram(const ShortBitVector& symbol) const;
       virtual ShortBitVector demapToBitRepresentation(const APSKSymbol *symbol) const;
       virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
+      virtual double calculateSER(double snir) const = 0;
 };
 
 } /* namespace physicallayer */
