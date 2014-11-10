@@ -22,7 +22,8 @@ namespace inet {
 namespace physicallayer {
 
 LayeredSNIR::LayeredSNIR(const LayeredReception *reception, const ScalarNoise *noise) :
-        SNIRBase(reception, noise)
+        SNIRBase(reception, noise),
+        minSNIR(NaN)
 {
 
 }
