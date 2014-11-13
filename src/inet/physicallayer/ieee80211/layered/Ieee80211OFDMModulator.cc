@@ -157,7 +157,7 @@ const ITransmissionSymbolModel *Ieee80211OFDMModulator::modulate(const ITransmis
     for (unsigned int i = OFDM_SYMBOL_SIZE; i < bits->getSize(); i++)
         dataField.appendBit(bits->getBit(i));
     modulateDataField(dataField, ofdmSymbols);
-    return new TransmissionSymbolModel(0, 0, ofdmSymbols, modulationScheme);
+    return new TransmissionSymbolModel(0, 0, ofdmSymbols, modulationScheme); // FIXME: symbol length, symbol rate
 }
 
 } // namespace physicallayer
