@@ -20,7 +20,7 @@
 
 #include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {
 

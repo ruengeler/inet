@@ -23,7 +23,7 @@
 #include "inet/physicallayer/contract/ISignalSymbolModel.h"
 #include "inet/physicallayer/contract/ISignalSampleModel.h"
 #include "inet/physicallayer/contract/ISignalAnalogModel.h"
-#include "inet/physicallayer/scalar/ScalarReception.h"
+#include "inet/physicallayer/analogmodel/ScalarReception.h"
 
 namespace inet {
 

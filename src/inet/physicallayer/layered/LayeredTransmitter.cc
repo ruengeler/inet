@@ -19,7 +19,7 @@
 #include "inet/physicallayer/layered/LayeredTransmitter.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {
 
@@ -58,7 +58,7 @@ const ITransmissionPacketModel* LayeredTransmitter::createPacketModel(const cPac
 const ITransmissionAnalogModel* LayeredTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
 {
     simtime_t duration = headerBitLength / headerBitRate + payloadBitLength / payloadBitRate; // TODO: preamble duration
-    const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionAnalogModel(duration, power, carrierFrequency, bandwidth);
+    const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
     return transmissionAnalogModel;
 }
 

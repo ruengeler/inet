@@ -21,7 +21,7 @@
 #include "inet/physicallayer/contract/IDigitalAnalogConverter.h"
 #include "inet/physicallayer/base/PhysicalLayerDefs.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {
 

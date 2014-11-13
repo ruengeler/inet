@@ -31,7 +31,7 @@ ScalarDigitalAnalogConverter::ScalarDigitalAnalogConverter() :
 const ITransmissionAnalogModel *ScalarDigitalAnalogConverter::convertDigitalToAnalog(const ITransmissionSampleModel *sampleModel) const
 {
     const simtime_t duration = sampleModel->getSampleLength() / sampleModel->getSampleRate();
-    return new ScalarTransmissionAnalogModel(duration, power, carrierFrequency, bandwidth);
+    return new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
 }
 
 } // namespace physicallayer

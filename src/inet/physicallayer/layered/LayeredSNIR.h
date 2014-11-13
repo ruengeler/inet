@@ -21,7 +21,7 @@
 #include "inet/common/INETDefs.h"
 #include "inet/physicallayer/base/SNIRBase.h"
 #include "inet/physicallayer/layered/LayeredReception.h"
-#include "inet/physicallayer/scalar/ScalarNoise.h"
+#include "inet/physicallayer/analogmodel/ScalarNoise.h"
 
 namespace inet {
 namespace physicallayer {
