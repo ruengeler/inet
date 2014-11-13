@@ -29,7 +29,7 @@ namespace physicallayer {
 class INET_API NarrowbandReceiverBase : public SNIRReceiverBase
 {
   protected:
-    const IModulator *modulator;
+    const IModulation *modulation;
     const IErrorModel *errorModel;
     W energyDetection;
     W sensitivity;
@@ -57,7 +57,7 @@ class INET_API NarrowbandReceiverBase : public SNIRReceiverBase
     virtual const IListeningDecision *computeListeningDecision(const IListening *listening, const IInterference *interference) const;
     virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
 
-    virtual const IModulator *getModulator() const { return modulator; }
+    virtual const IModulation *getModulation() const { return modulation; }
 
     virtual Hz getCarrierFrequency() const { return carrierFrequency; }
     virtual void setCarrierFrequency(Hz carrierFrequency) { this->carrierFrequency = carrierFrequency; }

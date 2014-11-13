@@ -17,6 +17,8 @@
 
 #include "inet/physicallayer/base/NarrowbandTransmitterBase.h"
 #include "inet/physicallayer/common/Modulation.h"
+#include "inet/physicallayer/modulation/BPSKModulation.h"
+#include "inet/physicallayer/modulation/QAM16Modulation.h"
 
 namespace inet {
 
@@ -49,8 +51,8 @@ void NarrowbandTransmitterBase::initialize(int stage)
             modulation = new BPSKModulation();
         else if (strcmp(modulationName, "16-QAM") == 0)
             modulation = new QAM16Modulation();
-        else if (strcmp(modulationName, "256-QAM") == 0)
-            modulation = new QAM256Modulation();
+//        else if (strcmp(modulationName, "256-QAM") == 0)
+//            modulation = new QAM256Modulation();
         else
             throw cRuntimeError(this, "Unknown modulation '%s'", modulationName);
         bitrate = bps(par("bitrate"));

@@ -24,6 +24,9 @@
 #include "inet/physicallayer/common/BandListening.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
 #include "inet/physicallayer/common/ReceptionDecision.h"
+#include "inet/physicallayer/modulation/BPSKModulation.h"
+#include "inet/physicallayer/modulation/QAM16Modulation.h"
+#include "inet/physicallayer/modulation/QAM64Modulation.h"
 
 namespace inet {
 
@@ -60,8 +63,8 @@ void NarrowbandReceiverBase::initialize(int stage)
             modulation = new BPSKModulation();
         else if (strcmp(modulationName, "16-QAM") == 0)
             modulation = new QAM16Modulation();
-        else if (strcmp(modulationName, "256-QAM") == 0)
-            modulation = new QAM256Modulation();
+//        else if (strcmp(modulationName, "256-QAM") == 0)
+//            modulation = new QAM256Modulation();
         else
             throw cRuntimeError(this, "Unknown modulation '%s'", modulationName);
     }
@@ -156,7 +159,7 @@ const IReceptionDecision *NarrowbandReceiverBase::computeReceptionDecision(const
     if (bandListening->getCarrierFrequency() == flatReception->getCarrierFrequency() && bandListening->getBandwidth() == flatReception->getBandwidth())
         return SNIRReceiverBase::computeReceptionDecision(listening, reception, interference);
     else
-        return new ReceptionDecision(reception, new RadioReceptionIndication(), false, false, false);
+        return new ReceptionDecision(reception, new RadioReceptionIndication(), NULL, false, false, false);
 }
 
 } // namespace physicallayer
