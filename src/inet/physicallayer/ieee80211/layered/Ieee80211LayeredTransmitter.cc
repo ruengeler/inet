@@ -39,10 +39,10 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
-        encoder = check_and_cast<IEncoder *>(getSubmodule("encoder"));
-        modulator = check_and_cast<IModulator *>(getSubmodule("modulator"));
-        pulseShaper = check_and_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
-        digitalAnalogConverter = check_and_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
+        encoder = dynamic_cast<IEncoder *>(getSubmodule("encoder"));
+        modulator = dynamic_cast<IModulator *>(getSubmodule("modulator"));
+        pulseShaper = dynamic_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
+        digitalAnalogConverter = dynamic_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
         power = W(par("power"));
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
@@ -53,8 +53,12 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
 const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(const cPacket* macFrame) const
 {
     const RadioTransmissionRequest *controlInfo = dynamic_cast<const RadioTransmissionRequest *>(macFrame->getControlInfo());
-    bps bitRate = controlInfo->getBitrate();
-    int rate = calculateRateField(channelSpacing, bitRate).toDecimal();
+    bps currentBitrate;
+    if (controlInfo)
+        currentBitrate = controlInfo->getBitrate();
+    else
+        currentBitrate = bitrate;
+    int rate = calculateRateField(channelSpacing, currentBitrate).toDecimal();
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
@@ -160,7 +164,7 @@ const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadi
         analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
     else if (digitalAnalogConverter && !sampleModel)
         throw cRuntimeError("Digital/analog converters need sample representation");
-    analogModel = createAnalogModel(); // FIXME
+    analogModel = createAnalogModel(bitModel->getHeaderBitLength(), bitModel->getHeaderBitRate(), bitModel->getPayloadBitLength(), bitModel->getPayloadBitRate());; // FIXME
     IMobility *mobility = transmitter->getAntenna()->getMobility();
     // assuming movement and rotation during transmission is negligible
     const simtime_t endTime = startTime + analogModel->getDuration();
