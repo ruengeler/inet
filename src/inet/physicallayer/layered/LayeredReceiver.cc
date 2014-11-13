@@ -27,7 +27,6 @@
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
-#include "inet/physicallayer/layered/LayeredSNIR.h"
 #include "inet/physicallayer/common/BandListening.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
 #include "inet/physicallayer/contract/IRadioMedium.h"
