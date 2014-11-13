@@ -38,6 +38,7 @@ class INET_API Ieee80211LayeredEncoder : public LayeredEncoder
         const IFECCoder *signalFECEncoder;
         const IInterleaver *signalInterleaver;
         const IFECCoder *dataFECEncoder;
+        Hz channelSpacing;
 
     protected:
         virtual void initialize(int stage);
@@ -45,7 +46,9 @@ class INET_API Ieee80211LayeredEncoder : public LayeredEncoder
         virtual BitVector signalFieldEncode(const BitVector& signalField) const;
         virtual BitVector dataFieldEncode(const BitVector& dataField) const;
         virtual BitVector serialize(const cPacket *packet) const; // FIXME: temporary function
-        double getBitRate(const BitVector& packet) const;
+        ShortBitVector getRate(const BitVector& serializedPacket) const;
+        bps computeDataBitRate(const BitVector& serializedPacket) const;
+        bps computeHeaderBitRate(const BitVector& serializedPacket) const;
         const APSKModulationBase* getModulationFromSignalFieldRate(const ShortBitVector& rate) const;
         const Ieee80211ConvolutionalCode* getFecFromSignalFieldRate(const ShortBitVector& rate) const;
 

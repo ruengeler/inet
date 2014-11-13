@@ -42,6 +42,8 @@ void Ieee80211LayeredEncoder::initialize(int stage)
         signalFECEncoder = check_and_cast<IFECCoder *>(getSubmodule("signalFECEncoder"));
         interleaver = check_and_cast<IInterleaver *>(getSubmodule("interleaver"));
         signalInterleaver = check_and_cast<IInterleaver *>(getSubmodule("signalInterleaver"));
+
+        channelSpacing = Hz(par("channelSpacing"));
     }
 }
 
@@ -143,10 +145,97 @@ BitVector Ieee80211LayeredEncoder::serialize(const cPacket* packet) const
 }
 // FIXME: HACK
 
-double Ieee80211LayeredEncoder::getBitRate(const BitVector& packet) const
+// TODO: Factor this code out
+bps Ieee80211LayeredEncoder::computeDataBitRate(const BitVector& serializedPacket) const
 {
-    throw cRuntimeError("Unimplemented");
-    return -1;
+    ShortBitVector rate = getRate(serializedPacket);
+    if (channelSpacing == MHz(20))
+    {
+        if (rate == ShortBitVector("1101"))
+            return bps(6000000);
+        else if (rate == ShortBitVector("1111"))
+            return bps(9000000);
+        else if (rate == ShortBitVector("0101"))
+            return bps(12000000);
+        else if (rate == ShortBitVector("0111"))
+            return bps(18000000);
+        else if (rate == ShortBitVector("1001"))
+            return bps(24000000);
+        else if (rate == ShortBitVector("1011"))
+            return bps(36000000);
+        else if (rate == ShortBitVector("0001"))
+            return bps(48000000);
+        else if (rate == ShortBitVector("0011"))
+            return bps(54000000);
+        else
+            throw cRuntimeError("Invalid rate field: %d", rate.toDecimal());
+    }
+    else if (channelSpacing == MHz(10))
+    {
+        if (rate == ShortBitVector("1101"))
+            return bps(3000000);
+        else if (rate == ShortBitVector("1111"))
+            return bps(4500000);
+        else if (rate == ShortBitVector("0101"))
+            return bps(6000000);
+        else if (rate == ShortBitVector("0111"))
+            return bps(9000000);
+        else if (rate == ShortBitVector("1001"))
+            return bps(12000000);
+        else if (rate == ShortBitVector("1011"))
+            return bps(18000000);
+        else if (rate == ShortBitVector("0001"))
+            return bps(24000000);
+        else if (rate == ShortBitVector("0011"))
+            return bps(27000000);
+        else
+            throw cRuntimeError("Invalid rate field: %d", rate.toDecimal());
+    }
+    else if (channelSpacing == MHz(5))
+    {
+       if (rate == ShortBitVector("1101"))
+           return bps(1500000);
+       else if (rate == ShortBitVector("1111"))
+           return bps(2250000);
+       else if (rate == ShortBitVector("0101"))
+           return bps(3000000);
+       else if (rate == ShortBitVector("0111"))
+           return bps(4500000);
+       else if (rate == ShortBitVector("1001"))
+           return bps(6000000);
+       else if (rate == ShortBitVector("1011"))
+           return bps(9000000);
+       else if (rate == ShortBitVector("0001"))
+           return bps(12000000);
+       else if (rate == ShortBitVector("0011"))
+           return bps(13500000);
+       else
+           throw cRuntimeError("Invalid rate field: %d", rate.toDecimal());
+    }
+    else
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+    return bps(0);
+}
+
+bps Ieee80211LayeredEncoder::computeHeaderBitRate(const BitVector& serializedPacket) const
+{
+    // TODO: Revise, these are the minimum bitrates for each channel spacing.
+    if (channelSpacing == MHz(20))
+        return bps(6000000);
+    else if (channelSpacing == MHz(10))
+        return bps(3000000);
+    else if (channelSpacing == MHz(5))
+        return bps(1500000);
+    else
+        throw cRuntimeError("Invalid channel spacing %lf", channelSpacing.get());
+}
+
+ShortBitVector Ieee80211LayeredEncoder::getRate(const BitVector& serializedPacket) const
+{
+    ShortBitVector rate;
+    for (unsigned int i = 0; i < 4; i++)
+        rate.appendBit(serializedPacket.getBit(i));
+    return rate;
 }
 
 const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmissionPacketModel* packetModel) const

@@ -21,17 +21,16 @@ import inet.physicallayer.contract.IFECCoder;
 import inet.physicallayer.contract.IInterleaver;
 import inet.physicallayer.layered.LayeredEncoder;
 
-
-// Note: this is not a general Ieee80211Encoder; it works in 36Mb/s mode.
 module Ieee80211LayeredEncoder extends LayeredEncoder
 {
     parameters:
         fecType = default("ConvolutionalCoder");
         string signalFECType = default("ConvolutionalCoder");
-        serializerType = default("Ieee80211Serializer");
+        //serializerType = default("Ieee80211Serializer");
         scramblerType = default("Ieee80211Scrambler");
         interleaverType = default("Ieee80211Interleaver");
         string signalInterleaverType = default("Ieee80211Interleaver");
+        double channelSpacing @unit(Hz);
         @display("bgb=270,313");
         @class(Ieee80211LayeredEncoder);
 
