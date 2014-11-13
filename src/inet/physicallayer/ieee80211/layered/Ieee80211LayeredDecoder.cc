@@ -25,6 +25,9 @@
 #include "inet/physicallayer/common/DummySerializer.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 
+namespace inet {
+namespace physicallayer {
+
 #define OFDM_SYMBOL_SIZE 48
 #define ENCODED_SIGNAL_FIELD_LENGTH 48
 // Table L-7—Bit assignment for SIGNAL field
@@ -35,9 +38,6 @@
 #define SIGNAL_PARITY_FIELD 17
 #define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
-
-namespace inet {
-namespace physicallayer {
 
 Define_Module(Ieee80211LayeredDecoder);
 
@@ -146,6 +146,7 @@ BitVector Ieee80211LayeredDecoder::decodeDataField(const BitVector& dataField, c
     return descrambler->descramble(fecDecodedDataField.first);
 }
 
+// TODO: remove decodedBits
 const IReceptionPacketModel* Ieee80211LayeredDecoder::createPacketModel(const BitVector& decodedBits, const Ieee80211Scrambling *scrambling, const Ieee80211ConvolutionalCode *fec, const Ieee80211Interleaving *interleaving) const
 {
     double per = -1;
