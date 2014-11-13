@@ -39,7 +39,7 @@ class INET_API ReceptionDecision : public IReceptionDecision, public cObject
     const bool isReceptionSuccessful_;
 
   public:
-    ReceptionDecision(const IReception *reception, const RadioReceptionIndication *indication, bool isReceptionPossible, bool isReceptionAttempted, bool isReceptionSuccessful);
+    ReceptionDecision(const IReception *reception, const RadioReceptionIndication *indication, const IReceptionPacketModel *packetModel, bool isReceptionPossible, bool isReceptionAttempted, bool isReceptionSuccessful);
 
     virtual void printToStream(std::ostream& stream) const;
 
