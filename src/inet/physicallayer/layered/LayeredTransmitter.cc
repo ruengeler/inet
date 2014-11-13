@@ -45,6 +45,7 @@ void LayeredTransmitter::initialize(int stage)
         power = W(par("power"));
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
+        bitrate = bps(par("bitrate"));
     }
 }
 
@@ -54,9 +55,9 @@ const ITransmissionPacketModel* LayeredTransmitter::createPacketModel(const cPac
     return packetModel;
 }
 
-const ITransmissionAnalogModel* LayeredTransmitter::createAnalogModel() const
+const ITransmissionAnalogModel* LayeredTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
 {
-    simtime_t duration = 0; // TODO: calculate duration
+    simtime_t duration = headerBitLength / headerBitRate + payloadBitLength / payloadBitRate; // TODO: preamble duration
     const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionAnalogModel(duration, power, carrierFrequency, bandwidth);
     return transmissionAnalogModel;
 }
@@ -84,7 +85,7 @@ const ITransmission *LayeredTransmitter::createTransmission(const IRadio *transm
     else if (digitalAnalogConverter && !sampleModel)
         throw cRuntimeError("Digital/analog converters need sample representation");
     // TODO: analog model is obligatory
-    analogModel = createAnalogModel();
+    analogModel = createAnalogModel(bitModel->getHeaderBitLength(), bitModel->getHeaderBitRate(), bitModel->getPayloadBitLength(), bitModel->getPayloadBitRate());
     IMobility *mobility = transmitter->getAntenna()->getMobility();
     // assuming movement and rotation during transmission is negligible
     const simtime_t endTime = startTime + analogModel->getDuration();

@@ -35,6 +35,8 @@ class INET_API LayeredTransmitter : public TransmitterBase
     const IModulator *modulator;
     const IPulseShaper *pulseShaper;
     const IDigitalAnalogConverter *digitalAnalogConverter;
+
+    bps bitrate;
     Hz carrierFrequency;
     Hz bandwidth;
     W power; // TODO: temporarily we added three parameters to describe the analog model, this parameters will probably move to
@@ -43,7 +45,7 @@ class INET_API LayeredTransmitter : public TransmitterBase
   protected:
     virtual void initialize(int stage);
     virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
-    virtual const ITransmissionAnalogModel *createAnalogModel() const;
+    virtual const ITransmissionAnalogModel *createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const;
 
   public:
     LayeredTransmitter();
