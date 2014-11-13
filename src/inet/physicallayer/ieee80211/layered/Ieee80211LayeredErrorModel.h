@@ -19,6 +19,7 @@
 #define __INET_IEEE80211LAYEREDERRORMODEL_H
 
 #include "inet/physicallayer/layered/LayeredErrorModel.h"
+#include "inet/physicallayer/modulation/OFDMSymbol.h"
 
 namespace inet {
 namespace physicallayer {
@@ -29,6 +30,7 @@ class INET_API Ieee80211LayeredErrorModel : public LayeredErrorModel
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
+        OFDMSymbol *corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const;
 
     public:
         virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const;

@@ -23,12 +23,16 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
-#include "inet/physicallayer/modulation/OFDMSymbol.h"
 
 namespace inet {
 namespace physicallayer {
 
 Define_Module(Ieee80211LayeredErrorModel);
+
+void Ieee80211LayeredErrorModel::initialize(int stage)
+{
+
+}
 
 const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
@@ -60,54 +64,46 @@ const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(cons
     // TODO: implement error model
     const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
     const IModulation *modulation = transmissionSymbolModel->getModulation();
-    const APSKModulationBase *apskModulation = check_and_cast<const APSKModulationBase *>(modulation);
-//    http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double ser = 0.05; // FIXME: modulation->calculateSER();
-    unsigned int dataFieldConstellationSize = apskModulation->getConstellationSize();
+    const APSKModulationBase *dataModulation = check_and_cast<const APSKModulationBase *>(modulation);
+    unsigned int dataFieldConstellationSize = dataModulation->getConstellationSize();
     unsigned int signalFieldConstellationSize = BPSKModulation::singleton.getConstellationSize();
-    const APSKSymbol *constellationDiagramForDataField = apskModulation->getEncodingTable();
+    double headerSER = BPSKModulation::singleton.calculateSER(snir->getMin());
+    double dataSER = dataModulation->calculateSER(snir->getMin());
+    const APSKSymbol *constellationDiagramForDataField = dataModulation->getEncodingTable();
     const APSKSymbol *constellationDiagramForSignalField = BPSKModulation::singleton.getEncodingTable();
     const std::vector<const ISymbol*> *symbols = transmissionSymbolModel->getSymbols();
     std::vector<const ISymbol*> *corruptedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
-    for (unsigned int i = 0; i < symbols->size(); i++)
+    // Only the first symbol is signal field symbol
+    corruptedSymbols->push_back(corruptOFDMSymbol(check_and_cast<const OFDMSymbol *>(symbols->at(0)), headerSER, signalFieldConstellationSize, constellationDiagramForSignalField));
+    // The remaining are all data field symbols
+    for (unsigned int i = 1; i < symbols->size(); i++)
     {
-        double p = uniform(0,1);
-        if (p <= ser)
-        {
-            const OFDMSymbol *ofdmSymbol = check_and_cast<const OFDMSymbol *>(symbols->at(i));
-            int corruptedSubcarrierSymbolIndex;
-            const APSKSymbol *corruptedSubcarrierSymbol;
-            // TODO: factor
-            if (i > 0)
-            {
-                corruptedSubcarrierSymbolIndex = intuniform(0, dataFieldConstellationSize - 1); // TODO: it can be equal to the current symbol
-                corruptedSubcarrierSymbol = &constellationDiagramForDataField[corruptedSubcarrierSymbolIndex];
-            }
-            else // Only the first symbol is signal field symbol
-            {
-                corruptedSubcarrierSymbolIndex = intuniform(0, signalFieldConstellationSize - 1); // TODO: it can be equal to the current symbol
-                corruptedSubcarrierSymbol = &constellationDiagramForSignalField[corruptedSubcarrierSymbolIndex];
-            }
-            int corruptedSubcarrierPosition = intuniform(0, ofdmSymbol->symbolSize() - 1);
-            // TODO: Should we corrupt other subcarrier symbols?
-            std::vector<const APSKSymbol *> subcarrierSymbols = ofdmSymbol->getSubCarrierSymbols();
-            subcarrierSymbols[corruptedSubcarrierPosition] = corruptedSubcarrierSymbol;
-            OFDMSymbol *corruptedOfdmSymbol = new OFDMSymbol(subcarrierSymbols);
-            corruptedSymbols->push_back(corruptedOfdmSymbol);
-        }
-        else
-            corruptedSymbols->push_back(symbols->at(i));
+        OFDMSymbol *corruptedOFDMSymbol = corruptOFDMSymbol(check_and_cast<const OFDMSymbol *>(symbols->at(i)), dataSER,
+                                                            dataFieldConstellationSize, constellationDiagramForDataField);
+        corruptedSymbols->push_back(corruptedOFDMSymbol);
     }
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
 }
 
-void Ieee80211LayeredErrorModel::initialize(int stage)
+OFDMSymbol *Ieee80211LayeredErrorModel::corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
 {
-
+    std::vector<const APSKSymbol *> subcarrierSymbols = symbol->getSubCarrierSymbols();
+    for (int j = 0; j < symbol->symbolSize(); j++)
+    {
+        double p = uniform(0,1);
+        if (p <= ser)
+        {
+            int corruptedSubcarrierSymbolIndex = intuniform(0, constellationSize - 1); // TODO: it can be equal to the current symbol
+            const APSKSymbol *corruptedSubcarrierSymbol = &constellationDiagram[corruptedSubcarrierSymbolIndex];
+            subcarrierSymbols[j] = corruptedSubcarrierSymbol;
+        }
+    }
+    return new OFDMSymbol(subcarrierSymbols);
 }
 
 const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    // TODO: implement sample error model
     const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
     int sampleLength = transmissionSampleModel->getSampleLength();
     double sampleRate = transmissionSampleModel->getSampleRate();
@@ -121,10 +117,8 @@ const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(cons
     // TODO: implement error model
     const ITransmissionPacketModel *transmissionPacketModel = transmission->getPacketModel();
     const cPacket *packet = transmissionPacketModel->getPacket();
-    double per = -1;
-    bool packetErrorless = true;
-    if (per != 0)
-        packetErrorless = false;
+    double per = 0.0;
+    bool packetErrorless = per == 0.0;
     return new const ReceptionPacketModel(packet, NULL, NULL, NULL, per, packetErrorless);
 }
 
