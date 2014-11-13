@@ -82,20 +82,20 @@ const IReceptionDecision *IdealReceiver::computeReceptionDecision(const IListeni
     RadioReceptionIndication *indication = new RadioReceptionIndication();
     if (power == IdealReception::POWER_RECEIVABLE) {
         if (ignoreInterference)
-            return new ReceptionDecision(reception, indication, true, true, true);
+            return new ReceptionDecision(reception, indication, NULL, true, true, true);
         else {
             const std::vector<const IReception *> *interferingReceptions = interference->getInterferingReceptions();
             for (std::vector<const IReception *>::const_iterator it = interferingReceptions->begin(); it != interferingReceptions->end(); it++) {
                 const IReception *interferingReception = *it;
                 IdealReception::Power interferingPower = check_and_cast<const IdealReception *>(interferingReception)->getPower();
                 if (interferingPower == IdealReception::POWER_RECEIVABLE || interferingPower == IdealReception::POWER_INTERFERING)
-                    return new ReceptionDecision(reception, indication, true, true, false);
+                    return new ReceptionDecision(reception, indication, NULL, true, true, false);
             }
-            return new ReceptionDecision(reception, indication, true, true, true);
+            return new ReceptionDecision(reception, indication, NULL, true, true, true);
         }
     }
     else
-        return new ReceptionDecision(reception, indication, false, false, false);
+        return new ReceptionDecision(reception, indication, NULL, false, false, false);
 }
 
 } // namespace physicallayer
