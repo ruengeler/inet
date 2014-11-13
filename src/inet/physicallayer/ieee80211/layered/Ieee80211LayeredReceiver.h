@@ -19,6 +19,7 @@
 #define __INET_IEEE80211LAYEREDRECEIVER_H
 
 #include "inet/physicallayer/layered/LayeredReceiver.h"
+#include "inet/physicallayer/layered/SignalBitModel.h"
 
 namespace inet {
 namespace physicallayer {

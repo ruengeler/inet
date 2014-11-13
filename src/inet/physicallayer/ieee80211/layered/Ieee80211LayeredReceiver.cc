@@ -26,7 +26,6 @@
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/LayeredSNIR.h"
 #include "inet/physicallayer/common/BandListening.h"
 
@@ -50,7 +49,7 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
     if (analogDigitalConverter)
     {
 //        const IReceptionAnalogModel *totalAnalogModel = NULL; // TODO: interference + receptionAnalogModel;
-//        receptionSampleModel = analogDigitalConverter->convertAnalogToDigital(totalAnalogModel);
+//        receptionSampleModel = analogDigitalConverter->convertAnalogToDigital(receptionAnalogModel, snir);
     }
     if (pulseFilter)
     {
@@ -85,6 +84,12 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
             ASSERT(transmission->getBitModel() != NULL);
             receptionBitModel = errorModel->computeBitModel(transmission, snir);
         }
+//        const BitVector *receivedBits = receptionBitModel->getBits();
+//        const BitVector *transmittedBits = transmission->getBitModel()->getBits();
+//        if (*receivedBits == *transmittedBits)
+//            EV_DETAIL << "The bit model has been decoded successfully." << endl;
+//        else
+//            EV_DETAIL << "The bit model decoding was unsuccessful." << endl;
         // FIXME: delete ber from reception indication?
 //        receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
 //        receptionIndication->setBitErrorRate(receptionBitModel->getBER());
@@ -99,12 +104,7 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
                                                                               receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
                                                                               receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
     // FIXME: !!HACK!!
-    bool isReceptionAttempted = true;
-    bool isReceptionPossible = computeIsReceptionPossible(listening, reception);
-//    double snirMin = totalAnalogModel ...;
-    double snirMin = 0; // TODO
-    bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
-    return new ReceptionDecision(reception, receptionIndication, hackedPacketModel, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful);
+    return new ReceptionDecision(reception, receptionIndication, hackedPacketModel, true, true, hackedPacketModel->isPacketErrorless());
 }
 
 } /* namespace physicallayer */
