@@ -46,11 +46,6 @@ class INET_API LayeredReceiver: public SNIRReceiverBase
 
   protected:
     virtual void initialize(int stage);
-    virtual bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const; // FIXME: copy
-    virtual const ISNIR *computeSNIR(const IReception *reception, const IListening *listening, const IInterference *interference) const;
-    virtual const ISNIR *computeSNIR(const IReception *reception, const INoise *noise) const;
-    const INoise *computeNoise(const IListening *listening, const IInterference *interference) const;
-    virtual bool computeIsReceptionSuccessful(const ISNIR *snir) const;
 
   public:
     LayeredReceiver();
@@ -58,6 +53,7 @@ class INET_API LayeredReceiver: public SNIRReceiverBase
     virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
     virtual const IListening *createListening(const IRadio *radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
     virtual const IListeningDecision *computeListeningDecision(const IListening *listening, const IInterference *interference) const;
+    bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
 
     virtual const IDecoder *getDecoder() const { return decoder; }
     virtual const IDemodulator *getDemodulator() const { return demodulator; }

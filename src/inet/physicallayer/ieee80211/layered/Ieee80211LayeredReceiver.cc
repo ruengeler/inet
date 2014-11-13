@@ -18,16 +18,17 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredReceiver.h"
 #include "inet/physicallayer/contract/ISNIR.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
-#include "inet/physicallayer/common/ReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredReceiver.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredReceptionDecision.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/LayeredReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/layered/LayeredSNIR.h"
 #include "inet/physicallayer/common/BandListening.h"
+#include "inet/physicallayer/contract/IRadioMedium.h"
 
 namespace inet {
 namespace physicallayer {
@@ -36,6 +37,8 @@ Define_Module(Ieee80211LayeredReceiver);
 
 const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
 {
+    const IRadio *receiver = reception->getReceiver();
+    const IRadioMedium *medium = receiver->getMedium();
     const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
     const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
@@ -55,7 +58,7 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
     {
         if (!receptionSampleModel)
         {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            const ISNIR *snir = medium->getSNIR(receiver, transmission);
             receptionIndication->setMinSNIR(snir->getMin());
             ASSERT(transmission->getSampleModel() != NULL);
             receptionSampleModel = errorModel->computeSampleModel(transmission, snir);
@@ -67,11 +70,11 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
     {
         if (!receptionSymbolModel)
         {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            const ISNIR *snir = medium->getSNIR(receiver, transmission);
             ASSERT(transmission->getSymbolModel() != NULL);
             receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
-        // FIXME: delete ser from reception indication?
+//        FIXME: delete ser from reception indication?
 //        receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
 //        receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
         receptionBitModel = demodulator->demodulate(receptionSymbolModel);
@@ -80,17 +83,11 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
     {
         if (!receptionBitModel)
         {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            const ISNIR *snir = medium->getSNIR(receiver, transmission);
             ASSERT(transmission->getBitModel() != NULL);
             receptionBitModel = errorModel->computeBitModel(transmission, snir);
         }
-//        const BitVector *receivedBits = receptionBitModel->getBits();
-//        const BitVector *transmittedBits = transmission->getBitModel()->getBits();
-//        if (*receivedBits == *transmittedBits)
-//            EV_DETAIL << "The bit model has been decoded successfully." << endl;
-//        else
-//            EV_DETAIL << "The bit model decoding was unsuccessful." << endl;
-        // FIXME: delete ber from reception indication?
+//        FIXME: delete ber from reception indication?
 //        receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
 //        receptionIndication->setBitErrorRate(receptionBitModel->getBER());
         receptionPacketModel = decoder->decode(receptionBitModel);
@@ -98,13 +95,12 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
     if (!receptionPacketModel)
         throw cRuntimeError("Packet model is obligatory");
     receptionIndication->setPacketErrorRate(receptionPacketModel->getPER());
-    // FIXME: !!HACK!!
+    // FIXME: Kludge: we have no serializer yet
     const cPacket *macFrame = transmission->getMacFrame();
     const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getForwardErrorCorrection(),
                                                                               receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
                                                                               receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
-    // FIXME: !!HACK!!
-    return new ReceptionDecision(reception, receptionIndication, hackedPacketModel, true, true, hackedPacketModel->isPacketErrorless());
+    return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, NULL, NULL, NULL, NULL, true, true, hackedPacketModel->isPacketErrorless());
 }
 
 } /* namespace physicallayer */

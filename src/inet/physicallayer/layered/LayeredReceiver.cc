@@ -17,18 +17,20 @@
 
 #include "inet/physicallayer/contract/ISNIR.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
-#include "inet/physicallayer/common/ReceptionDecision.h"
+#include "inet/physicallayer/base/NarrowbandNoiseBase.h"
+#include "inet/physicallayer/layered/LayeredReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredReceiver.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/LayeredReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/LayeredSNIR.h"
 #include "inet/physicallayer/common/BandListening.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
+#include "inet/physicallayer/contract/IRadioMedium.h"
 
 namespace inet {
 
@@ -63,79 +65,10 @@ void LayeredReceiver::initialize(int stage)
     }
 }
 
-const ISNIR* LayeredReceiver::computeSNIR(const IReception *reception, const IListening *listening, const IInterference *interference) const
-{
-    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
-    const INoise *noise = computeNoise(listening, interference);
-    const ScalarNoise *scalarNoise = check_and_cast<const ScalarNoise *>(noise);
-    return new LayeredSNIR(layeredReception, scalarNoise);
-}
-
-const INoise *LayeredReceiver::computeNoise(const IListening *listening, const IInterference *interference) const
-{
-    // FIXME: copied from ScalarReceiver
-    const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
-    Hz carrierFrequency = bandListening->getCarrierFrequency();
-    Hz bandwidth = bandListening->getBandwidth();
-    simtime_t noiseStartTime = SimTime::getMaxTime();
-    simtime_t noiseEndTime = 0;
-    std::map<simtime_t, W> *powerChanges = new std::map<simtime_t, W>();
-    const std::vector<const IReception *> *interferingReceptions = interference->getInterferingReceptions();
-    for (std::vector<const IReception *>::const_iterator it = interferingReceptions->begin(); it != interferingReceptions->end(); it++) {
-        const LayeredReception *reception = check_and_cast<const LayeredReception *>(*it);
-        if (carrierFrequency == reception->getCarrierFrequency() && bandwidth == reception->getBandwidth()) {
-            W power = reception->getPower();
-            simtime_t startTime = reception->getStartTime();
-            simtime_t endTime = reception->getEndTime();
-            if (startTime < noiseStartTime)
-                noiseStartTime = startTime;
-            if (endTime > noiseEndTime)
-                noiseEndTime = endTime;
-            std::map<simtime_t, W>::iterator itStartTime = powerChanges->find(startTime);
-            if (itStartTime != powerChanges->end())
-                itStartTime->second += power;
-            else
-                powerChanges->insert(std::pair<simtime_t, W>(startTime, power));
-            std::map<simtime_t, W>::iterator itEndTime = powerChanges->find(endTime);
-            if (itEndTime != powerChanges->end())
-                itEndTime->second -= power;
-            else
-                powerChanges->insert(std::pair<simtime_t, W>(endTime, -power));
-        }
-        else if (areOverlappingBands(carrierFrequency, bandwidth, reception->getCarrierFrequency(), reception->getBandwidth()))
-            throw cRuntimeError("Overlapping bands are not supported");
-    }
-    const ScalarNoise *scalarBackgroundNoise = dynamic_cast<const ScalarNoise *>(interference->getBackgroundNoise());
-    if (scalarBackgroundNoise) {
-        if (carrierFrequency == scalarBackgroundNoise->getCarrierFrequency() && bandwidth == scalarBackgroundNoise->getBandwidth()) {
-            const std::map<simtime_t, W> *backgroundNoisePowerChanges = scalarBackgroundNoise->getPowerChanges();
-            for (std::map<simtime_t, W>::const_iterator it = backgroundNoisePowerChanges->begin(); it != backgroundNoisePowerChanges->end(); it++) {
-                std::map<simtime_t, W>::iterator jt = powerChanges->find(it->first);
-                if (jt != powerChanges->end())
-                    jt->second += it->second;
-                else
-                    powerChanges->insert(std::pair<simtime_t, W>(it->first, it->second));
-            }
-        }
-        else if (areOverlappingBands(carrierFrequency, bandwidth, scalarBackgroundNoise->getCarrierFrequency(), scalarBackgroundNoise->getBandwidth()))
-            throw cRuntimeError("Overlapping bands are not supported");
-    }
-    return new ScalarNoise(noiseStartTime, noiseEndTime, carrierFrequency, bandwidth, powerChanges);
-}
-
-// FIXME: copy
-// TODO: this is not purely functional, see interface comment
-bool LayeredReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
-{
-    const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
-    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
-    std::cout << sensitivity << " min power : " << layeredReception->computeMinPower(reception->getStartTime(), reception->getEndTime()) << endl;
-    return bandListening->getCarrierFrequency() == layeredReception->getCarrierFrequency() && bandListening->getBandwidth() == layeredReception->getBandwidth() &&
-           layeredReception->computeMinPower(reception->getStartTime(), reception->getEndTime()) >= sensitivity;
-}
-
 const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
 {
+    const IRadio *receiver = reception->getReceiver();
+    const IRadioMedium *medium = receiver->getMedium();
     const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
     const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
@@ -155,7 +88,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     {
         if (!receptionSampleModel)
         {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            const ISNIR *snir = medium->getSNIR(receiver, transmission);
             receptionIndication->setMinSNIR(snir->getMin());
             ASSERT(transmission->getSampleModel() != NULL);
             receptionSampleModel = errorModel->computeSampleModel(transmission, snir);
@@ -167,11 +100,11 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     {
         if (!receptionSymbolModel)
         {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            const ISNIR *snir = medium->getSNIR(receiver, transmission);
             ASSERT(transmission->getSymbolModel() != NULL);
             receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
-        // FIXME: delete ser from reception indication?
+//        FIXME: delete ser from reception indication?
 //        receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
 //        receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
         receptionBitModel = demodulator->demodulate(receptionSymbolModel);
@@ -180,11 +113,11 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     {
         if (!receptionBitModel)
         {
-            const ISNIR *snir = computeSNIR(reception, listening, interference);
+            const ISNIR *snir = medium->getSNIR(receiver, transmission);
             ASSERT(transmission->getBitModel() != NULL);
             receptionBitModel = errorModel->computeBitModel(transmission, snir);
         }
-        // FIXME: delete ber from reception indication?
+//        FIXME: delete ber from reception indication?
 //        receptionIndication->setBitErrorCount(receptionBitModel->getBitErrorCount());
 //        receptionIndication->setBitErrorRate(receptionBitModel->getBER());
         receptionPacketModel = decoder->decode(receptionBitModel);
@@ -192,56 +125,50 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     if (!receptionPacketModel)
         throw cRuntimeError("Packet model is obligatory");
     receptionIndication->setPacketErrorRate(receptionPacketModel->getPER());
-    // FIXME: !!HACK!!
+    // FIXME: Kludge: we have no serializer yet
     const cPacket *macFrame = transmission->getMacFrame();
     const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getForwardErrorCorrection(),
                                                                               receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
                                                                               receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
-    // FIXME: !!HACK!!
-    bool isReceptionAttempted = true;
-    bool isReceptionPossible = computeIsReceptionPossible(listening, reception);
-//    double snirMin = totalAnalogModel ...;
-    double snirMin = 0; // TODO
-    bool isReceptionSuccessful = isReceptionPossible && snirMin > snirThreshold;
-    return new ReceptionDecision(reception, receptionIndication, hackedPacketModel, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful);
+    return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, NULL, NULL, NULL, NULL, true, true, true);
 }
 
 const IListening* LayeredReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
 {
     return new BandListening(radio, startTime, endTime, startPosition, endPosition, carrierFrequency, bandwidth);
 }
-// FIXME
-bool LayeredReceiver::computeIsReceptionSuccessful(const ISNIR* snir) const
-{
-    if (!SNIRReceiverBase::computeIsReceptionSuccessful(snir))
-        return false;
-    else
-        return true;
-//    else {
-//        double packetErrorRate = errorModel->computePacketErrorRate(snir);
-//        if (packetErrorRate == 0.0)
-//            return true;
-//        else if (packetErrorRate == 1.0)
-//            return false;
-//        else
-//            return dblrand() > packetErrorRate;
-//    }
-}
-// FIXME: copy
-const ISNIR* LayeredReceiver::computeSNIR(const IReception* reception, const INoise* noise) const
-{
-    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
-    const ScalarNoise *scalarNoise = check_and_cast<const ScalarNoise *>(noise);
-    return new LayeredSNIR(layeredReception, scalarNoise);
-}
-// FIXME: copy
+
+// TODO: copy
 const IListeningDecision* LayeredReceiver::computeListeningDecision(const IListening* listening, const IInterference* interference) const
 {
-    const INoise *noise = computeNoise(listening, interference);
-    const FlatNoiseBase *flatNoise = check_and_cast<const FlatNoiseBase *>(noise);
+    const IRadio *receiver = listening->getReceiver();
+    const IRadioMedium *radioMedium = receiver->getMedium();
+    const IAnalogModel *analogModel = radioMedium->getAnalogModel();
+    const INoise *noise = analogModel->computeNoise(listening, interference);
+    const NarrowbandNoiseBase *flatNoise = check_and_cast<const NarrowbandNoiseBase *>(noise);
     W maxPower = flatNoise->computeMaxPower(listening->getStartTime(), listening->getEndTime());
+    bool isListeningPossible = maxPower >= energyDetection;
     delete noise;
-    return new ListeningDecision(listening, maxPower >= energyDetection);
+    EV_DEBUG << "Computing listening possible: maximum power = " << maxPower << ", energy detection = " << energyDetection << " -> listening is " << (isListeningPossible ? "possible" : "impossible") << endl;
+    return new ListeningDecision(listening, isListeningPossible);
+}
+
+// TODO: this is not purely functional, see interface comment
+// TODO: copy
+bool LayeredReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
+{
+    const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
+    const NarrowbandReceptionBase *flatReception = check_and_cast<const NarrowbandReceptionBase *>(reception);
+    if (bandListening->getCarrierFrequency() != flatReception->getCarrierFrequency() || bandListening->getBandwidth() != flatReception->getBandwidth()) {
+        EV_DEBUG << "Computing reception possible: listening and reception bands are different -> reception is impossible" << endl;
+        return false;
+    }
+    else {
+        W minReceptionPower = flatReception->computeMinPower(reception->getStartTime(), reception->getEndTime());
+        bool isReceptionPossible = minReceptionPower >= sensitivity;
+        EV_DEBUG << "Computing reception possible: minimum reception power = " << minReceptionPower << ", sensitivity = " << sensitivity << " -> reception is " << (isReceptionPossible ? "possible" : "impossible") << endl;
+        return isReceptionPossible;
+    }
 }
 
 } // namespace physicallayer
