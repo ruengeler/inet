@@ -34,7 +34,7 @@ module LayeredEncoder like IEncoder
         @class(LayeredEncoder);
 
     submodules:
-        serializer: <serializerType> like ISerializer {
+        serializer: <serializerType> like ISerializer if serializerType != "" {
             @display("p=72,28");
         }
         scrambler: <scramblerType> like IScrambler if scramblerType != "" {
