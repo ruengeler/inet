@@ -29,14 +29,13 @@ namespace inet {
 
 namespace physicallayer {
 
-// revise name LayeredScalarReception would be better
-class INET_API LayeredReception : public ScalarReception
+class INET_API LayeredScalarReception : public ScalarReception
 {
   protected:
     const IReceptionAnalogModel *analogModel;
 
   public:
-    LayeredReception(const IReceptionAnalogModel *analogModel, const IRadio *radio, const ITransmission *transmission, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, const Hz carrierFrequency, const Hz bandwidth, const W power) :
+    LayeredScalarReception(const IReceptionAnalogModel *analogModel, const IRadio *radio, const ITransmission *transmission, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, const Hz carrierFrequency, const Hz bandwidth, const W power) :
         ScalarReception(radio, transmission, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, carrierFrequency, bandwidth, power),
         analogModel(analogModel)
     {}

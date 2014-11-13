@@ -21,7 +21,7 @@
 namespace inet {
 namespace physicallayer {
 
-LayeredSNIR::LayeredSNIR(const LayeredReception *reception, const ScalarNoise *noise) :
+LayeredSNIR::LayeredSNIR(const LayeredScalarReception *reception, const ScalarNoise *noise) :
         SNIRBase(reception, noise),
         minSNIR(NaN)
 {
@@ -37,7 +37,7 @@ double LayeredSNIR::getMin() const
 
 double LayeredSNIR::computeMin() const
 {
-    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
+    const LayeredScalarReception *layeredReception = check_and_cast<const LayeredScalarReception *>(reception);
     const ScalarNoise *scalarNoise= check_and_cast<const ScalarNoise *>(noise);
     return unit(layeredReception->getPower() / scalarNoise->computeMaxPower(reception->getStartTime(), reception->getEndTime())).get();
 }

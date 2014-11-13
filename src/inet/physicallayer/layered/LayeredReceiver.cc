@@ -22,7 +22,7 @@
 #include "inet/physicallayer/layered/LayeredReceiver.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/layered/LayeredReception.h"
+#include "inet/physicallayer/layered/LayeredScalarReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
@@ -70,7 +70,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     const IRadio *receiver = reception->getReceiver();
     const IRadioMedium *medium = receiver->getMedium();
     const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
-    const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
+    const LayeredScalarReception *layeredReception = dynamic_cast<const LayeredScalarReception*>(reception);
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
     if (!receptionAnalogModel)
         throw cRuntimeError("Reception analog model is obligatory");

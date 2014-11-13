@@ -35,7 +35,7 @@ class INET_API LayeredSNIR : public SNIRBase
         double computeMin() const;
 
     public:
-        LayeredSNIR(const LayeredReception *reception, const ScalarNoise *noise);
+        LayeredSNIR(const LayeredScalarReception *reception, const ScalarNoise *noise);
         virtual void printToStream(std::ostream& stream) const;
         virtual double getMin() const;
         virtual ~LayeredSNIR();
