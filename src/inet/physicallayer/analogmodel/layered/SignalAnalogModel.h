@@ -39,7 +39,7 @@ class INET_API SignalAnalogModel : public virtual ISignalAnalogModel
     virtual const simtime_t getDuration() const { return duration; }
 };
 
-class INET_API ScalarAnalogModel : public SignalAnalogModel
+class INET_API ScalarSignalAnalogModel : public SignalAnalogModel
 {
   protected:
     const W power;
@@ -47,7 +47,7 @@ class INET_API ScalarAnalogModel : public SignalAnalogModel
     const Hz bandwidth;
 
   public:
-    ScalarAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth) :
+    ScalarSignalAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth) :
         SignalAnalogModel(duration),
         power(power),
         carrierFrequency(carrierFrequency),
@@ -61,22 +61,22 @@ class INET_API ScalarAnalogModel : public SignalAnalogModel
     virtual Hz getBandwidth() const { return bandwidth; }
 };
 
-class INET_API ScalarTransmissionAnalogModel : public ScalarAnalogModel, public virtual ITransmissionAnalogModel
+class INET_API ScalarTransmissionSignalAnalogModel : public ScalarSignalAnalogModel, public virtual ITransmissionAnalogModel
 {
   public:
-    ScalarTransmissionAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth) :
-        ScalarAnalogModel(duration, power, carrierFrequency, bandwidth)
+    ScalarTransmissionSignalAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth) :
+        ScalarSignalAnalogModel(duration, power, carrierFrequency, bandwidth)
     {}
 };
 
-class INET_API ScalarReceptionAnalogModel : public ScalarAnalogModel, public virtual IReceptionAnalogModel
+class INET_API ScalarReceptionSignalAnalogModel : public ScalarSignalAnalogModel, public virtual IReceptionAnalogModel
 {
   protected:
     const double snir;
 
   public:
-    ScalarReceptionAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth, double snir) :
-        ScalarAnalogModel(duration, power, carrierFrequency, bandwidth),
+    ScalarReceptionSignalAnalogModel(const simtime_t duration, W power, Hz carrierFrequency, Hz bandwidth, double snir) :
+        ScalarSignalAnalogModel(duration, power, carrierFrequency, bandwidth),
         snir(snir)
     {}
 

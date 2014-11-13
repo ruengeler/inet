@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {
 
@@ -26,7 +26,7 @@ void SignalAnalogModel::printToStream(std::ostream &stream) const
     stream << "duration = " << duration;
 }
 
-void ScalarAnalogModel::printToStream(std::ostream &stream) const
+void ScalarSignalAnalogModel::printToStream(std::ostream &stream) const
 {
     stream << "power = " << power << ", carrier frequency = " << carrierFrequency << ", bandwidth = " << bandwidth << ", ";
     SignalAnalogModel::printToStream(stream);
