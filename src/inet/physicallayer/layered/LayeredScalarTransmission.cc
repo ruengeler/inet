@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 
 namespace inet {
 

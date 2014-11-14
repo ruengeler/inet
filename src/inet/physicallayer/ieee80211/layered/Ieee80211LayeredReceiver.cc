@@ -19,7 +19,7 @@
 #include "inet/physicallayer/contract/ISNIR.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
 #include "inet/physicallayer/layered/LayeredReceiver.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/LayeredReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredScalarReception.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
@@ -38,7 +38,7 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
 {
     const IRadio *receiver = reception->getReceiver();
     const IRadioMedium *medium = receiver->getMedium();
-    const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
+    const LayeredScalarTransmission *transmission = dynamic_cast<const LayeredScalarTransmission*>(reception->getTransmission());
     const LayeredScalarReception *layeredReception = dynamic_cast<const LayeredScalarReception*>(reception);
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
     if (!receptionAnalogModel)

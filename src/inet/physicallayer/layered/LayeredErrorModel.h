@@ -32,10 +32,10 @@ class INET_API LayeredErrorModel : public ILayeredErrorModel, public cSimpleModu
         void corruptBits(BitVector *bits, double ber, int begin, int end) const;
 
     public:
-        virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
-        virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
-        virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
-        virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionPacketModel *computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionBitModel *computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
+        virtual const IReceptionSampleModel *computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
         virtual void printToStream(std::ostream& stream) const { stream << "Layered Error Model"; }
 };
 

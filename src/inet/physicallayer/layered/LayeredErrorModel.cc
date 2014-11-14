@@ -17,7 +17,7 @@
 
 #include "inet/physicallayer/layered/LayeredErrorModel.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
@@ -36,7 +36,7 @@ void LayeredErrorModel::corruptBits(BitVector *bits, double ber, int begin, int 
     }
 }
 
-const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
     int headerBitLength = transmissionBitModel->getHeaderBitLength();
@@ -59,7 +59,7 @@ const IReceptionBitModel* LayeredErrorModel::computeBitModel(const LayeredTransm
     return new const ReceptionBitModel(headerBitLength, headerBitRate, payloadBitLength, payloadBitRate, corruptedBits, modulation);
 }
 
-const IReceptionSymbolModel* LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionSymbolModel* LayeredErrorModel::computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionSymbolModel *transmissionSymbolModel = transmission->getSymbolModel();
     // TODO: SER?
@@ -72,7 +72,7 @@ void LayeredErrorModel::initialize(int stage)
     throw cRuntimeError("Unimplemented");
 }
 
-const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
     int sampleLength = transmissionSampleModel->getSampleLength();
@@ -82,7 +82,7 @@ const IReceptionSampleModel* LayeredErrorModel::computeSampleModel(const Layered
     return new const ReceptionSampleModel(sampleLength, sampleRate, samples, rssi);
 }
 
-const IReceptionPacketModel* LayeredErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionPacketModel* LayeredErrorModel::computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionPacketModel *transmissionPacketModel = transmission->getPacketModel();
     const cPacket *packet = transmissionPacketModel->getPacket();

@@ -19,7 +19,7 @@
 #define __INET_IERRORMODEL_H
 
 #include "ISNIR.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 
 namespace inet {
 
@@ -39,10 +39,10 @@ class INET_API IErrorModel : public IPrintableObject
 class INET_API ILayeredErrorModel : public IPrintableObject
 {
   public:
-    virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
-    virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
-    virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
-    virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionPacketModel *computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionBitModel *computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
+    virtual const IReceptionSampleModel *computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
 };
 
 } // namespace physicallayer

@@ -18,7 +18,7 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredErrorModel.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
@@ -34,7 +34,7 @@ void Ieee80211LayeredErrorModel::initialize(int stage)
 
 }
 
-const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
     int signalBitLength = transmissionBitModel->getHeaderBitLength();
@@ -59,7 +59,7 @@ const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const Laye
     return new const ReceptionBitModel(signalBitLength, dataBitLength, signalBitRate, dataBitRate, corruptedBits, modulation);
 }
 
-const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     // TODO: implement error model
     const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
@@ -101,7 +101,7 @@ OFDMSymbol *Ieee80211LayeredErrorModel::corruptOFDMSymbol(const OFDMSymbol *symb
     return new OFDMSymbol(subcarrierSymbols);
 }
 
-const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     // TODO: implement sample error model
     const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
@@ -112,7 +112,7 @@ const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(cons
     return new const ReceptionSampleModel(sampleLength, sampleRate, samples, rssi);
 }
 
-const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
 {
     // TODO: implement error model
     const ITransmissionPacketModel *transmissionPacketModel = transmission->getPacketModel();

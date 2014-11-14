@@ -17,7 +17,7 @@
 
 #include "inet/mobility/contract/IMobility.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredTransmitter.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
 
@@ -172,7 +172,7 @@ const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadi
     const Coord endPosition = mobility->getCurrentPosition();
     const EulerAngles startOrientation = mobility->getCurrentAngularPosition();
     const EulerAngles endOrientation = mobility->getCurrentAngularPosition();
-    return new LayeredTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, bandwidth, carrierFrequency, power);
+    return new LayeredScalarTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, bandwidth, carrierFrequency, power);
 }
 
 } // namespace physicallayer

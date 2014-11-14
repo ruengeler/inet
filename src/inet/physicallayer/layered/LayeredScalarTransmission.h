@@ -29,8 +29,7 @@ namespace inet {
 
 namespace physicallayer {
 
-// revise name: LayeredScalarTransmission would be better
-class INET_API LayeredTransmission : public TransmissionBase
+class INET_API LayeredScalarTransmission : public TransmissionBase
 {
   protected:
     const ITransmissionPacketModel *packetModel;
@@ -44,7 +43,7 @@ class INET_API LayeredTransmission : public TransmissionBase
     const W power;
 
   public:
-    LayeredTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, Hz bandwidth, Hz carrierFreequency, W power) :
+    LayeredScalarTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, Hz bandwidth, Hz carrierFreequency, W power) :
         TransmissionBase(transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation),
         packetModel(packetModel),
         bitModel(bitModel),
