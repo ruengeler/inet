@@ -28,10 +28,7 @@ namespace physicallayer {
 Define_Module(Ieee80211LayeredTransmitter);
 
 Ieee80211LayeredTransmitter::Ieee80211LayeredTransmitter() :
-    encoder(NULL),
-    modulator(NULL),
-    pulseShaper(NULL),
-    digitalAnalogConverter(NULL)
+        LayeredTransmitter()
 {
 }
 

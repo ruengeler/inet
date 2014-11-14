@@ -32,11 +32,6 @@ namespace physicallayer {
 class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
 {
     protected:
-        const IEncoder *encoder;
-        const IModulator *modulator;
-        const IPulseShaper *pulseShaper;
-        const IDigitalAnalogConverter *digitalAnalogConverter;
-
         Hz bandwidth;
         Hz carrierFrequency;
         Hz channelSpacing;
