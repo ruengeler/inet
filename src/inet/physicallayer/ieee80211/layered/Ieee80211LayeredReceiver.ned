@@ -28,8 +28,16 @@ import inet.physicallayer.layered.LayeredReceiver;
 module Ieee80211LayeredReceiver extends LayeredReceiver
 {
     parameters:
+        double channelSpacing @unit(Hz);
+        string headerDemodulatorType = "Ieee80211OFDMDemodulator";
         errorModelType = "Ieee80211LayeredErrorModel";
-        decoderType = "Ieee80211LayeredDecoder";
-        demodulatorType = "Ieee80211OFDMDemodulator";
+        decoderType = "";
+        demodulatorType = "";
+        headerDemodulator.demodulationScheme = "BPSK";
         @class(Ieee80211LayeredReceiver);
+
+    submodules:
+        headerDemodulator: <headerDemodulatorType> like IDemodulator if headerDemodulatorType != "" {
+            @display("p=248,150");
+        }
 }
