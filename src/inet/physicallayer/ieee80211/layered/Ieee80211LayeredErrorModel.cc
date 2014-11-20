@@ -119,7 +119,7 @@ const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(cons
     const cPacket *packet = transmissionPacketModel->getPacket();
     double per = 0.0;
     bool packetErrorless = per == 0.0;
-    return new const ReceptionPacketModel(packet, NULL, NULL, NULL, per, packetErrorless);
+    return new const ReceptionPacketModel(packet, NULL, NULL, NULL, NULL, per, packetErrorless);
 }
 
 } /* namespace physicallayer */

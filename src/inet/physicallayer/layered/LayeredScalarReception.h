@@ -28,7 +28,7 @@
 namespace inet {
 
 namespace physicallayer {
-
+// TODO: do not inherit from ScalarReception
 class INET_API LayeredScalarReception : public ScalarReception
 {
   protected:

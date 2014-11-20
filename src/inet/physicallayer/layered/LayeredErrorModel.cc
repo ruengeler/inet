@@ -90,7 +90,7 @@ const IReceptionPacketModel* LayeredErrorModel::computePacketModel(const Layered
     bool packetErrorless = true;
     if (per != 0)
         packetErrorless = false;
-    return new const ReceptionPacketModel(packet, NULL, NULL, NULL, per, packetErrorless);
+    return new const ReceptionPacketModel(packet, NULL, NULL, NULL, NULL, per, packetErrorless);
 }
 
 } /* namespace physicallayer */

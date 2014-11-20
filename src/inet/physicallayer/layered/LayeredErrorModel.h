@@ -32,6 +32,7 @@ class INET_API LayeredErrorModel : public ILayeredErrorModel, public cSimpleModu
         void corruptBits(BitVector *bits, double ber, int begin, int end) const;
 
     public:
+        // TODO: create an abstract type for LayeredTransmissions, this error model is not scalar-specific
         virtual const IReceptionPacketModel *computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
         virtual const IReceptionBitModel *computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
         virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
