@@ -18,10 +18,28 @@
 package inet.physicallayer.layered;
 
 import inet.physicallayer.contract.IDecoder;
+import inet.physicallayer.contract.IFECCoder;
+import inet.physicallayer.contract.IInterleaver;
+import inet.physicallayer.contract.IScrambler;
+import inet.physicallayer.contract.ISerializer;
 
 
 module LayeredDecoder like IDecoder
 {
     parameters:
+        string fecType = default("");
+        string deinterleaverType = default("");
+        string descramblerType = default("");
         @class(LayeredDecoder);
+
+    submodules:
+        descrambler: <descramblerType> like IScrambler if descramblerType != "" {
+            @display("p=72,94");
+        }
+        fecDecoder: <fecType> like IFECCoder if fecType != "" {
+            @display("p=72,168");
+        }
+        deinterleaverType: <deinterleaverType> like IInterleaver if deinterleaverType != "" {
+            @display("p=72,244");
+        }
 }
