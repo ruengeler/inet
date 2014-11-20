@@ -39,7 +39,6 @@ class INET_API SignalPacketModel : public virtual ISignalPacketModel
     {}
 
     virtual void printToStream(std::ostream &stream) const;
-
     virtual const cPacket *getPacket() const { return packet; }
 };
 
@@ -58,6 +57,7 @@ class INET_API TransmissionPacketModel : public SignalPacketModel, public virtua
 class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptionPacketModel
 {
   protected:
+    const BitVector *serializedPacket;
     const IForwardErrorCorrection *forwardErrorCorrection;
     const IScrambling *scrambling;
     const IInterleaving *interleaving;
@@ -67,6 +67,7 @@ class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptio
   public:
     ReceptionPacketModel() :
         SignalPacketModel(),
+        serializedPacket(NULL),
         forwardErrorCorrection(NULL),
         scrambling(NULL),
         interleaving(NULL),
@@ -74,8 +75,9 @@ class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptio
         packetErrorless(false)
     {}
 
-    ReceptionPacketModel(const cPacket *packet, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scrambling, const IInterleaving *interleaving, double per, bool packetErrorless) :
+    ReceptionPacketModel(const cPacket *packet, const BitVector *serializedPacket, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scrambling, const IInterleaving *interleaving, double per, bool packetErrorless) :
         SignalPacketModel(packet),
+        serializedPacket(serializedPacket),
         forwardErrorCorrection(forwardErrorCorrection),
         scrambling(scrambling),
         interleaving(interleaving),
@@ -88,6 +90,7 @@ class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptio
     virtual const IForwardErrorCorrection *getForwardErrorCorrection() const { return forwardErrorCorrection; }
     virtual const IScrambling *getScrambling() const { return scrambling; }
     virtual const IInterleaving *getInterleaving() const { return interleaving; }
+    virtual const BitVector *getSerializedPacket() const { return serializedPacket; }
 };
 
 } // namespace physicallayer
