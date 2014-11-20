@@ -27,6 +27,7 @@
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 
 namespace inet {
@@ -39,19 +40,21 @@ class INET_API Ieee80211LayeredEncoder : public LayeredEncoder
         const IInterleaver *signalInterleaver;
         const IFECCoder *dataFECEncoder;
         Hz channelSpacing;
+        bps headerBitrate;
 
     protected:
         virtual void initialize(int stage);
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual BitVector signalFieldEncode(const BitVector& signalField) const;
-        virtual BitVector dataFieldEncode(const BitVector& dataField) const;
+        virtual BitVector dataFieldEncode(const BitVector& dataField, const ShortBitVector& signalFieldRate) const;
         virtual BitVector serialize(const cPacket *packet) const; // FIXME: temporary function
         ShortBitVector getRate(const BitVector& serializedPacket) const;
         bps computeDataBitRate(const BitVector& serializedPacket) const;
-        bps computeHeaderBitRate(const BitVector& serializedPacket) const;
+        bps computeHeaderBitRate() const;
         const APSKModulationBase* getModulationFromSignalFieldRate(const ShortBitVector& rate) const;
         const Ieee80211ConvolutionalCode* getFecFromSignalFieldRate(const ShortBitVector& rate) const;
-
+        const Ieee80211Interleaving* getInterleavingFromModulation(const IModulation *modulationScheme) const;
+        ShortBitVector calculateRateField(Hz channelSpacing, bps bitrate) const;
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
         virtual void printToStream(std::ostream& stream) const { stream << "IEEE80211 Layered Encoder"; } // TODO

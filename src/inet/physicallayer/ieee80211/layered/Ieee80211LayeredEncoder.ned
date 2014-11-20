@@ -24,12 +24,12 @@ import inet.physicallayer.layered.LayeredEncoder;
 module Ieee80211LayeredEncoder extends LayeredEncoder
 {
     parameters:
-        fecType = default("ConvolutionalCoder");
-        string signalFECType = default("ConvolutionalCoder");
+        fecType = default("");
+        string signalFECType;
         //serializerType = default("Ieee80211Serializer");
-        scramblerType = default("Ieee80211Scrambler");
-        interleaverType = default("Ieee80211Interleaver");
-        string signalInterleaverType = default("Ieee80211Interleaver");
+        scramblerType = default("");
+        interleaverType = default("");
+        string signalInterleaverType = default("");
         double channelSpacing @unit(Hz);
         @display("bgb=270,313");
         @class(Ieee80211LayeredEncoder);

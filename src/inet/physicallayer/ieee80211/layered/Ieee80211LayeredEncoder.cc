@@ -22,6 +22,7 @@
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 
 namespace inet {
 namespace physicallayer {
@@ -37,33 +38,68 @@ void Ieee80211LayeredEncoder::initialize(int stage)
     if (stage == INITSTAGE_LOCAL)
     {
         serializer = dynamic_cast<ISerializer *>(getSubmodule("serializer")); // FIXME
-        scrambler = check_and_cast<IScrambler *>(getSubmodule("scrambler"));
-        dataFECEncoder = check_and_cast<IFECCoder *>(getSubmodule("fecEncoder"));
-        signalFECEncoder = check_and_cast<IFECCoder *>(getSubmodule("signalFECEncoder"));
-        interleaver = check_and_cast<IInterleaver *>(getSubmodule("interleaver"));
-        signalInterleaver = check_and_cast<IInterleaver *>(getSubmodule("signalInterleaver"));
-
+        scrambler = dynamic_cast<IScrambler *>(getSubmodule("scrambler"));
+        dataFECEncoder = dynamic_cast<IFECCoder *>(getSubmodule("fecEncoder"));
+        signalFECEncoder = dynamic_cast<IFECCoder *>(getSubmodule("signalFECEncoder"));
+        interleaver = dynamic_cast<IInterleaver *>(getSubmodule("interleaver")); // FIXME this should not be a module
+        signalInterleaver = dynamic_cast<IInterleaver *>(getSubmodule("signalInterleaver"));
         channelSpacing = Hz(par("channelSpacing"));
+        headerBitrate = computeHeaderBitRate();
     }
 }
 
 BitVector Ieee80211LayeredEncoder::signalFieldEncode(const BitVector& signalField) const
 {
     // NOTE: The contents of the SIGNAL field are not scrambled.
-    BitVector fecEncodedBits = signalFECEncoder->encode(signalField);
+    ShortBitVector signalFieldRate = calculateRateField(channelSpacing, headerBitrate);
+    BitVector fecEncodedBits;
+    if (signalFECEncoder) // non-compliant mode
+        fecEncodedBits = signalFECEncoder->encode(signalField);
+    else
+    {
+        const Ieee80211ConvolutionalCode *fec = getFecFromSignalFieldRate(signalFieldRate);
+        ConvolutionalCoder fecCoder(fec);
+        fecEncodedBits = fecCoder.encode(signalField);
+    }
     EV_DEBUG << "FEC encoded bits of the SIGNAL field are: " << fecEncodedBits << endl;
-    BitVector interleavedBits = signalInterleaver->interleave(fecEncodedBits);
+    BitVector interleavedBits;
+    if (signalInterleaver) // non-compliant mode
+        interleavedBits = signalInterleaver->interleave(fecEncodedBits);
+    else
+    {
+        const IModulation *modulationScheme = getModulationFromSignalFieldRate(signalFieldRate);
+        const Ieee80211Interleaving *interleaving = getInterleavingFromModulation(modulationScheme);
+        Ieee80211Interleaver interleaver(interleaving);
+        interleavedBits = interleaver.interleave(fecEncodedBits);
+    }
     EV_DEBUG << "Interleaved bits of the SIGNAL field are: " << interleavedBits << endl;
     return interleavedBits;
 }
 
-BitVector Ieee80211LayeredEncoder::dataFieldEncode(const BitVector& dataField) const
+BitVector Ieee80211LayeredEncoder::dataFieldEncode(const BitVector& dataField, const ShortBitVector& signalFieldRate) const
 {
    BitVector scrambledBits = scrambler->scramble(dataField);
    EV_DEBUG << "Scrambled bits of the DATA field are: " << scrambledBits << endl;
-   BitVector fecEncodedBits = dataFECEncoder->encode(scrambledBits);
+   BitVector fecEncodedBits;
+   if (dataFECEncoder) // non-compliant mode
+       fecEncodedBits = dataFECEncoder->encode(scrambledBits);
+   else
+   {
+       const Ieee80211ConvolutionalCode *fec = getFecFromSignalFieldRate(signalFieldRate);
+       ConvolutionalCoder fecCoder(fec);
+       fecEncodedBits = fecCoder.encode(scrambledBits);
+   }
    EV_DEBUG << "FEC encoded bits of the DATA field are: " << fecEncodedBits << endl;
-   BitVector interleavedBits = interleaver->interleave(fecEncodedBits);
+   BitVector interleavedBits;
+   if (interleaver) // non-compliant mode
+       interleavedBits = interleaver->interleave(fecEncodedBits);
+   else
+   {
+       const IModulation *modulationScheme = getModulationFromSignalFieldRate(signalFieldRate);
+       const Ieee80211Interleaving *interleaving = getInterleavingFromModulation(modulationScheme);
+       Ieee80211Interleaver interleaver(interleaving);
+       interleavedBits = interleaver.interleave(fecEncodedBits);
+   }
    EV_DEBUG << "Interleaved bits of the DATA field are: " << interleavedBits << endl;
    return interleavedBits;
 }
@@ -217,7 +253,88 @@ bps Ieee80211LayeredEncoder::computeDataBitRate(const BitVector& serializedPacke
     return bps(0);
 }
 
-bps Ieee80211LayeredEncoder::computeHeaderBitRate(const BitVector& serializedPacket) const
+// FIXME: copy
+// move this code to the Ieee80211Modulation class
+ShortBitVector Ieee80211LayeredEncoder::calculateRateField(Hz channelSpacing, bps bitrate) const
+{
+    if (channelSpacing == MHz(20))
+    {
+        if (bitrate == bps(6000000))
+            return ShortBitVector("1101");
+        else if (bitrate == bps(9000000))
+            return ShortBitVector("1111");
+        else if (bitrate == bps(12000000))
+            return ShortBitVector("0101");
+        else if (bitrate == bps(18000000))
+            return ShortBitVector("0111");
+        else if (bitrate == bps(24000000))
+            return ShortBitVector("1001");
+        else if (bitrate == bps(36000000))
+            return ShortBitVector("1011");
+        else if (bitrate == bps(48000000))
+            return ShortBitVector("0001");
+        else if (bitrate == bps(54000000))
+            return ShortBitVector("0011");
+        else
+            throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+    }
+    else if (channelSpacing == MHz(10))
+    {
+        if (bitrate == bps(3000000))
+            return ShortBitVector("1101");
+        else if (bitrate == bps(4500000))
+            return ShortBitVector("1111");
+        else if (bitrate == bps(6000000))
+            return ShortBitVector("0101");
+        else if (bitrate == bps(9000000))
+            return ShortBitVector("0111");
+        else if (bitrate == bps(12000000))
+            return ShortBitVector("1001");
+        else if (bitrate == bps(18000000))
+            return ShortBitVector("1011");
+        else if (bitrate == bps(24000000))
+            return ShortBitVector("0001");
+        else if (bitrate == bps(27000000))
+            return ShortBitVector("0011");
+        else
+            throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+    }
+    else if (channelSpacing == MHz(5))
+    {
+       if (bitrate == bps(1500000))
+           return ShortBitVector("1101");
+       else if (bitrate == bps(2250000))
+           return ShortBitVector("1111");
+       else if (bitrate == bps(3000000))
+           return ShortBitVector("0101");
+       else if (bitrate == bps(4500000))
+           return ShortBitVector("0111");
+       else if (bitrate == bps(6000000))
+           return ShortBitVector("1001");
+       else if (bitrate == bps(9000000))
+           return ShortBitVector("1011");
+       else if (bitrate == bps(12000000))
+           return ShortBitVector("0001");
+       else if (bitrate == bps(13500000))
+           return ShortBitVector("0011");
+       else
+           throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+    }
+    else
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+    return ShortBitVector("0000");
+}
+
+// TODO: copy
+const Ieee80211Interleaving* Ieee80211LayeredEncoder::getInterleavingFromModulation(const IModulation *modulationScheme) const
+{
+    const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
+    ASSERT(dataModulationScheme != NULL);
+    return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
+}
+
+// TODO: move this code to the Ieee80211Modulation class
+bps Ieee80211LayeredEncoder::computeHeaderBitRate() const
 {
     // TODO: Revise, these are the minimum bitrates for each channel spacing.
     if (channelSpacing == MHz(20))
@@ -254,16 +371,16 @@ const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmission
     // but for the SIGNAL field - then for the DATA field.
     for (unsigned int i = 24; i < serializedPacket.getSize(); i++)
         dataField.appendBit(serializedPacket.getBit(i));
+    ShortBitVector signalFieldRate = getRate(serializedPacket);
     BitVector encodedSignalField = signalFieldEncode(signalField);
-    BitVector encodedDataField = dataFieldEncode(dataField);
+    BitVector encodedDataField = dataFieldEncode(dataField, signalFieldRate);
     BitVector *encodedBits = new BitVector();
     for (unsigned int i = 0; i < encodedSignalField.getSize(); i++)
         encodedBits->appendBit(encodedSignalField.getBit(i));
     for (unsigned int i = 0; i < encodedDataField.getSize(); i++)
         encodedBits->appendBit(encodedDataField.getBit(i));
-    double dataFieldBitRate = 36000000; // FIXME: this is not a constant, we set it to 36Mb/s for testing purposes
-    double signalFieldBitRate = 1000000; // The PLCP header and preamble are always transmitted at 1 Mb/s
-    return new TransmissionBitModel(encodedSignalField.getSize(), encodedDataField.getSize(), signalFieldBitRate, dataFieldBitRate, encodedBits, dataFECEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
+    double dataBitRate = computeDataBitRate(serializedPacket).get();
+    return new TransmissionBitModel(encodedSignalField.getSize(), encodedDataField.getSize(), headerBitrate.get(), dataBitRate, encodedBits, dataFECEncoder->getForwardErrorCorrection(), scrambler->getScrambling(), interleaver->getInterleaving());
 }
 
 } /* namespace physicallayer */
