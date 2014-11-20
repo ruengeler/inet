@@ -28,8 +28,11 @@ import inet.physicallayer.contract.IReceiver;
 module LayeredReceiver like IReceiver
 {
     parameters:
+        string levelOfDetial @enum("bit","symbol","sample") = default("symbol");
         string errorModelType;
+        string headerDecoderType;
         string decoderType;
+        string headerDemodulatorType;
         string demodulatorType;
         string shaperFilterType;
         string analogDigitalConverterType;
@@ -42,10 +45,16 @@ module LayeredReceiver like IReceiver
 
     submodules:
         errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
-            @display("p=219,50");
+            @display("p=240,350");
         }
         decoder: <decoderType> like IDecoder if decoderType != "" {
             @display("p=100,50");
+        }
+        headerDecoder: <headerDecoderType> like IDecoder if headerDecoderType != "" {
+            @display("p=229,50");
+        }
+        headerDemodulator: <headerDemodulatorType> like IDemodulator if headerDemodulatorType != "" {
+            @display("p=229,150");
         }
         demodulator: <demodulatorType> like IDemodulator if demodulatorType != "" {
             @display("p=100,150");

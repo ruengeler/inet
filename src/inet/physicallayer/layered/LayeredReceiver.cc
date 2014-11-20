@@ -38,8 +38,11 @@ namespace physicallayer {
 Define_Module(LayeredReceiver);
 
 LayeredReceiver::LayeredReceiver() :
+    errorModel(NULL),
     decoder(NULL),
+    headerDecoder(NULL),
     demodulator(NULL),
+    headerDemodulator(NULL),
     pulseFilter(NULL),
     analogDigitalConverter(NULL)
 {
@@ -51,7 +54,9 @@ void LayeredReceiver::initialize(int stage)
     {
         errorModel = dynamic_cast<ILayeredErrorModel *>(getSubmodule("errorModel"));
         decoder = dynamic_cast<IDecoder *>(getSubmodule("decoder"));
+        headerDecoder = dynamic_cast<IDecoder *>(getSubmodule("headerDecoder"));
         demodulator = dynamic_cast<IDemodulator *>(getSubmodule("demodulator"));
+        headerDemodulator = dynamic_cast<IDemodulator *>(getSubmodule("headerDemodulator"));
         pulseFilter = dynamic_cast<IPulseFilter *>(getSubmodule("pulseFilter"));
         analogDigitalConverter = dynamic_cast<IAnalogDigitalConverter *>(getSubmodule("analogDigitalConverter"));
 
@@ -63,7 +68,7 @@ void LayeredReceiver::initialize(int stage)
         snirThreshold = math::dB2fraction(par("snirThreshold"));
     }
 }
-
+// TODO: revise this function
 const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
 {
     const IRadio *receiver = reception->getReceiver();
@@ -95,7 +100,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
         receptionIndication->setMinRSSI(receptionSampleModel->getRSSI());
         receptionSymbolModel = pulseFilter->filter(receptionSampleModel);
     }
-    if (demodulator)
+    if (headerDemodulator)
     {
         if (!receptionSymbolModel)
         {
@@ -106,7 +111,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
 //        FIXME: delete ser from reception indication?
 //        receptionIndication->setSymbolErrorCount(receptionSymbolModel->getSymbolErrorCount());
 //        receptionIndication->setSymbolErrorRate(receptionSymbolModel->getSER());
-        receptionBitModel = demodulator->demodulate(receptionSymbolModel);
+        receptionBitModel = headerDemodulator->demodulate(receptionSymbolModel);
     }
     if (decoder)
     {
@@ -126,7 +131,7 @@ const IReceptionDecision *LayeredReceiver::computeReceptionDecision(const IListe
     receptionIndication->setPacketErrorRate(receptionPacketModel->getPER());
     // FIXME: Kludge: we have no serializer yet
     const cPacket *macFrame = transmission->getMacFrame();
-    const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getForwardErrorCorrection(),
+    const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getSerializedPacket(), receptionPacketModel->getForwardErrorCorrection(),
                                                                               receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
                                                                               receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
     return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, NULL, NULL, NULL, NULL, true, true, true);

@@ -31,10 +31,21 @@ namespace physicallayer {
 
 class INET_API LayeredReceiver: public SNIRReceiverBase
 {
+  public:
+    enum LevelOfDetial
+    {
+        BIT_DOMAIN,
+        SYMBOL_DOMAIN,
+        SAMPLE_DOMAIN,
+    };
+
   protected:
+    LevelOfDetial levelOfDetail;
     const ILayeredErrorModel *errorModel;
     const IDecoder *decoder;
+    const IDecoder *headerDecoder;
     const IDemodulator *demodulator;
+    const IDemodulator *headerDemodulator;
     const IPulseFilter *pulseFilter;
     const IAnalogDigitalConverter *analogDigitalConverter;
 
@@ -56,7 +67,9 @@ class INET_API LayeredReceiver: public SNIRReceiverBase
     bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
 
     virtual const IDecoder *getDecoder() const { return decoder; }
+    virtual const IDecoder *getHeaderDecoder() const { return headerDecoder; }
     virtual const IDemodulator *getDemodulator() const { return demodulator; }
+    virtual const IDemodulator *getHeaderDemodulator() const { return headerDemodulator; }
     virtual const IPulseFilter *getPulseFilter() const { return pulseFilter; }
     virtual const IAnalogDigitalConverter *getAnalogDigitalConverter() const { return analogDigitalConverter; }
 
