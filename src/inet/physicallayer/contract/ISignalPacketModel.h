@@ -66,6 +66,10 @@ class INET_API IReceptionPacketModel : public virtual ISignalPacketModel
      * Returns true if the packet is actually free of errors.
      */
     virtual bool isPacketErrorless() const = 0;
+    /**
+     * Returns the serialized packet
+     */
+    virtual const BitVector *getSerializedPacket() const = 0;
 };
 
 } // namespace physicallayer
