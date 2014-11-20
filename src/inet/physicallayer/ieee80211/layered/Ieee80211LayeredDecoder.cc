@@ -39,19 +39,13 @@ namespace physicallayer {
 #define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
 
-Define_Module(Ieee80211LayeredDecoder);
 
-void Ieee80211LayeredDecoder::initialize(int stage)
+Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const Ieee80211Scrambler *descrambler, const ConvolutionalCoder *fecDecoder, const Ieee80211Interleaver *deinterleaver) :
+        descrambler(descrambler),
+        fecDecoder(fecDecoder),
+        deinterleaver(deinterleaver)
 {
-    if (stage == INITSTAGE_LOCAL)
-    {
-        // TODO: maybe they should be modules
-        deserializer = dynamic_cast<DummySerializer *>(getSubmodule("deserializer")); // FIXME
-        descrambling = new Ieee80211Scrambling("1011101", "0001001");
-        descrambler = new Ieee80211Scrambler(descrambling);
-        signalFECDecoder = new ConvolutionalCoder(new Ieee80211ConvolutionalCode(1,2));
-        signalDeinterleaver = new Ieee80211Interleaver(new Ieee80211Interleaving(BPSKModulation::singleton.getCodeWordLength() * OFDM_SYMBOL_SIZE, BPSKModulation::singleton.getCodeWordLength()));
-    }
+
 }
 
 const Ieee80211ConvolutionalCode* Ieee80211LayeredDecoder::getFecFromSignalFieldRate(const ShortBitVector& rate) const
@@ -86,37 +80,50 @@ const APSKModulationBase* Ieee80211LayeredDecoder::getModulationFromSignalFieldR
         throw cRuntimeError("Unknown rate field = %s", rate.toString().c_str());
 }
 
+//const IReceptionPacketModel* Ieee80211LayeredDecoder::decode(const IReceptionBitModel* bitModel) const
+//{
+//    const BitVector *bits = bitModel->getBits();
+//    BitVector signalField;
+//    for (unsigned int i = 0; i < ENCODED_SIGNAL_FIELD_LENGTH; i++)
+//        signalField.appendBit(bits->getBit(i));
+//    BitVector decodedSignalField = decodeSignalField(signalField);
+//    ShortBitVector signalFieldRate = getSignalFieldRate(decodedSignalField);
+//    const Ieee80211ConvolutionalCode *fec = getFecFromSignalFieldRate(signalFieldRate);
+//    const IModulation *modulationScheme = bitModel->getModulation();
+//    ASSERT(modulationScheme != NULL);
+//    const Ieee80211Interleaving *deinterleaving = getInterleavingFromModulation(modulationScheme);
+//    Ieee80211Interleaver deinterleaver(deinterleaving);
+//    ConvolutionalCoder fecDecoder(fec);
+//    unsigned int psduLengthInBits = getSignalFieldLength(decodedSignalField) * 8;
+//    unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_BITS_LENGTH + PPDU_TAIL_BITS_LENGTH;
+//    dataFieldLengthInBits += calculatePadding(dataFieldLengthInBits, modulationScheme, fec);
+//    ASSERT(dataFieldLengthInBits % fec->getCodeRatePuncturingK() == 0);
+//    unsigned int encodedDataFieldLengthInBits = dataFieldLengthInBits * fec->getCodeRatePuncturingN() / fec->getCodeRatePuncturingK();
+//    if (dataFieldLengthInBits + ENCODED_SIGNAL_FIELD_LENGTH > bits->getSize())
+//        throw cRuntimeError("The calculated data field length = %d is greater then the actual bitvector length = %d", dataFieldLengthInBits, bits->getSize());
+//    BitVector dataField;
+//    for (unsigned int i = 0; i < encodedDataFieldLengthInBits; i++)
+//        dataField.appendBit(bits->getBit(ENCODED_SIGNAL_FIELD_LENGTH+i));
+//    BitVector decodedDataField = decodeDataField(dataField, fecDecoder, deinterleaver);
+//    BitVector decodedBits;
+//    for (unsigned int i = 0; i < decodedSignalField.getSize(); i++)
+//        decodedBits.appendBit(decodedSignalField.getBit(i));
+//    for (unsigned int i = 0; i < decodedDataField.getSize(); i++)
+//        decodedBits.appendBit(decodedDataField.getBit(i));
+//    return createPacketModel(decodedBits, descrambler->getScrambling(), fec, deinterleaving);
+//}
+
 const IReceptionPacketModel* Ieee80211LayeredDecoder::decode(const IReceptionBitModel* bitModel) const
 {
-    const BitVector *bits = bitModel->getBits();
-    BitVector signalField;
-    for (unsigned int i = 0; i < ENCODED_SIGNAL_FIELD_LENGTH; i++)
-        signalField.appendBit(bits->getBit(i));
-    BitVector decodedSignalField = decodeSignalField(signalField);
-    ShortBitVector signalFieldRate = getSignalFieldRate(decodedSignalField);
-    const Ieee80211ConvolutionalCode *fec = getFecFromSignalFieldRate(signalFieldRate);
-    const IModulation *modulationScheme = bitModel->getModulation();
-    ASSERT(modulationScheme != NULL);
-    const Ieee80211Interleaving *deinterleaving = getInterleavingFromModulation(modulationScheme);
-    BitVector dataField;
-    Ieee80211Interleaver deinterleaver(deinterleaving);
-    ConvolutionalCoder fecDecoder(fec);
-    unsigned int psduLengthInBits = getSignalFieldLength(decodedSignalField) * 8;
-    unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_BITS_LENGTH + PPDU_TAIL_BITS_LENGTH;
-    dataFieldLengthInBits += calculatePadding(dataFieldLengthInBits, modulationScheme, fec);
-    ASSERT(dataFieldLengthInBits % fec->getCodeRatePuncturingK() == 0);
-    unsigned int encodedDataFieldLengthInBits = dataFieldLengthInBits * fec->getCodeRatePuncturingN() / fec->getCodeRatePuncturingK();
-    if (dataFieldLengthInBits + ENCODED_SIGNAL_FIELD_LENGTH > bits->getSize())
-        throw cRuntimeError("The calculated data field length = %d is greater then the actual bitvector length = %d", dataFieldLengthInBits, bits->getSize());
-    for (unsigned int i = 0; i < encodedDataFieldLengthInBits; i++)
-        dataField.appendBit(bits->getBit(ENCODED_SIGNAL_FIELD_LENGTH+i));
-    BitVector decodedDataField = decodeDataField(dataField, fecDecoder, deinterleaver);
-    BitVector decodedBits;
-    for (unsigned int i = 0; i < decodedSignalField.getSize(); i++)
-        decodedBits.appendBit(decodedSignalField.getBit(i));
-    for (unsigned int i = 0; i < decodedDataField.getSize(); i++)
-        decodedBits.appendBit(decodedDataField.getBit(i));
-    return createPacketModel(decodedBits, descrambling, fec, deinterleaving);
+    const BitVector *fieldBits = bitModel->getBits();
+    BitVector deinterleavedDataField = deinterleaver->deinterleave(*fieldBits);
+    std::pair<BitVector, bool> fecDecodedDataField = fecDecoder->decode(deinterleavedDataField);
+    bool isDecodedSuccessfully = fecDecodedDataField.second;
+    if (!isDecodedSuccessfully)
+        throw cRuntimeError("FEC error"); // TODO: implement correct error handling
+    if (descrambler)
+        return createPacketModel(descrambler->descramble(fecDecodedDataField.first), descrambler->getScrambling(), fecDecoder->getForwardErrorCorrection(), deinterleaver->getInterleaving());
+    return createPacketModel(fecDecodedDataField.first, descrambler->getScrambling(), fecDecoder->getForwardErrorCorrection(), deinterleaver->getInterleaving());
 }
 
 const Ieee80211Interleaving* Ieee80211LayeredDecoder::getInterleavingFromModulation(const IModulation *modulationScheme) const
@@ -126,33 +133,12 @@ const Ieee80211Interleaving* Ieee80211LayeredDecoder::getInterleavingFromModulat
     return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
 }
 
-BitVector Ieee80211LayeredDecoder::decodeSignalField(const BitVector& signalField) const
-{
-    BitVector deinterleavedSignalField = signalDeinterleaver->deinterleave(signalField);
-    std::pair<BitVector, bool> fecDecodedSignalField = signalFECDecoder->decode(deinterleavedSignalField);
-    bool isDecodedSuccessfully = fecDecodedSignalField.second;
-    if (!isDecodedSuccessfully)
-        throw cRuntimeError("FEC error"); // TODO: implement correct error handling
-    return fecDecodedSignalField.first;
-}
-
-BitVector Ieee80211LayeredDecoder::decodeDataField(const BitVector& dataField, const ConvolutionalCoder& fecDecoder, const Ieee80211Interleaver& deinterleaver) const
-{
-    BitVector deinterleavedDataField = deinterleaver.deinterleave(dataField);
-    std::pair<BitVector, bool> fecDecodedDataField = fecDecoder.decode(deinterleavedDataField);
-    bool isDecodedSuccessfully = fecDecodedDataField.second;
-    if (!isDecodedSuccessfully)
-        throw cRuntimeError("FEC error"); // TODO: implement correct error handling
-    return descrambler->descramble(fecDecodedDataField.first);
-}
-
 // TODO: remove decodedBits
-const IReceptionPacketModel* Ieee80211LayeredDecoder::createPacketModel(const BitVector& decodedBits, const Ieee80211Scrambling *scrambling, const Ieee80211ConvolutionalCode *fec, const Ieee80211Interleaving *interleaving) const
+const IReceptionPacketModel* Ieee80211LayeredDecoder::createPacketModel(const BitVector& decodedBits, const Ieee80211Scrambling *scrambling, const ConvolutionalCode *fec, const Ieee80211Interleaving *interleaving) const
 {
     double per = -1;
     bool packetErrorless = true; // TODO: compute packet error rate, packetErrorLess
-//    const cPacket *packet = deserializer->deserialize(decodedBits); // FIXME
-    return new ReceptionPacketModel(NULL, fec, scrambling, interleaving, per, packetErrorless);
+    return new ReceptionPacketModel(NULL, new BitVector(decodedBits), fec, scrambling, interleaving, per, packetErrorless); // FIXME: memory leak
 }
 
 ShortBitVector Ieee80211LayeredDecoder::getSignalFieldRate(const BitVector& signalField) const
@@ -182,9 +168,9 @@ unsigned int Ieee80211LayeredDecoder::calculatePadding(unsigned int dataFieldLen
 
 Ieee80211LayeredDecoder::~Ieee80211LayeredDecoder()
 {
-    delete signalDeinterleaver;
+    delete deinterleaver;
     delete descrambler;
-    delete signalFECDecoder;
+    delete fecDecoder;
 }
 
 } /* namespace physicallayer */
