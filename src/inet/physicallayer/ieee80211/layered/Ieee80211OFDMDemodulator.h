@@ -29,25 +29,20 @@
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211OFDMDemodulator : public cSimpleModule, public IDemodulator
+class INET_API Ieee80211OFDMDemodulator : public IDemodulator
 {
     protected:
-        const APSKModulationBase *signalModulationScheme;
-        const APSKModulationBase *dataModulationScheme;
+        const APSKModulationBase *demodulationScheme;
 
     protected:
-        virtual int numInitStages() const { return NUM_INIT_STAGES; }
-        virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
-        BitVector demodulateField(const OFDMSymbol *signalSymbol, const APSKModulationBase *modulationScheme) const;
-        BitVector demodulateDataSymbol(const OFDMSymbol *dataSymbol) const;
-        BitVector demodulateSignalSymbol(const OFDMSymbol *signalSymbol) const;
+        BitVector demodulateSymbol(const OFDMSymbol *signalSymbol) const;
         const IReceptionBitModel *createBitModel(const BitVector *bitRepresentation, int signalFieldBitLength, double signalFieldBitRate, int dataFieldBitLength, double dataFieldBitRate) const;
         bool isPilotOrDcSubcarrier(int i) const;
 
     public:
         virtual const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
         void printToStream(std::ostream& stream) const { stream << "TODO"; }
+        Ieee80211OFDMDemodulator(const APSKModulationBase *demodulationScheme);
 };
 
 } // namespace physicallayer
