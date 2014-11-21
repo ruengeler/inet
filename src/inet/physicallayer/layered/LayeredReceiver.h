@@ -32,7 +32,7 @@ namespace physicallayer {
 class INET_API LayeredReceiver: public SNIRReceiverBase
 {
   public:
-    enum LevelOfDetial
+    enum LevelOfDetail
     {
         BIT_DOMAIN,
         SYMBOL_DOMAIN,
@@ -40,7 +40,7 @@ class INET_API LayeredReceiver: public SNIRReceiverBase
     };
 
   protected:
-    LevelOfDetial levelOfDetail;
+    LevelOfDetail levelOfDetail;
     const ILayeredErrorModel *errorModel;
     const IDecoder *decoder;
     const IDecoder *headerDecoder;
