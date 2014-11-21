@@ -22,5 +22,5 @@ simple Ieee80211OFDMModulator like IModulator
 {
     parameters:
         string modulationScheme; // QAM-16, QAM-64, BPSK, QPSK
-        @class(Ieee80211OFDMModulator);
+        @class(Ieee80211OFDMModulatorModule);
 }

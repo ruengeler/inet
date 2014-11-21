@@ -23,12 +23,13 @@
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/modulation/OFDMSymbol.h"
+#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API Ieee80211OFDMModulator : public cSimpleModule, public IModulator
+class INET_API Ieee80211OFDMModulator : public IModulator
 {
   protected:
     int preambleSymbolLength;
@@ -37,19 +38,15 @@ class INET_API Ieee80211OFDMModulator : public cSimpleModule, public IModulator
     static const int polarityVector[127];
 
   protected:
-    virtual int numInitStages() const { return NUM_INIT_STAGES; }
-    virtual void initialize(int stage);
-    virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
     int getSubcarrierIndex(int ofdmSymbolIndex) const;
-    void modulateSignalField(const BitVector& signalField, std::vector<const ISymbol*> *ofdmSymbols) const;
-    void modulateDataField(const BitVector& dataField, std::vector<const ISymbol*> *ofdmSymbols) const;
     void insertPilotSubcarriers(OFDMSymbol *ofdmSymbol, int symbolID) const;
 
   public:
     virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const;
-    double calculateBER(double snir, double bandwidth, double bitrate) const { return 42; } // TODO: (Modulator, ModulationScheme) -> BER
     const IModulation *getModulation() const { return modulationScheme; }
     void printToStream(std::ostream& stream) const { stream << "TODO"; }
+    Ieee80211OFDMModulator(const Ieee80211OFDMModulation *ofdmModulation);
+    Ieee80211OFDMModulator(const APSKModulationBase *modulationScheme);
 };
 
 } // namespace physicallayer
