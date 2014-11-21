@@ -29,12 +29,12 @@ module LayeredReceiver like IReceiver
 {
     parameters:
         string levelOfDetial @enum("bit","symbol","sample") = default("symbol");
-        string errorModelType;
-        string headerDecoderType;
-        string decoderType;
-        string headerDemodulatorType;
-        string demodulatorType;
-        string shaperFilterType;
+        string errorModelType = default("");
+        string headerDecoderType = default("");
+        string decoderType = default("");
+        string headerDemodulatorType = default("");
+        string demodulatorType = default("");
+        string shaperFilterType = default("");
         string analogDigitalConverterType;
         double energyDetection @unit(dBm); // TODO: @unit(W) + dBm/dBW <--> W
         double sensitivity @unit(dBm); // TODO: @unit(W) + dBm/dBW <--> W

@@ -60,6 +60,16 @@ void LayeredReceiver::initialize(int stage)
         pulseFilter = dynamic_cast<IPulseFilter *>(getSubmodule("pulseFilter"));
         analogDigitalConverter = dynamic_cast<IAnalogDigitalConverter *>(getSubmodule("analogDigitalConverter"));
 
+        const char *levelOfDetailStr = par("levelOfDetail").stringValue();
+        if (strcmp("bit", levelOfDetailStr) == 0)
+            levelOfDetail = BIT_DOMAIN;
+        else if (strcmp("symbol", levelOfDetailStr) == 0)
+            levelOfDetail = SYMBOL_DOMAIN;
+        else if (strcmp("sample", levelOfDetailStr) == 0)
+            levelOfDetail = SAMPLE_DOMAIN;
+        else
+            throw cRuntimeError("Unknown level of detail='%s'", levelOfDetailStr);
+
         energyDetection = mW(math::dBm2mW(par("energyDetection")));
         // TODO: temporary parameters
         sensitivity = mW(math::dBm2mW(par("sensitivity")));
