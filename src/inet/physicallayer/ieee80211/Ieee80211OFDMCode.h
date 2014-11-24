@@ -29,8 +29,11 @@ namespace physicallayer {
 
 using namespace units::values;
 
-class INET_API Ieee80211OFDMCodec
+class INET_API Ieee80211OFDMCode
 {
+    public:
+        static const Ieee80211OFDMCode *headerCode;
+
     protected:
         uint8_t signalFieldRate;
         Hz channelSpacing;
@@ -49,8 +52,9 @@ class INET_API Ieee80211OFDMCodec
         const Ieee80211Scrambling *getScrambling() const { return scrambling; }
         uint8_t getSignalFieldRate() const { return signalFieldRate; }
 
-        Ieee80211OFDMCodec(uint8_t signalFieldRate, Hz channelSpacing);
-        virtual ~Ieee80211OFDMCodec();
+        Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing);
+        Ieee80211OFDMCode(const Ieee80211ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling);
+        virtual ~Ieee80211OFDMCode();
 
 };
 

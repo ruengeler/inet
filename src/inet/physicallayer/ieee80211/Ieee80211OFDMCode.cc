@@ -13,14 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "Ieee80211OFDMCodec.h"
+#include "Ieee80211OFDMCode.h"
+#include "inet/physicallayer/modulation/BPSKModulation.h"
 
 namespace inet {
 namespace physicallayer {
 
 #define OFDM_SYMBOL_SIZE 48
 
-const Ieee80211ConvolutionalCode* Ieee80211OFDMCodec::computeFec(uint8_t rate) const
+const Ieee80211OFDMCode *Ieee80211OFDMCode::headerCode = new const Ieee80211OFDMCode(new Ieee80211ConvolutionalCode(1,2), new Ieee80211Interleaving(BPSKModulation::singleton.getCodeWordLength() * OFDM_SYMBOL_SIZE, BPSKModulation::singleton.getCodeWordLength()), new Ieee80211Scrambling("1011101", "0001001"));
+
+const Ieee80211ConvolutionalCode* Ieee80211OFDMCode::computeFec(uint8_t rate) const
 {
     // Table 18-6—Contents of the SIGNAL field
     // Table 18-4—Modulation-dependent parameters
@@ -34,14 +37,14 @@ const Ieee80211ConvolutionalCode* Ieee80211OFDMCodec::computeFec(uint8_t rate) c
         throw cRuntimeError("Unknown rate field  = %d", rate);
 }
 
-const Ieee80211Interleaving* Ieee80211OFDMCodec::computeInterleaving(const IModulation *modulationScheme) const
+const Ieee80211Interleaving* Ieee80211OFDMCode::computeInterleaving(const IModulation *modulationScheme) const
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
     return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
 }
 
-Ieee80211OFDMCodec::Ieee80211OFDMCodec(uint8_t signalFieldRate, Hz channelSpacing) :
+Ieee80211OFDMCode::Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing) :
         signalFieldRate(signalFieldRate),
         channelSpacing(channelSpacing)
 {
@@ -50,16 +53,24 @@ Ieee80211OFDMCodec::Ieee80211OFDMCodec(uint8_t signalFieldRate, Hz channelSpacin
     interleaving = computeInterleaving(ofdmModulation.getModulationScheme());
 }
 
-const Ieee80211Scrambling* Ieee80211OFDMCodec::computeScrambling() const
+const Ieee80211Scrambling* Ieee80211OFDMCode::computeScrambling() const
 {
     // Default scrambling
     return new Ieee80211Scrambling("1011101", "0001001");
 }
 
-Ieee80211OFDMCodec::~Ieee80211OFDMCodec()
+Ieee80211OFDMCode::~Ieee80211OFDMCode()
 {
 
 }
 
+Ieee80211OFDMCode::Ieee80211OFDMCode(const Ieee80211ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling) :
+        convCode(convCode),
+        interleaving(interleaving),
+        scrambling(scrambling)
+{
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */
+
