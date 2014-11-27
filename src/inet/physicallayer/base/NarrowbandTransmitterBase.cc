@@ -16,7 +16,6 @@
 //
 
 #include "inet/physicallayer/base/NarrowbandTransmitterBase.h"
-#include "inet/physicallayer/common/Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 

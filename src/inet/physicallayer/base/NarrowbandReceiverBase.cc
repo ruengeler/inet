@@ -20,7 +20,6 @@
 #include "inet/physicallayer/base/NarrowbandTransmissionBase.h"
 #include "inet/physicallayer/base/NarrowbandReceptionBase.h"
 #include "inet/physicallayer/base/NarrowbandNoiseBase.h"
-#include "inet/physicallayer/common/Modulation.h"
 #include "inet/physicallayer/common/BandListening.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
 #include "inet/physicallayer/common/ReceptionDecision.h"

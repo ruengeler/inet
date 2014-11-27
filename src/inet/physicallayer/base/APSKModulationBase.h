@@ -47,9 +47,6 @@ class INET_API APSKModulationBase : public IAPSKModulation
       virtual double getNormalizationFactor() const { return normalizationFactor; }
       virtual const APSKSymbol *mapToConstellationDiagram(const ShortBitVector& symbol) const;
       virtual ShortBitVector demapToBitRepresentation(const APSKSymbol *symbol) const;
-      virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
-      // Reference: http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-      virtual double calculateSER(double snir) const = 0;
 };
 
 } /* namespace physicallayer */
