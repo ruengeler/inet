@@ -501,14 +501,14 @@ std::pair<BitVector, bool> ConvolutionalCoder::decode(const BitVector& encodedBi
     if (!isTruncatedMode && bestNode.symbol == -1)
     {
         EV_DEBUG << "None of the paths in the trellis graph lead to the all-zeros state" << endl;
-        return std::make_pair<BitVector, bool>(BitVector::UNDEF, false);
+        return std::pair<BitVector, bool>(BitVector::UNDEF, false);
     }
     BitVector decodedMsg = traversePath(bestNode, trellisGraph);
     EV_DEBUG << "Recovered message: " << decodedMsg << endl
     << " Number of errors: " << bestNode.numberOfErrors
     << " Cumulative error (Hamming distance): " << bestNode.comulativeHammingDistance
     << " End state: " << bestNode.state << endl;
-    return std::make_pair<BitVector, bool>(decodedMsg, true);
+    return std::pair<BitVector, bool>(decodedMsg, true);
 }
 
 ConvolutionalCoder::ConvolutionalCoder(const ConvolutionalCode* convolutionalCode) : FecCoderBase(convolutionalCode)
