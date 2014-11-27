@@ -35,7 +35,8 @@ void Ieee80211LayeredDecoderModule::initialize(int stage)
         descrambler = dynamic_cast<Ieee80211Scrambler *>(getSubmodule("descrambler"));
         fecDecoder = dynamic_cast<ConvolutionalCoder *>(getSubmodule("fecDecoder"));
         deinterleaver = dynamic_cast<Ieee80211Interleaver *>(getSubmodule("fecDecoder"));
-        layeredDecoder = new Ieee80211LayeredDecoder(descrambler , fecDecoder, deinterleaver);
+        channelSpacing = Hz(par("channelSpacing"));
+        layeredDecoder = new Ieee80211LayeredDecoder(descrambler , fecDecoder, deinterleaver, channelSpacing);
     }
 }
 

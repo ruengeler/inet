@@ -22,7 +22,7 @@
 namespace inet {
 namespace physicallayer {
 
-const IAPSKModulation* Ieee80211OFDMModulation::getModulation(uint8_t rate) const
+const APSKModulationBase* Ieee80211OFDMModulation::computeModulation(uint8_t rate) const
 {
     // Table 18-6—Contents of the SIGNAL field
     // Table 18-4—Modulation-dependent parameters
@@ -49,6 +49,38 @@ bps Ieee80211OFDMModulation::computeHeaderBitrate(Hz channelSpacing) const
         return bps(1500000);
     else
         throw cRuntimeError("Invalid channel spacing %lf", channelSpacing.get());
+}
+
+
+uint8_t Ieee80211OFDMModulation::calculateRateField(Hz channelSpacing, bps bitrate) const
+{
+    double rateFactor;
+    if (channelSpacing == MHz(20))
+        rateFactor = 1;
+    else if (channelSpacing == MHz(10))
+        rateFactor = 0.5;
+    else if (channelSpacing == MHz(5))
+        rateFactor = 0.25;
+    else
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+    if (bitrate == bps(6000000 * rateFactor))
+        return 1101_b;
+    else if (bitrate == bps(9000000 * rateFactor))
+        return 1111_b;
+    else if (bitrate == bps(12000000 * rateFactor))
+        return 0101_b;
+    else if (bitrate == bps(18000000 * rateFactor))
+        return 0111_b;
+    else if (bitrate == bps(24000000 * rateFactor))
+        return 1001_b;
+    else if (bitrate == bps(36000000 * rateFactor))
+        return 1011_b;
+    else if (bitrate == bps(48000000 * rateFactor))
+        return 0001_b;
+    else if (bitrate == bps(54000000 * rateFactor))
+        return 0011_b;
+    else
+        throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
 }
 
 bps Ieee80211OFDMModulation::computeDataBitrate(uint8_t rate, Hz channelSpacing) const
@@ -86,9 +118,24 @@ Ieee80211OFDMModulation::Ieee80211OFDMModulation(uint8_t signalRateField, Hz cha
         signalRateField(signalRateField),
         channelSpacing(channelSpacing)
 {
-    modulationScheme = getModulation(signalRateField);
-    headerRate = computeHeaderBitrate(channelSpacing);
-    dataRate = computeDataBitrate(signalRateField, channelSpacing);
+    modulationScheme = computeModulation(signalRateField);
+    bitrate = computeDataBitrate(signalRateField, channelSpacing);
+}
+
+Ieee80211OFDMModulation::Ieee80211OFDMModulation(bps dataRate, Hz channelSpacing) :
+        channelSpacing(channelSpacing),
+        bitrate(dataRate)
+{
+    signalRateField = calculateRateField(channelSpacing, dataRate);
+    modulationScheme = computeModulation(signalRateField);
+}
+
+Ieee80211OFDMModulation::Ieee80211OFDMModulation(Hz channelSpacing) :
+        channelSpacing(channelSpacing)
+{
+    bitrate = computeHeaderBitrate(channelSpacing);
+    modulationScheme = &BPSKModulation::singleton;
+    signalRateField = 0;
 }
 
 Ieee80211OFDMModulation::~Ieee80211OFDMModulation()

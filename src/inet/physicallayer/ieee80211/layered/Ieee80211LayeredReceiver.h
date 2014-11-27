@@ -18,28 +18,71 @@
 #ifndef __INET_IEEE80211LAYEREDRECEIVER_H
 #define __INET_IEEE80211LAYEREDRECEIVER_H
 
-#include "inet/physicallayer/layered/LayeredReceiver.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/IRadioMedium.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
+#include "inet/physicallayer/base/SNIRReceiverBase.h"
+#include "inet/physicallayer/contract/IDecoder.h"
+#include "inet/physicallayer/contract/IDemodulator.h"
+#include "inet/physicallayer/contract/IPulseFilter.h"
+#include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
+#include "inet/physicallayer/contract/IErrorModel.h"
 
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredReceiver : public LayeredReceiver
+// TODO: rename Ieee80211LayeredOFDMReceiver
+class INET_API Ieee80211LayeredReceiver : public SNIRReceiverBase
 {
+    public:
+        enum LevelOfDetail
+        {
+            BIT_DOMAIN,
+            SYMBOL_DOMAIN,
+            SAMPLE_DOMAIN,
+        };
+
     protected:
+        LevelOfDetail levelOfDetail;
+        const ILayeredErrorModel *errorModel;
+        const IDecoder *decoder;
+        const IDecoder *headerDecoder;
+        const IDemodulator *demodulator;
+        const IDemodulator *headerDemodulator;
+        const IPulseFilter *pulseFilter;
+        const IAnalogDigitalConverter *analogDigitalConverter;
+
+        W energyDetection;
+        W sensitivity;
+        Hz carrierFrequency;
+        Hz bandwidth;
         Hz channelSpacing;
+        double snirThreshold;
 
     protected:
         virtual void initialize(int stage);
+        uint8_t getRate(const BitVector *serializedPacket) const;
+        unsigned int getSignalFieldLength(const BitVector *signalField) const;
+        unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const Ieee80211ConvolutionalCode *fec) const;
+
+        const IReceptionPacketModel *createCompleteReceptionPacketModel(const IReceptionPacketModel *signalFieldReceptionPacketModel, const IReceptionPacketModel *dataFieldReceptionPacketModel) const;
         const IReceptionSymbolModel *createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
-        const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredScalarTransmission *transmission, const IReceptionSymbolModel *receptionSymbolModel) const;
+        const IReceptionSymbolModel *createDataFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
+        const IReceptionBitModel *createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const Ieee80211ConvolutionalCode *convCode, const IReceptionBitModel *receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
+        const IReceptionBitModel *createSignalFieldReceptionBitModel(const IReceptionBitModel *receptionBitModel) const;
+        const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredScalarTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel,  const IReceptionBitModel *&receptionBitModel) const;
+        const IReceptionPacketModel *demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
 
     public:
+        bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
+        const IListeningDecision* computeListeningDecision(const IListening* listening, const IInterference* interference) const;
+        const IListening* createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
         virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
+        Ieee80211LayeredReceiver();
 };
 
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* IEEE80211LAYEREDRECEIVER_H_ */
+#endif /* IEEE80211LAYEREDRECEIVER_H */

@@ -15,52 +15,45 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDENCODER_H_
-#define __INET_IEEE80211LAYEREDENCODER_H_
+#ifndef __INET_IEEE80211LAYEREDENCODER_H
+#define __INET_IEEE80211LAYEREDENCODER_H
 
 #include "inet/physicallayer/contract/IEncoder.h"
 #include "inet/physicallayer/contract/ISerializer.h"
-#include "inet/physicallayer/layered/LayeredEncoder.h"
 #include "inet/physicallayer/contract/IFECCoder.h"
 #include "inet/physicallayer/contract/IScrambler.h"
 #include "inet/physicallayer/contract/IInterleaver.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
+#include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredEncoder : public LayeredEncoder
+class INET_API Ieee80211LayeredEncoder : public IEncoder
 {
     protected:
-        const IFECCoder *signalFECEncoder;
-        const IInterleaver *signalInterleaver;
-        const IFECCoder *dataFECEncoder;
+        const IFECCoder *fecEncoder;
+        const IInterleaver *interleaver;
+        const IScrambler *scrambler;
+        const Ieee80211OFDMCode *code;
         Hz channelSpacing;
-        bps headerBitrate;
 
     protected:
-        virtual void initialize(int stage);
-        virtual int numInitStages() const { return NUM_INIT_STAGES; }
-        virtual BitVector signalFieldEncode(const BitVector& signalField) const;
-        virtual BitVector dataFieldEncode(const BitVector& dataField, const ShortBitVector& signalFieldRate) const;
-        virtual BitVector serialize(const cPacket *packet) const; // FIXME: temporary function
-        ShortBitVector getRate(const BitVector& serializedPacket) const;
-        bps computeDataBitRate(const BitVector& serializedPacket) const;
-        bps computeHeaderBitRate() const;
-        const APSKModulationBase* getModulationFromSignalFieldRate(const ShortBitVector& rate) const;
-        const Ieee80211ConvolutionalCode* getFecFromSignalFieldRate(const ShortBitVector& rate) const;
-        const Ieee80211Interleaving* getInterleavingFromModulation(const IModulation *modulationScheme) const;
-        ShortBitVector calculateRateField(Hz channelSpacing, bps bitrate) const;
+        uint8_t getRate(const BitVector *serializedPacket) const;
+
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
         virtual void printToStream(std::ostream& stream) const { stream << "IEEE80211 Layered Encoder"; } // TODO
+        const Ieee80211OFDMCode *getCode() const { return code; }
+        Ieee80211LayeredEncoder();
+        Ieee80211LayeredEncoder(const Ieee80211OFDMCode *code);
+        Ieee80211LayeredEncoder(const IFECCoder *fecEncoder, const IInterleaver *interleaver, const IScrambler *scrambler, Hz channelSpacing);
+        ~Ieee80211LayeredEncoder();
 };
 
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211LAYEREDENCODER_H_ */
+#endif /* __INET_IEEE80211LAYEREDENCODER_H */

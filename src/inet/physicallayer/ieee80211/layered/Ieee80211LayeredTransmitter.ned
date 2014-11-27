@@ -21,14 +21,44 @@ import inet.physicallayer.contract.IDigitalAnalogConverter;
 import inet.physicallayer.contract.IEncoder;
 import inet.physicallayer.contract.IModulator;
 import inet.physicallayer.contract.IPulseShaper;
-import inet.physicallayer.layered.LayeredTransmitter;
+import inet.physicallayer.contract.ITransmitter;
 
-module Ieee80211LayeredTransmitter extends LayeredTransmitter
+
+module Ieee80211LayeredTransmitter like ITransmitter
 {
     parameters:
-        encoderType = "Ieee80211LayeredEncoder";
-        modulatorType = "Ieee80211OFDMModulator";
+        string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
+        string signalEncoderType = default("");
+        string encoderType = default("");
+        string signalModulatorType = default("");
+        string modulatorType = default("");
+        string pulseShaperType = default("");
+        string digitalAnalogConverterType = default("");
         double channelSpacing @unit(Hz);
+        double bitrate @unit(bps);
+        double power @unit(W);
+        double carrierFrequency @unit(Hz);
+        double bandwidth @unit(Hz);
         *.channelSpacing = channelSpacing;
         @class(Ieee80211LayeredTransmitter);
+
+    submodules:
+        signalEncoder: <signalEncoderType> like IEncoder if signalEncoderType != "" {
+            @display("p=100,50");
+        }
+        encoder: <encoderType> like IEncoder if encoderType != "" {
+            @display("p=207,50");
+        }
+        modulator: <modulatorType> like IModulator if modulatorType != "" {
+            @display("p=100,150");
+        }
+        signalModulator: <signalModulatorType> like IModulator if signalModulatorType != "" {
+            @display("p=207,150");
+        }
+        pulseShaper: <pulseShaperType> like IPulseShaper if pulseShaperType != "" {
+            @display("p=100,250");
+        }
+        digitalAnalogConverter: <digitalAnalogConverterType> like IDigitalAnalogConverter if digitalAnalogConverterType != "" {
+            @display("p=100,350");
+        }
 }

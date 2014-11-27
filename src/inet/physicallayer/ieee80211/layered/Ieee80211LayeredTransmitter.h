@@ -22,33 +22,61 @@
 #include "inet/physicallayer/contract/IModulator.h"
 #include "inet/physicallayer/contract/IPulseShaper.h"
 #include "inet/physicallayer/contract/IDigitalAnalogConverter.h"
-#include "inet/physicallayer/layered/LayeredTransmitter.h"
-#include "inet/common/ShortBitVector.h"
+#include "inet/physicallayer/contract/ITransmitter.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredTransmitter : public LayeredTransmitter
+class INET_API Ieee80211LayeredTransmitter : public ITransmitter, public cSimpleModule
 {
+    // TODO: copy
+    public:
+        enum LevelOfDetail
+        {
+            BIT_DOMAIN,
+            SYMBOL_DOMAIN,
+            SAMPLE_DOMAIN,
+        };
+
     protected:
+        LevelOfDetail levelOfDetail;
+        const IEncoder *signalEncoder;
+        const IEncoder *encoder;
+        const IModulator *signalModulator;
+        const IModulator *modulator;
+        const IPulseShaper *pulseShaper;
+        const IDigitalAnalogConverter *digitalAnalogConverter;
+
+        bps bitrate;
         Hz bandwidth;
         Hz carrierFrequency;
         Hz channelSpacing;
         W power;
 
     protected:
+        virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
+        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
-        ShortBitVector calculateRateField(Hz channelSpacing, bps bitrate) const;
+        const ITransmissionAnalogModel* createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const;
+        BitVector serialize(const cPacket* packet) const; // FIXME: kludge
+        uint8_t getRate(const BitVector* serializedPacket) const; // TODO: copy
+        const ITransmissionPacketModel *createSignalFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
+        const ITransmissionPacketModel *createDataFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
+        const ITransmissionSymbolModel *encodeAndModulate(const ITransmissionPacketModel *fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const;
+        const ITransmissionSymbolModel *createSymbolModel(const ITransmissionSymbolModel *signalFieldSymbolModel, const ITransmissionSymbolModel *dataFieldSymbolModel) const;
+        const ITransmissionBitModel *createBitModel(const ITransmissionBitModel *signalFieldBitModel, const ITransmissionBitModel *dataFieldBitModel, uint8_t rate) const;
 
     public:
-        Ieee80211LayeredTransmitter();
         virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;
         virtual const IEncoder *getEncoder() const { return encoder; }
         virtual const IModulator *getModulator() const { return modulator; }
         virtual const IPulseShaper *getPulseShaper() const{ return pulseShaper; }
         virtual const IDigitalAnalogConverter *getDigitalAnalogConverter() const { return digitalAnalogConverter; }
+        virtual W getMaxPower() const { return power; }
+        const Hz getBandwidth() const { return bandwidth; }
+        const Hz getCarrierFrequency() const { return carrierFrequency; }
         virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredTransmitter"; }
 };
 

@@ -17,28 +17,30 @@
 
 package inet.physicallayer.ieee80211.layered;
 
+import inet.physicallayer.contract.IEncoder;
 import inet.physicallayer.contract.IFECCoder;
 import inet.physicallayer.contract.IInterleaver;
-import inet.physicallayer.layered.LayeredEncoder;
+import inet.physicallayer.contract.IScrambler;
 
-module Ieee80211LayeredEncoder extends LayeredEncoder
+
+module Ieee80211LayeredEncoder like IEncoder
 {
     parameters:
-        fecType = default("");
-        string signalFECType;
-        //serializerType = default("Ieee80211Serializer");
-        scramblerType = default("");
-        interleaverType = default("");
-        string signalInterleaverType = default("");
+        string fecType = default("");
+        string scramblerType = default("");
+        string interleaverType = default("");
         double channelSpacing @unit(Hz);
-        @display("bgb=270,313");
+        @display("bgb=140,313");
         @class(Ieee80211LayeredEncoder);
 
     submodules:
-        signalFECEncoder: <signalFECType> like IFECCoder if signalFECType != "" {
-            @display("p=186,168");
+        fecEncoder: <fecType> like IFECCoder if fecType != "" {
+            @display("p=66,156");
         }
-        signalInterleaver: <signalInterleaverType> like IInterleaver if signalInterleaverType != "" {
-            @display("p=186,244");
+        scrambler: <scramblerType> like IScrambler if scramblerType != "" {
+            @display("p=66,73");
+        }
+        interleaver: <interleaverType> like IInterleaver if interleaverType != "" {
+            @display("p=66,238");
         }
 }

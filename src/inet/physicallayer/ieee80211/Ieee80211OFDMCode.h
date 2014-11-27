@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __INET_IEEE80211OFDMCODEC_H
-#define __INET_IEEE80211OFDMCODEC_H
+#ifndef __INET_IEEE80211OFDMCODE_H
+#define __INET_IEEE80211OFDMCODE_H
 
 #include "inet/common/INETDefs.h"
 #include "inet/common/Units.h"
@@ -23,19 +23,16 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambling.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
+#include "inet/physicallayer/contract/IIeee80211Code.h"
 
 namespace inet {
 namespace physicallayer {
 
 using namespace units::values;
 
-class INET_API Ieee80211OFDMCode
+class INET_API Ieee80211OFDMCode : public IIeee80211Code
 {
-    public:
-        static const Ieee80211OFDMCode *headerCode;
-
     protected:
-        uint8_t signalFieldRate;
         Hz channelSpacing;
         const Ieee80211ConvolutionalCode *convCode;
         const Ieee80211Interleaving *interleaving;
@@ -50,15 +47,14 @@ class INET_API Ieee80211OFDMCode
         const Ieee80211ConvolutionalCode *getConvCode() const { return convCode; }
         const Ieee80211Interleaving *getInterleaving() const { return interleaving; }
         const Ieee80211Scrambling *getScrambling() const { return scrambling; }
-        uint8_t getSignalFieldRate() const { return signalFieldRate; }
+        const Hz getChannelSpacing() const { return channelSpacing; }
 
+        Ieee80211OFDMCode(Hz channelSpacing); // TODO: revise
         Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing);
-        Ieee80211OFDMCode(const Ieee80211ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling);
-        virtual ~Ieee80211OFDMCode();
-
+        Ieee80211OFDMCode(const Ieee80211ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling, Hz channelSpacing);
 };
 
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211OFDMCODEC_H */
+#endif /* __INET_IEEE80211OFDMCODE_H */

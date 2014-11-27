@@ -21,8 +21,6 @@ namespace physicallayer {
 
 #define OFDM_SYMBOL_SIZE 48
 
-const Ieee80211OFDMCode *Ieee80211OFDMCode::headerCode = new const Ieee80211OFDMCode(new Ieee80211ConvolutionalCode(1,2), new Ieee80211Interleaving(BPSKModulation::singleton.getCodeWordLength() * OFDM_SYMBOL_SIZE, BPSKModulation::singleton.getCodeWordLength()), new Ieee80211Scrambling("1011101", "0001001"));
-
 const Ieee80211ConvolutionalCode* Ieee80211OFDMCode::computeFec(uint8_t rate) const
 {
     // Table 18-6—Contents of the SIGNAL field
@@ -45,12 +43,12 @@ const Ieee80211Interleaving* Ieee80211OFDMCode::computeInterleaving(const IModul
 }
 
 Ieee80211OFDMCode::Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing) :
-        signalFieldRate(signalFieldRate),
         channelSpacing(channelSpacing)
 {
     convCode = computeFec(signalFieldRate);
     Ieee80211OFDMModulation ofdmModulation(signalFieldRate, channelSpacing);
     interleaving = computeInterleaving(ofdmModulation.getModulationScheme());
+    scrambling = computeScrambling();
 }
 
 const Ieee80211Scrambling* Ieee80211OFDMCode::computeScrambling() const
@@ -59,12 +57,16 @@ const Ieee80211Scrambling* Ieee80211OFDMCode::computeScrambling() const
     return new Ieee80211Scrambling("1011101", "0001001");
 }
 
-Ieee80211OFDMCode::~Ieee80211OFDMCode()
+Ieee80211OFDMCode::Ieee80211OFDMCode(Hz channelSpacing) :
+        channelSpacing(channelSpacing),
+        scrambling(NULL)
 {
-
+    convCode = new Ieee80211ConvolutionalCode(1,2);
+    interleaving = new Ieee80211Interleaving(OFDM_SYMBOL_SIZE, 1);
 }
 
-Ieee80211OFDMCode::Ieee80211OFDMCode(const Ieee80211ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling) :
+Ieee80211OFDMCode::Ieee80211OFDMCode(const Ieee80211ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling, Hz channelSpacing) :
+        channelSpacing(channelSpacing),
         convCode(convCode),
         interleaving(interleaving),
         scrambling(scrambling)

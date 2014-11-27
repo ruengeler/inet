@@ -33,8 +33,8 @@ class INET_API Ieee80211OFDMModulator : public IModulator
 {
   protected:
     int preambleSymbolLength;
+    const Ieee80211OFDMModulation *ofdmModulation;
     const APSKModulationBase *modulationScheme;
-    const APSKModulationBase *signalModulationScheme;
     static const int polarityVector[127];
 
   protected:
@@ -44,9 +44,11 @@ class INET_API Ieee80211OFDMModulator : public IModulator
   public:
     virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const;
     const IModulation *getModulation() const { return modulationScheme; }
+    const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmModulation; }
     void printToStream(std::ostream& stream) const { stream << "TODO"; }
     Ieee80211OFDMModulator(const Ieee80211OFDMModulation *ofdmModulation);
     Ieee80211OFDMModulator(const APSKModulationBase *modulationScheme);
+    ~Ieee80211OFDMModulator();
 };
 
 } // namespace physicallayer

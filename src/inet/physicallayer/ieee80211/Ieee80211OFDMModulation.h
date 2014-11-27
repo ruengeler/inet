@@ -17,7 +17,7 @@
 #define __INET_IEEE80211OFDMMODULATION_H
 
 #include "inet/physicallayer/contract/IModulation.h"
-#include "inet/physicallayer/contract/IAPSKModulation.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/common/Units.h"
 #include "inet/common/INETUtils.h"
 
@@ -27,29 +27,32 @@ namespace physicallayer {
 using namespace units::values;
 using namespace utils;
 
-class INET_API Ieee80211OFDMModulation
+class INET_API Ieee80211OFDMModulation : public IModulation
 {
     protected:
-        const IAPSKModulation *modulationScheme;
+        const APSKModulationBase *modulationScheme;
         uint8_t signalRateField;
         Hz channelSpacing;
-        bps headerRate;
-        bps dataRate;
+        bps bitrate;
+        simtime_t slotDuration; // todo
 
     protected:
-        const IAPSKModulation* getModulation(uint8_t rate) const;
+        const APSKModulationBase* computeModulation(uint8_t rate) const;
         bps computeDataBitrate(uint8_t rate, Hz channelSpacing) const;
         bps computeHeaderBitrate(Hz channelSpacing) const;
+        uint8_t calculateRateField(Hz channelSpacing, bps bitrate) const;
 
     public:
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) { return modulationScheme->calculateBER(snir, bandwidth, bitrate); }
+        // TODO: delete
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const { return modulationScheme->calculateBER(snir, bandwidth, bitrate); }
         virtual double calculateSER(double snir) const { return modulationScheme->calculateSER(snir); }
         virtual Hz getChannelSpacing() const { return channelSpacing; }
-        const bps getDataRate() const { return dataRate; }
-        const bps getHeaderRate() const { return headerRate; }
+        const bps getBitrate() const { return bitrate; }
         uint8_t getSignalRateField() const { return signalRateField; }
-        const IAPSKModulation* getModulationScheme() const { return modulationScheme; }
-        Ieee80211OFDMModulation(uint8_t signalRateField, Hz channelSpacing);
+        const APSKModulationBase* getModulationScheme() const { return modulationScheme; }
+        Ieee80211OFDMModulation(Hz channelSpacing); // header
+        Ieee80211OFDMModulation(uint8_t signalRateField, Hz channelSpacing); // data
+        Ieee80211OFDMModulation(bps dataRate, Hz channelSpacing); // data
         virtual ~Ieee80211OFDMModulation();
 };
 

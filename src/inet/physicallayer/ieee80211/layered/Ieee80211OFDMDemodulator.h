@@ -23,6 +23,7 @@
 #include "inet/physicallayer/contract/IDemodulator.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/modulation/OFDMSymbol.h"
+#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 
@@ -40,8 +41,10 @@ class INET_API Ieee80211OFDMDemodulator : public IDemodulator
         bool isPilotOrDcSubcarrier(int i) const;
 
     public:
+        const APSKModulationBase *getDemodulationScheme() const { return demodulationScheme; }
         virtual const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
         void printToStream(std::ostream& stream) const { stream << "TODO"; }
+        Ieee80211OFDMDemodulator(const Ieee80211OFDMModulation *ofdmModulation);
         Ieee80211OFDMDemodulator(const APSKModulationBase *demodulationScheme);
 };
 

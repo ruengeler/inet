@@ -22,22 +22,48 @@ import inet.physicallayer.contract.IDecoder;
 import inet.physicallayer.contract.IDemodulator;
 import inet.physicallayer.contract.IErrorModel;
 import inet.physicallayer.contract.IPulseFilter;
-import inet.physicallayer.layered.LayeredReceiver;
+import inet.physicallayer.contract.IReceiver;
 
 
-module Ieee80211LayeredReceiver extends LayeredReceiver
+module Ieee80211LayeredReceiver like IReceiver
 {
     parameters:
+        string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
+        string errorModelType = default("");
+        string headerDecoderType = default("");
+        string decoderType = default("");
+        string headerDemodulatorType = default("");
+        string demodulatorType = default("");
+        string shaperFilterType = default("");
+        string analogDigitalConverterType;
+        double energyDetection @unit(dBm); // TODO: @unit(W) + dBm/dBW <--> W
+        double sensitivity @unit(dBm); // TODO: @unit(W) + dBm/dBW <--> W
+        double carrierFrequency @unit(Hz);
+        double bandwidth @unit(Hz);
+        double snirThreshold @unit(dB);
         double channelSpacing @unit(Hz);
-        string headerDemodulatorType = "Ieee80211OFDMDemodulator";
-        errorModelType = "Ieee80211LayeredErrorModel";
-        decoderType = "";
-        demodulatorType = "";
-        headerDemodulator.demodulationScheme = "BPSK";
         @class(Ieee80211LayeredReceiver);
 
     submodules:
+        errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
+            @display("p=240,350");
+        }
+        decoder: <decoderType> like IDecoder if decoderType != "" {
+            @display("p=100,50");
+        }
+        headerDecoder: <headerDecoderType> like IDecoder if headerDecoderType != "" {
+            @display("p=229,50");
+        }
         headerDemodulator: <headerDemodulatorType> like IDemodulator if headerDemodulatorType != "" {
-            @display("p=248,150");
+            @display("p=229,150");
+        }
+        demodulator: <demodulatorType> like IDemodulator if demodulatorType != "" {
+            @display("p=100,150");
+        }
+        shaperFilter: <shaperFilterType> like IPulseFilter if shaperFilterType != "" {
+            @display("p=100,250");
+        }
+        analogDigitalConverter: <analogDigitalConverterType> like IAnalogDigitalConverter if analogDigitalConverterType != "" {
+            @display("p=100,350");
         }
 }

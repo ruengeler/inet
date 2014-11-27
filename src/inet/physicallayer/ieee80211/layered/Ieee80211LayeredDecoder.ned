@@ -17,11 +17,29 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.layered.LayeredDecoder;
+import inet.physicallayer.contract.IDecoder;
+import inet.physicallayer.contract.IFECCoder;
+import inet.physicallayer.contract.IInterleaver;
+import inet.physicallayer.contract.IScrambler;
 
 
-module Ieee80211LayeredDecoder extends LayeredDecoder
+module Ieee80211LayeredDecoder like IDecoder
 {
     parameters:
+        string fecType = default("");
+        string deinterleaverType = default("");
+        string descramblerType = default("");
+        double channelSpacing @unit(Hz);
         @class(Ieee80211LayeredDecoderModule);
+
+    submodules:
+        descrambler: <descramblerType> like IScrambler if descramblerType != "" {
+            @display("p=72,196");
+        }
+        fecDecoder: <fecType> like IFECCoder if fecType != "" {
+            @display("p=72,106");
+        }
+        deinterleaver: <deinterleaverType> like IInterleaver if deinterleaverType != "" {
+            @display("p=72,29");
+        }
 }

@@ -36,12 +36,14 @@ const int Ieee80211OFDMModulator::polarityVector[] = {1,1,1,1,-1,-1,-1,1,-1,-1,-
                                                        -1,-1,-1,-1,-1,1,-1,1,1,-1,1,-1,1,1,1,-1,-1,1,-1,-1,-1,1,1,1,-1,-1,-1,-1,-1,-1,-1};
 
 Ieee80211OFDMModulator::Ieee80211OFDMModulator(const Ieee80211OFDMModulation* ofdmModulation) :
+        ofdmModulation(ofdmModulation),
         modulationScheme(ofdmModulation->getModulationScheme())
 {
 
 }
 
 Ieee80211OFDMModulator::Ieee80211OFDMModulator(const APSKModulationBase* modulationScheme) :
+        ofdmModulation(NULL),
         modulationScheme(modulationScheme)
 {
 
@@ -119,5 +121,11 @@ const ITransmissionSymbolModel *Ieee80211OFDMModulator::modulate(const ITransmis
     return new TransmissionSymbolModel(0, 0, ofdmSymbols, modulationScheme); // FIXME: symbol length, symbol rate
 }
 
+Ieee80211OFDMModulator::~Ieee80211OFDMModulator()
+{
+    delete ofdmModulation;
+}
+
 } // namespace physicallayer
 } // namespace inet
+

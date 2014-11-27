@@ -15,33 +15,36 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDDECODER_H_
-#define __INET_IEEE80211LAYEREDDECODER_H_
+#ifndef __INET_IEEE80211LAYEREDDECODER_H
+#define __INET_IEEE80211LAYEREDDECODER_H
 
-#include "inet/physicallayer/layered/LayeredDecoder.h"
 #include "inet/physicallayer/contract/ISerializer.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
+#include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/contract/ISignalPacketModel.h"
+#include "inet/physicallayer/contract/ISignalBitModel.h"
+#include "inet/physicallayer/contract/IDecoder.h"
 
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredDecoder : public LayeredDecoder
+// TODO: rename to Ieee..OFDMDecoder
+class INET_API Ieee80211LayeredDecoder : public IDecoder
 {
     protected:
-        const Ieee80211Scrambler *descrambler;
-        const ConvolutionalCoder *fecDecoder;
-        const Ieee80211Interleaver *deinterleaver;
+        const Ieee80211OFDMCode *code;
+        const IScrambler *descrambler;
+        const IFECCoder *fecDecoder;
+        const IInterleaver *deinterleaver;
+        Hz channelSpacing;
 
     protected:
-        const IReceptionPacketModel *createPacketModel(const BitVector& decodedBits, const Ieee80211Scrambling *scrambling, const ConvolutionalCode *fec, const Ieee80211Interleaving *interleaving) const;
-        const Ieee80211ConvolutionalCode *getFecFromSignalFieldRate(const ShortBitVector& rate) const;
-        const APSKModulationBase *getModulationFromSignalFieldRate(const ShortBitVector& rate) const;
-        const Ieee80211Interleaving *getInterleavingFromModulation(const IModulation *modulationScheme) const;
+        const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
         ShortBitVector getSignalFieldRate(const BitVector& signalField) const;
         unsigned int getSignalFieldLength(const BitVector& signalField) const;
         unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const Ieee80211ConvolutionalCode *fec) const;
@@ -49,11 +52,13 @@ class INET_API Ieee80211LayeredDecoder : public LayeredDecoder
     public:
         virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredDecoder"; }
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
-        Ieee80211LayeredDecoder(const Ieee80211Scrambler *descrambler, const ConvolutionalCoder *fecDecoder, const Ieee80211Interleaver *deinterleaver);
+        const Ieee80211OFDMCode *getCode() const { return code; }
+        Ieee80211LayeredDecoder(const Ieee80211OFDMCode *code);
+        Ieee80211LayeredDecoder(const Ieee80211Scrambler *descrambler, const ConvolutionalCoder *fecDecoder, const Ieee80211Interleaver *deinterleaver, Hz channelSpacing);
         virtual ~Ieee80211LayeredDecoder();
 };
 
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211LAYEREDDECODER_H_ */
+#endif /* __INET_IEEE80211LAYEREDDECODER_H */

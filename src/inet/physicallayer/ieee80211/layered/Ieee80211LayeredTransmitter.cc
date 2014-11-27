@@ -20,6 +20,13 @@
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
+#include "inet/physicallayer/contract/ISignalAnalogModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
+#include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulator.h"
 
 namespace inet {
 
@@ -27,24 +34,76 @@ namespace physicallayer {
 
 Define_Module(Ieee80211LayeredTransmitter);
 
-Ieee80211LayeredTransmitter::Ieee80211LayeredTransmitter() :
-        LayeredTransmitter()
-{
-}
-
 void Ieee80211LayeredTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
         encoder = dynamic_cast<IEncoder *>(getSubmodule("encoder"));
+        signalEncoder = dynamic_cast<IEncoder *>(getSubmodule("signalEncoder"));
         modulator = dynamic_cast<IModulator *>(getSubmodule("modulator"));
+        signalModulator = dynamic_cast<IModulator *>(getSubmodule("signalModulator"));
         pulseShaper = dynamic_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
         digitalAnalogConverter = dynamic_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
         power = W(par("power"));
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
         channelSpacing = Hz(par("channelSpacing"));
+        bitrate = bps(par("bitrate"));
+
+        const char *levelOfDetailStr = par("levelOfDetail").stringValue();
+        if (strcmp("bit", levelOfDetailStr) == 0)
+            levelOfDetail = BIT_DOMAIN;
+        else if (strcmp("symbol", levelOfDetailStr) == 0)
+            levelOfDetail = SYMBOL_DOMAIN;
+        else if (strcmp("sample", levelOfDetailStr) == 0)
+            levelOfDetail = SAMPLE_DOMAIN;
+        else
+            throw cRuntimeError("Unknown level of detail='%s'", levelOfDetailStr);
     }
+}
+
+// FIXME: Kludge
+BitVector Ieee80211LayeredTransmitter::serialize(const cPacket* packet) const
+{
+    // HACK: Here we just compute the bit-correct PLCP header
+    // and then we fill the remaining with random bits
+    const Ieee80211PHYFrame *phyFrame = check_and_cast<const Ieee80211PHYFrame*>(packet);
+    BitVector serializedPacket;
+    // RATE, 4 bits
+    ShortBitVector rate(phyFrame->getRate(), 4);
+    for (unsigned int i = 0; i < rate.getSize(); i++)
+        serializedPacket.appendBit(rate.getBit(i));
+    // Reserved, 1 bit
+    serializedPacket.appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
+    // Length, 12 bits
+    ShortBitVector byteLength(phyFrame->getLength(), 12); // == macFrame->getByteLength()
+    for (unsigned int i = 0; i < byteLength.getSize(); i++)
+        serializedPacket.appendBit(byteLength.getBit(i));
+    // Parity, 1 bit
+    serializedPacket.appendBit(0); // whatever (at least for now)
+    // Tail, 6 bit
+    serializedPacket.appendBit(0, 6); // The bits 18–23 constitute the SIGNAL TAIL field, and all 6 bits shall be set to 0
+    // Service, 16 bit
+    // The bits from 0–6 of the SERVICE field, which are transmitted first, are set to 0s
+    // and are used to synchronize the descrambler in the receiver. The remaining 9 bits
+    // (7–15) of the SERVICE field shall be reserved for future use. All reserved bits shall
+    // be set to 0.
+    serializedPacket.appendBit(0, 16);
+    ASSERT(serializedPacket.getSize() == 40);
+    for (unsigned int i = 0; i < byteLength.toDecimal() * 8; i++)
+        serializedPacket.appendBit(rand() % 2);
+    serializedPacket.appendBit(0, 6); // tail bits
+    // FIXME: HACK, append bits
+    int dataBitsLength = 6 + 16 + byteLength.toDecimal() * 8;
+    Ieee80211OFDMModulation ofdmModulation(phyFrame->getRate(), channelSpacing);
+    const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
+    unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
+    Ieee80211OFDMCode codec(phyFrame->getRate(), channelSpacing);
+    const Ieee80211ConvolutionalCode *fec = codec.getConvCode();
+    int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
+    int appendedBitsLength = dataBitsPerOFDMSymbol - dataBitsLength % dataBitsPerOFDMSymbol;
+    serializedPacket.appendBit(0, appendedBitsLength);
+    return serializedPacket;
 }
 
 const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(const cPacket* macFrame) const
@@ -55,7 +114,8 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(c
         currentBitrate = controlInfo->getBitrate();
     else
         currentBitrate = bitrate;
-    int rate = calculateRateField(channelSpacing, currentBitrate).toDecimal();
+    Ieee80211OFDMModulation ofdmModulation(currentBitrate, channelSpacing);
+    int rate = ofdmModulation.getSignalRateField();
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
@@ -64,104 +124,164 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(c
     phyFrame->setLength(macFrame->getByteLength());
     phyFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
     phyFrame->setBitLength(phyFrame->getLength() + plcpHeaderLength);
-    const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame);
+    const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame, NULL);
     return packetModel;
 }
 
-
-ShortBitVector Ieee80211LayeredTransmitter::calculateRateField(Hz channelSpacing, bps bitrate) const
+const ITransmissionAnalogModel* Ieee80211LayeredTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
 {
-    if (channelSpacing == MHz(20))
+    simtime_t duration = headerBitLength / headerBitRate + payloadBitLength / payloadBitRate; // TODO: preamble duration
+    const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
+    return transmissionAnalogModel;
+}
+
+// TODO: copy
+uint8_t Ieee80211LayeredTransmitter::getRate(const BitVector* serializedPacket) const
+{
+    ShortBitVector rate;
+    for (unsigned int i = 0; i < 4; i++)
+        rate.appendBit(serializedPacket->getBit(i));
+    return rate.toDecimal();
+}
+
+const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createSignalFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
+{
+    // The SIGNAL field is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1), Tail (6),
+    // fields, so the SIGNAL field is 24 bits long.
+    BitVector *signalField = new BitVector();
+    const BitVector *serializedPacket = completePacketModel->getSerializedPacket();
+    for (unsigned int i = 0; i < 24; i++)
+        signalField->appendBit(serializedPacket->getBit(i));
+    return new TransmissionPacketModel(NULL, signalField);
+}
+
+const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createDataFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
+{
+    BitVector *dataField = new BitVector();
+    const BitVector *serializedPacket = completePacketModel->getSerializedPacket();
+    for (unsigned int i = 24; i < serializedPacket->getSize(); i++)
+        dataField->appendBit(serializedPacket->getBit(i));
+    return new TransmissionPacketModel(NULL, dataField);
+}
+
+const ITransmissionSymbolModel* Ieee80211LayeredTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const
+{
+    if (levelOfDetail >= BIT_DOMAIN)
     {
-        if (bitrate == bps(6000000))
-            return ShortBitVector("1101");
-        else if (bitrate == bps(9000000))
-            return ShortBitVector("1111");
-        else if (bitrate == bps(12000000))
-            return ShortBitVector("0101");
-        else if (bitrate == bps(18000000))
-            return ShortBitVector("0111");
-        else if (bitrate == bps(24000000))
-            return ShortBitVector("1001");
-        else if (bitrate == bps(36000000))
-            return ShortBitVector("1011");
-        else if (bitrate == bps(48000000))
-            return ShortBitVector("0001");
-        else if (bitrate == bps(54000000))
-            return ShortBitVector("0011");
+        if (encoder) // non-compliant mode
+            fieldBitModel = encoder->encode(fieldPacketModel);
+        else // compliant mode
+        {
+            const Ieee80211OFDMCode *code;
+            if (isSignalField) // signal
+                code = new Ieee80211OFDMCode(channelSpacing);
+            else // data
+                code = new Ieee80211OFDMCode(rate, channelSpacing);
+            const Ieee80211LayeredEncoder encoder(code);
+            fieldBitModel = encoder.encode(fieldPacketModel);
+        }
+    }
+    if (levelOfDetail >= SYMBOL_DOMAIN)
+    {
+        if (fieldBitModel)
+        {
+            if (modulator) // non-compliant mode
+                fieldSymbolModel = modulator->modulate(fieldBitModel);
+            else // compliant mode
+            {
+                const Ieee80211OFDMModulation *ofdmModulation;
+                if (isSignalField) // signal
+                    ofdmModulation = new Ieee80211OFDMModulation(channelSpacing);
+                else // data
+                    ofdmModulation = new Ieee80211OFDMModulation(rate, channelSpacing);
+                Ieee80211OFDMModulator modulator(ofdmModulation);
+                fieldSymbolModel = modulator.modulate(fieldBitModel);
+            }
+        }
         else
-            throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
+            throw cRuntimeError("Modulator needs bit representation");
     }
-    else if (channelSpacing == MHz(10))
-    {
-        if (bitrate == bps(3000000))
-            return ShortBitVector("1101");
-        else if (bitrate == bps(4500000))
-            return ShortBitVector("1111");
-        else if (bitrate == bps(6000000))
-            return ShortBitVector("0101");
-        else if (bitrate == bps(9000000))
-            return ShortBitVector("0111");
-        else if (bitrate == bps(12000000))
-            return ShortBitVector("1001");
-        else if (bitrate == bps(18000000))
-            return ShortBitVector("1011");
-        else if (bitrate == bps(24000000))
-            return ShortBitVector("0001");
-        else if (bitrate == bps(27000000))
-            return ShortBitVector("0011");
-        else
-            throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
-    }
-    else if (channelSpacing == MHz(5))
-    {
-       if (bitrate == bps(1500000))
-           return ShortBitVector("1101");
-       else if (bitrate == bps(2250000))
-           return ShortBitVector("1111");
-       else if (bitrate == bps(3000000))
-           return ShortBitVector("0101");
-       else if (bitrate == bps(4500000))
-           return ShortBitVector("0111");
-       else if (bitrate == bps(6000000))
-           return ShortBitVector("1001");
-       else if (bitrate == bps(9000000))
-           return ShortBitVector("1011");
-       else if (bitrate == bps(12000000))
-           return ShortBitVector("0001");
-       else if (bitrate == bps(13500000))
-           return ShortBitVector("0011");
-       else
-           throw cRuntimeError("%lf Hz channel spacing does not support %lf bps bitrate", channelSpacing.get(), bitrate.get());
-    }
-    else
-        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
-    return ShortBitVector("0000");
+}
+
+const ITransmissionSymbolModel* Ieee80211LayeredTransmitter::createSymbolModel(
+        const ITransmissionSymbolModel* signalFieldSymbolModel,
+        const ITransmissionSymbolModel* dataFieldSymbolModel) const
+{
+    const std::vector<const ISymbol *> *dataSymbols = dataFieldSymbolModel->getSymbols();
+    std::vector<const ISymbol *> *mergedSymbols = new std::vector<const ISymbol *>(*signalFieldSymbolModel->getSymbols());
+    for (unsigned int i = 0; i < dataSymbols->size(); i++)
+        mergedSymbols->push_back(dataSymbols->at(i));
+    // FIXME
+    return new TransmissionSymbolModel(0, 0, mergedSymbols, dataFieldSymbolModel->getModulation());
+}
+
+const ITransmissionBitModel* Ieee80211LayeredTransmitter::createBitModel(
+        const ITransmissionBitModel* signalFieldBitModel,
+        const ITransmissionBitModel* dataFieldBitModel,
+        uint8_t rate) const
+{
+    BitVector *encodedBits = new BitVector(*signalFieldBitModel->getBits());
+    unsigned int signalBitLength = signalFieldBitModel->getBits()->getSize();
+    const BitVector *dataFieldBits = dataFieldBitModel->getBits();
+    unsigned int dataBitLength = dataFieldBits->getSize();
+    for (unsigned int i = 0; i < dataFieldBits->getSize(); i++)
+        encodedBits->appendBit(dataFieldBits->getBit(i));
+    Ieee80211OFDMModulation signalModulation(channelSpacing);
+    Ieee80211OFDMModulation dataModulation(rate, channelSpacing);
+    return new TransmissionBitModel(signalBitLength, dataBitLength, signalModulation.getBitrate().get(), dataModulation.getBitrate().get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
 const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
 {
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
+    BitVector *serializedPacket = new BitVector(serialize(packetModel->getPacket()));
+    const ITransmissionPacketModel *completePacketModel = new TransmissionPacketModel(packetModel->getPacket(), serializedPacket);
+    delete packetModel;
     ASSERT(packetModel != NULL);
-    const ITransmissionBitModel *bitModel = NULL;
-    if (encoder)
-        bitModel = encoder->encode(packetModel);
-    const ITransmissionSymbolModel *symbolModel = NULL;
-    if (modulator && bitModel)
-        symbolModel = modulator->modulate(bitModel);
-    else if (modulator && !bitModel)
-        throw cRuntimeError("Modulators need bit representation");
+    const ITransmissionBitModel *signalFieldBitModel = NULL;
+    const ITransmissionBitModel *dataFieldBitModel = NULL;
     const ITransmissionSampleModel *sampleModel = NULL;
-    if (pulseShaper && symbolModel)
-        sampleModel = pulseShaper->shape(symbolModel);
-    else if (pulseShaper && !sampleModel)
-        throw cRuntimeError("Pulse shapers need symbol representation");
+    const ITransmissionSymbolModel *signalFieldSymbolModel = NULL;
+    const ITransmissionSymbolModel *dataFieldSymbolModel = NULL;
+    const ITransmissionPacketModel *signalFieldPacketModel = createSignalFieldPacketModel(completePacketModel);
+    const ITransmissionPacketModel *dataFieldPacketModel = createDataFieldPacketModel(completePacketModel);
+    uint8_t rate = getRate(serializedPacket);
+    encodeAndModulate(signalFieldPacketModel, signalFieldBitModel, signalFieldSymbolModel, signalEncoder, signalModulator, rate, true);
+    encodeAndModulate(dataFieldPacketModel, dataFieldBitModel, dataFieldSymbolModel, encoder, modulator, rate, false);
+    const ITransmissionBitModel *bitModel = NULL;
+    if (levelOfDetail >= BIT_DOMAIN)
+        bitModel = createBitModel(signalFieldBitModel, dataFieldBitModel, rate);
+    const ITransmissionSymbolModel *symbolModel = NULL;
+    if (levelOfDetail >= SYMBOL_DOMAIN)
+        symbolModel = createSymbolModel(signalFieldSymbolModel, dataFieldSymbolModel);
+    if (levelOfDetail >= SAMPLE_DOMAIN)
+    {
+        if (symbolModel)
+        {
+            if (pulseShaper) // non-compliant mode
+                sampleModel = pulseShaper->shape(symbolModel);
+            else // compliant mode
+            {
+                // TODO: implement
+            }
+        }
+        else
+            throw cRuntimeError("Pulse shaper needs symbol representation");
+    }
     const ITransmissionAnalogModel *analogModel = NULL;
-    if (digitalAnalogConverter && sampleModel)
-        analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
-    else if (digitalAnalogConverter && !sampleModel)
-        throw cRuntimeError("Digital/analog converters need sample representation");
-    analogModel = createAnalogModel(bitModel->getHeaderBitLength(), bitModel->getHeaderBitRate(), bitModel->getPayloadBitLength(), bitModel->getPayloadBitRate());; // FIXME
+    if (digitalAnalogConverter)
+    {
+        if (!sampleModel)
+            analogModel = digitalAnalogConverter->convertDigitalToAnalog(sampleModel);
+        else
+            throw cRuntimeError("Digital/analog converter needs sample representation");
+    }
+    else // Analog model is obligatory
+    {
+        ASSERT(bitModel != NULL);
+        analogModel = createAnalogModel(bitModel->getHeaderBitLength(), bitModel->getHeaderBitRate(), bitModel->getPayloadBitLength(), bitModel->getPayloadBitRate());; // FIXME
+    }
+
     IMobility *mobility = transmitter->getAntenna()->getMobility();
     // assuming movement and rotation during transmission is negligible
     const simtime_t endTime = startTime + analogModel->getDuration();
@@ -169,7 +289,7 @@ const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadi
     const Coord endPosition = mobility->getCurrentPosition();
     const EulerAngles startOrientation = mobility->getCurrentAngularPosition();
     const EulerAngles endOrientation = mobility->getCurrentAngularPosition();
-    return new LayeredScalarTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, bandwidth, carrierFrequency, power);
+    return new LayeredScalarTransmission(completePacketModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, bandwidth, carrierFrequency, power);
 }
 
 } // namespace physicallayer
