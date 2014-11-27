@@ -24,8 +24,8 @@ module Ieee80211LayeredScalarRadioMedium extends RadioMedium
     parameters:
         propagationType = default("ConstantSpeedPropagation");
         pathLossType = default("FreeSpacePathLoss");
-        analogModelType = default("ScalarAnalogModel");
-        backgroundNoiseType = default("ScalarBackgroundNoise");
+        analogModelType = default("LayeredScalarAnalogModel");
+        backgroundNoiseType = default("IsotropicScalarBackgroundNoise");
         carrierFrequency = default(2.4GHz);
         minReceptionPower = default(-85dBm);
         minInterferencePower = default(-110dBm);
