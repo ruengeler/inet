@@ -28,18 +28,22 @@ class INET_API SignalPacketModel : public virtual ISignalPacketModel
 {
   protected:
     const cPacket *packet;
+    const BitVector *serializedPacket;
 
   public:
     SignalPacketModel() :
-        packet(NULL)
+        packet(NULL),
+        serializedPacket(NULL)
     {}
 
-    SignalPacketModel(const cPacket *packet) :
-        packet(packet)
+    SignalPacketModel(const cPacket *packet, const BitVector *serializedPacket) :
+        packet(packet),
+        serializedPacket(serializedPacket)
     {}
 
     virtual void printToStream(std::ostream &stream) const;
     virtual const cPacket *getPacket() const { return packet; }
+    virtual const BitVector *getSerializedPacket() const { return serializedPacket; }
 };
 
 class INET_API TransmissionPacketModel : public SignalPacketModel, public virtual ITransmissionPacketModel
@@ -49,15 +53,14 @@ class INET_API TransmissionPacketModel : public SignalPacketModel, public virtua
         SignalPacketModel()
     {}
 
-    TransmissionPacketModel(const cPacket *packet) :
-        SignalPacketModel(packet)
+    TransmissionPacketModel(const cPacket *packet, const BitVector *serializedPacket) :
+        SignalPacketModel(packet, serializedPacket)
     {}
 };
 
 class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptionPacketModel
 {
   protected:
-    const BitVector *serializedPacket;
     const IForwardErrorCorrection *forwardErrorCorrection;
     const IScrambling *scrambling;
     const IInterleaving *interleaving;
@@ -67,7 +70,6 @@ class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptio
   public:
     ReceptionPacketModel() :
         SignalPacketModel(),
-        serializedPacket(NULL),
         forwardErrorCorrection(NULL),
         scrambling(NULL),
         interleaving(NULL),
@@ -76,8 +78,7 @@ class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptio
     {}
 
     ReceptionPacketModel(const cPacket *packet, const BitVector *serializedPacket, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scrambling, const IInterleaving *interleaving, double per, bool packetErrorless) :
-        SignalPacketModel(packet),
-        serializedPacket(serializedPacket),
+        SignalPacketModel(packet, serializedPacket),
         forwardErrorCorrection(forwardErrorCorrection),
         scrambling(scrambling),
         interleaving(interleaving),
@@ -90,7 +91,6 @@ class INET_API ReceptionPacketModel : public SignalPacketModel, public IReceptio
     virtual const IForwardErrorCorrection *getForwardErrorCorrection() const { return forwardErrorCorrection; }
     virtual const IScrambling *getScrambling() const { return scrambling; }
     virtual const IInterleaving *getInterleaving() const { return interleaving; }
-    virtual const BitVector *getSerializedPacket() const { return serializedPacket; }
 };
 
 } // namespace physicallayer

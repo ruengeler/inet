@@ -71,12 +71,17 @@ class INET_API TransmissionBitModel : public SignalBitModel, public virtual ITra
     TransmissionBitModel() :
         SignalBitModel()
     {}
-
-    TransmissionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scramblerInfo, const IInterleaving *interleaverInfo) :
+    TransmissionBitModel(const BitVector *bits, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scrambling, const IInterleaving *interleaving) :
+        SignalBitModel(0, 0, 0, 0, bits),
+        forwardErrorCorrection(forwardErrorCorrection),
+        scrambling(scrambling),
+        interleaving(interleaving)
+    {}
+    TransmissionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IForwardErrorCorrection *forwardErrorCorrection, const IScrambling *scrambling, const IInterleaving *interleaving) :
         SignalBitModel(headerBitLength, payloadBitLength, headerBitRate, payloadBitRate, bits),
         forwardErrorCorrection(forwardErrorCorrection),
-        scrambling(scramblerInfo),
-        interleaving(interleaverInfo)
+        scrambling(scrambling),
+        interleaving(interleaving)
     {}
 
     virtual const IForwardErrorCorrection *getForwardErrorCorrection() const { return forwardErrorCorrection; }
