@@ -15,24 +15,21 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IMODULATOR_H
-#define __INET_IMODULATOR_H
+#ifndef __INET_IIEEE80211CODE_H
+#define __INET_IIEEE80211CODE_H
 
-#include "inet/physicallayer/contract/ISignalBitModel.h"
-#include "inet/physicallayer/contract/ISignalSymbolModel.h"
+#include "inet/common/INETDefs.h"
 
 namespace inet {
-
 namespace physicallayer {
 
-class INET_API IModulator : public IPrintableObject
+class INET_API IIeee80211Code
 {
-  public:
-    virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const = 0;
+    public:
+        virtual ~IIeee80211Code() {}
 };
 
-} // namespace physicallayer
+} /* namespace physicallayer */
+} /* namespace inet */
 
-} // namespace inet
-
-#endif /* __INET_IMODULATOR_H */
+#endif /* __INET_IIEEE80211CODE_H */

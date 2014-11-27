@@ -40,7 +40,7 @@ class INET_API IFECCoder
         virtual ~IFECCoder() {};
 };
 
-class INET_API FecCoderBase : public IFECCoder
+class INET_API FecCoderBase : public IFECCoder // TODO: delete
 {
     protected:
         const IForwardErrorCorrection *forwardErrorCorrection;

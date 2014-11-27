@@ -39,10 +39,8 @@ class INET_API ISignalSymbolModel : public IPrintableObject
 
 class INET_API ITransmissionSymbolModel : public virtual ISignalSymbolModel
 {
-    /*
-     *
-     */
-    virtual const IModulation *getModulation() const = 0;
+    public:
+        virtual const IModulation *getModulation() const = 0;
 };
 
 class INET_API IReceptionSymbolModel : public virtual ISignalSymbolModel
