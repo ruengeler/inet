@@ -45,7 +45,7 @@ class INET_API Ieee80211OFDMModulator : public IModulator
     virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const;
     const IModulation *getModulation() const { return modulationScheme; }
     const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmModulation; }
-    void printToStream(std::ostream& stream) const { stream << "TODO"; }
+    void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMModulator"; }
     Ieee80211OFDMModulator(const Ieee80211OFDMModulation *ofdmModulation);
     Ieee80211OFDMModulator(const APSKModulationBase *modulationScheme);
     ~Ieee80211OFDMModulator();
