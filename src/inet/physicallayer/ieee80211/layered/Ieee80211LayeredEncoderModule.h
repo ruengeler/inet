@@ -41,6 +41,7 @@ class INET_API Ieee80211LayeredEncoderModule : public IEncoder, public cSimpleMo
 
     public:
         virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredEncoder"; }
+        const Ieee80211OFDMCode *getCode() const { return encoder->getCode(); }
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
         virtual ~Ieee80211LayeredEncoderModule();
 };

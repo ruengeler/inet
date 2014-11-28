@@ -32,6 +32,10 @@ void Ieee80211LayeredEncoderModule::initialize(int stage)
         interleaver = dynamic_cast<IInterleaver *>(getSubmodule("interleaver"));
         channelSpacing = Hz(par("channelSpacing"));
     }
+    else if (stage == INITSTAGE_PHYSICAL_LAYER)
+    {
+        encoder = new Ieee80211LayeredEncoder(fecEncoder, interleaver, scrambler, channelSpacing);
+    }
 }
 
 const ITransmissionBitModel* Ieee80211LayeredEncoderModule::encode(const ITransmissionPacketModel* packetModel) const
