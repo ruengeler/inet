@@ -13,10 +13,10 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
-#ifndef IEEE80211INTERLEAVERMODULE_H
-#define IEEE80211INTERLEAVERMODULE_H
+#ifndef __INET_IEEE80211INTERLEAVERMODULE_H
+#define __INET_IEEE80211INTERLEAVERMODULE_H
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 
@@ -43,4 +43,4 @@ class INET_API Ieee80211InterleaverModule : public cSimpleModule, public IInterl
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* IEEE80211INTERLEAVERMODULE_H */
+#endif /* __INET_IEEE80211INTERLEAVERMODULE_H */

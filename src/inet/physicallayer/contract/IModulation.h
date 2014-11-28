@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IMODULATION_H_
-#define __INET_IMODULATION_H_
+#ifndef __INET_IMODULATION_H
+#define __INET_IMODULATION_H
 
 #include "inet/common/INETDefs.h"
 
@@ -34,4 +34,4 @@ class INET_API IModulation
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IMODULATION_H_ */
+#endif /* __INET_IMODULATION_H */
