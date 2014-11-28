@@ -32,7 +32,7 @@ namespace physicallayer {
  * Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications,
  * 18.3.5.7 Data interleaving
  */
-class Ieee80211Interleaver : public InterleaverBase
+class Ieee80211Interleaver : public IInterleaver
 {
   protected:
     int numberOfCodedBitsPerSymbol;

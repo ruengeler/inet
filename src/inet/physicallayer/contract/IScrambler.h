@@ -40,18 +40,6 @@ class INET_API IScrambler
         virtual ~IScrambler() {};
 };
 
-class INET_API ScramblerBase : public IScrambler
-{
-    protected:
-        const IScrambling *scrambling;
-
-    public:
-        ScramblerBase(const IScrambling *scrambling) : scrambling(scrambling) {};
-        virtual BitVector scramble(const BitVector& bits) const = 0;
-        virtual BitVector descramble(const BitVector& bits) const = 0;
-        virtual const IScrambling *getScrambling() const { return scrambling; }
-};
-
 } /* namespace physicallayer */
 } /* namespace inet */
 

@@ -511,7 +511,7 @@ std::pair<BitVector, bool> ConvolutionalCoder::decode(const BitVector& encodedBi
     return std::pair<BitVector, bool>(decodedMsg, true);
 }
 
-ConvolutionalCoder::ConvolutionalCoder(const ConvolutionalCode* convolutionalCode) : FecCoderBase(convolutionalCode)
+ConvolutionalCoder::ConvolutionalCoder(const ConvolutionalCode* convolutionalCode) : convolutionalCode(convolutionalCode)
 {
     const char *strTransferFunctionMatrix = convolutionalCode->getTransferFunctionMatrix();
     const char *strPuncturingMatrix = convolutionalCode->getPuncturingMatrix();

@@ -40,18 +40,6 @@ class INET_API IFECCoder
         virtual ~IFECCoder() {};
 };
 
-class INET_API FecCoderBase : public IFECCoder // TODO: delete
-{
-    protected:
-        const IForwardErrorCorrection *forwardErrorCorrection;
-
-    public:
-        FecCoderBase(const IForwardErrorCorrection *convolutionalCode) : forwardErrorCorrection(convolutionalCode) {}
-        virtual BitVector encode(const BitVector& informationBits) const = 0;
-        virtual std::pair<BitVector, bool> decode(const BitVector& encodedBits) const = 0;
-        virtual const IForwardErrorCorrection *getForwardErrorCorrection() { return forwardErrorCorrection; }
-};
-
 } // namespace physicallayer
 
 } // namespace inet
