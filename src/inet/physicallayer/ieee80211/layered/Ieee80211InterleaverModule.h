@@ -31,12 +31,12 @@ class INET_API Ieee80211InterleaverModule : public cSimpleModule, public IInterl
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { cRuntimeError("This module doesn't handle self messages."); }
+        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages."); }
 
     public:
         virtual BitVector interleave(const BitVector& bits) const { return interleaver->interleave(bits); }
         virtual BitVector deinterleave(const BitVector& bits) const { return interleaver->deinterleave(bits); }
-        virtual const IInterleaving *getInterleaving() const { return interleaver->getInterleaving(); }
+        virtual const Ieee80211Interleaving *getInterleaving() const { return interleaver->getInterleaving(); }
         virtual ~Ieee80211InterleaverModule();
 };
 
