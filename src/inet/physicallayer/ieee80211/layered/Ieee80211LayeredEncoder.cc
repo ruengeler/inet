@@ -82,12 +82,16 @@ Ieee80211LayeredEncoder::Ieee80211LayeredEncoder(const IFECCoder* fecEncoder, co
         scrambler(scrambler),
         channelSpacing(channelSpacing)
 {
-    code = new Ieee80211OFDMCode(
-            (const Ieee80211ConvolutionalCode *)fecEncoder->getForwardErrorCorrection(),
-            (const Ieee80211Interleaving*) interleaver->getInterleaving(),
-            (const Ieee80211Scrambling*) scrambler->getScrambling(),
-            channelSpacing
-            );
+    const Ieee80211ConvolutionalCode *fec = NULL;
+    if (fecEncoder)
+        fec = dynamic_cast<const Ieee80211ConvolutionalCode *>(fecEncoder->getForwardErrorCorrection());
+    const Ieee80211Interleaving *interleaving = NULL;
+    if (interleaver)
+        interleaving = dynamic_cast<const Ieee80211Interleaving *>(interleaver->getInterleaving());
+    const Ieee80211Scrambling *scrambling = NULL;
+    if (scrambler)
+        scrambling = dynamic_cast<const Ieee80211Scrambling *>(scrambler->getScrambling());
+    code = new Ieee80211OFDMCode(fec, interleaving, scrambling, channelSpacing);
 }
 
 Ieee80211LayeredEncoder::Ieee80211LayeredEncoder() :

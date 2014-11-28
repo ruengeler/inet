@@ -40,9 +40,6 @@ class INET_API Ieee80211LayeredEncoder : public IEncoder
         const Ieee80211OFDMCode *code;
         Hz channelSpacing;
 
-    protected:
-        uint8_t getRate(const BitVector *serializedPacket) const;
-
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
         virtual void printToStream(std::ostream& stream) const { stream << "IEEE80211 Layered Encoder"; } // TODO
