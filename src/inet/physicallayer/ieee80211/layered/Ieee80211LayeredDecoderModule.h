@@ -33,9 +33,9 @@ class INET_API Ieee80211LayeredDecoderModule : public cSimpleModule, public IDec
 {
     protected:
         const Ieee80211LayeredDecoder *layeredDecoder;
-        const Ieee80211Scrambler *descrambler;
-        const ConvolutionalCoder *fecDecoder;
-        const Ieee80211Interleaver *deinterleaver;
+        const IScrambler *descrambler;
+        const IFECCoder *fecDecoder;
+        const IInterleaver *deinterleaver;
         Hz channelSpacing;
 
     protected:
