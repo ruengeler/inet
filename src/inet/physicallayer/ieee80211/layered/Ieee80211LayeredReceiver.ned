@@ -30,9 +30,9 @@ module Ieee80211LayeredReceiver like IReceiver
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
         string errorModelType = default("");
-        string headerDecoderType = default("");
+        string signalDecoderType = default("");
         string decoderType = default("");
-        string headerDemodulatorType = default("");
+        string signalDemodulatorType = default("");
         string demodulatorType = default("");
         string shaperFilterType = default("");
         string analogDigitalConverterType;
@@ -42,6 +42,7 @@ module Ieee80211LayeredReceiver like IReceiver
         double bandwidth @unit(Hz);
         double snirThreshold @unit(dB);
         double channelSpacing @unit(Hz);
+        **.channelSpacing = channelSpacing;
         @class(Ieee80211LayeredReceiver);
 
     submodules:
@@ -51,10 +52,10 @@ module Ieee80211LayeredReceiver like IReceiver
         decoder: <decoderType> like IDecoder if decoderType != "" {
             @display("p=100,50");
         }
-        headerDecoder: <headerDecoderType> like IDecoder if headerDecoderType != "" {
+        signalDecoder: <signalDecoderType> like IDecoder if signalDecoderType != "" {
             @display("p=229,50");
         }
-        headerDemodulator: <headerDemodulatorType> like IDemodulator if headerDemodulatorType != "" {
+        signalDemodulator: <signalDemodulatorType> like IDemodulator if signalDemodulatorType != "" {
             @display("p=229,150");
         }
         demodulator: <demodulatorType> like IDemodulator if demodulatorType != "" {
