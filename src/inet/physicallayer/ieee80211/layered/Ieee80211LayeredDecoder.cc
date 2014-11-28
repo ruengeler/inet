@@ -53,18 +53,22 @@ Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const Ieee80211OFDMCode *code) 
         deinterleaver = new Ieee80211Interleaver(code->getInterleaving());
 }
 
-Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const Ieee80211Scrambler *descrambler, const ConvolutionalCoder *fecDecoder, const Ieee80211Interleaver *deinterleaver, Hz channelSpacing) :
+Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver, Hz channelSpacing) :
         descrambler(descrambler),
         fecDecoder(fecDecoder),
         deinterleaver(deinterleaver),
         channelSpacing(channelSpacing)
 {
-    code = new Ieee80211OFDMCode(
-            (const Ieee80211ConvolutionalCode *)fecDecoder->getForwardErrorCorrection(),
-            (const Ieee80211Interleaving*) deinterleaver->getInterleaving(),
-            (const Ieee80211Scrambling*) descrambler->getScrambling(),
-            channelSpacing
-            );
+    const Ieee80211ConvolutionalCode *fec = NULL;
+    if (fecDecoder)
+        fec = dynamic_cast<const Ieee80211ConvolutionalCode *>(fecDecoder->getForwardErrorCorrection());
+    const Ieee80211Interleaving *interleaving = NULL;
+    if (deinterleaver)
+        interleaving = dynamic_cast<const Ieee80211Interleaving *>(deinterleaver->getInterleaving());
+    const Ieee80211Scrambling *scrambling = NULL;
+    if (descrambler)
+        scrambling = dynamic_cast<const Ieee80211Scrambling *>(descrambler->getScrambling());
+    code = new Ieee80211OFDMCode(fec, interleaving, scrambling, channelSpacing);
 }
 
 const IReceptionPacketModel* Ieee80211LayeredDecoder::decode(const IReceptionBitModel* bitModel) const

@@ -54,7 +54,7 @@ class INET_API Ieee80211LayeredDecoder : public IDecoder
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
         const Ieee80211OFDMCode *getCode() const { return code; }
         Ieee80211LayeredDecoder(const Ieee80211OFDMCode *code);
-        Ieee80211LayeredDecoder(const Ieee80211Scrambler *descrambler, const ConvolutionalCoder *fecDecoder, const Ieee80211Interleaver *deinterleaver, Hz channelSpacing);
+        Ieee80211LayeredDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver, Hz channelSpacing);
         virtual ~Ieee80211LayeredDecoder();
 };
 
