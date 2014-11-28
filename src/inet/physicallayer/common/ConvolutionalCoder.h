@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_CONVOLUTIONALCODER_H_
-#define __INET_CONVOLUTIONALCODER_H_
+#ifndef __INET_CONVOLUTIONALCODER_H
+#define __INET_CONVOLUTIONALCODER_H
 
 #include "inet/common/INETDefs.h"
 #include "inet/common/BitVector.h"
@@ -156,4 +156,4 @@ class INET_API ConvolutionalCoder : public IFECCoder
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_CONVOLUTIONALCODER_H_ */
+#endif /* __INET_CONVOLUTIONALCODER_H */
