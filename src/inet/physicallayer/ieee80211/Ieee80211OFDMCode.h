@@ -49,7 +49,7 @@ class INET_API Ieee80211OFDMCode : public IIeee80211Code
         const Ieee80211Scrambling *getScrambling() const { return scrambling; }
         const Hz getChannelSpacing() const { return channelSpacing; }
 
-        Ieee80211OFDMCode(Hz channelSpacing); // TODO: revise
+        Ieee80211OFDMCode(Hz channelSpacing);
         Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing);
         Ieee80211OFDMCode(const Ieee80211ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling, Hz channelSpacing);
 };
