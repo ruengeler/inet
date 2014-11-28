@@ -26,6 +26,7 @@
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoderModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulator.h"
 
 namespace inet {
@@ -38,12 +39,12 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
-        encoder = dynamic_cast<IEncoder *>(getSubmodule("encoder"));
-        signalEncoder = dynamic_cast<IEncoder *>(getSubmodule("signalEncoder"));
-        modulator = dynamic_cast<IModulator *>(getSubmodule("modulator"));
-        signalModulator = dynamic_cast<IModulator *>(getSubmodule("signalModulator"));
-        pulseShaper = dynamic_cast<IPulseShaper *>(getSubmodule("pulseShaper"));
-        digitalAnalogConverter = dynamic_cast<IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
+        encoder = dynamic_cast<const IEncoder *>(getSubmodule("encoder"));
+        signalEncoder = dynamic_cast<const IEncoder *>(getSubmodule("signalEncoder"));
+        modulator = dynamic_cast<const IModulator *>(getSubmodule("modulator"));
+        signalModulator = dynamic_cast<const IModulator *>(getSubmodule("signalModulator"));
+        pulseShaper = dynamic_cast<const IPulseShaper *>(getSubmodule("pulseShaper"));
+        digitalAnalogConverter = dynamic_cast<const IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
         power = W(par("power"));
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
@@ -63,48 +64,42 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
 }
 
 // FIXME: Kludge
-BitVector Ieee80211LayeredTransmitter::serialize(const cPacket* packet) const
+BitVector *Ieee80211LayeredTransmitter::serialize(const cPacket* packet) const
 {
     // HACK: Here we just compute the bit-correct PLCP header
     // and then we fill the remaining with random bits
     const Ieee80211PHYFrame *phyFrame = check_and_cast<const Ieee80211PHYFrame*>(packet);
-    BitVector serializedPacket;
+    BitVector *serializedPacket = new BitVector();
     // RATE, 4 bits
     ShortBitVector rate(phyFrame->getRate(), 4);
     for (unsigned int i = 0; i < rate.getSize(); i++)
-        serializedPacket.appendBit(rate.getBit(i));
+        serializedPacket->appendBit(rate.getBit(i));
     // Reserved, 1 bit
-    serializedPacket.appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
+    serializedPacket->appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
     // Length, 12 bits
     ShortBitVector byteLength(phyFrame->getLength(), 12); // == macFrame->getByteLength()
     for (unsigned int i = 0; i < byteLength.getSize(); i++)
-        serializedPacket.appendBit(byteLength.getBit(i));
+        serializedPacket->appendBit(byteLength.getBit(i));
     // Parity, 1 bit
-    serializedPacket.appendBit(0); // whatever (at least for now)
+    serializedPacket->appendBit(0); // whatever (at least for now)
     // Tail, 6 bit
-    serializedPacket.appendBit(0, 6); // The bits 18–23 constitute the SIGNAL TAIL field, and all 6 bits shall be set to 0
+    serializedPacket->appendBit(0, 6); // The bits 18–23 constitute the SIGNAL TAIL field, and all 6 bits shall be set to 0
     // Service, 16 bit
     // The bits from 0–6 of the SERVICE field, which are transmitted first, are set to 0s
     // and are used to synchronize the descrambler in the receiver. The remaining 9 bits
     // (7–15) of the SERVICE field shall be reserved for future use. All reserved bits shall
     // be set to 0.
-    serializedPacket.appendBit(0, 16);
-    ASSERT(serializedPacket.getSize() == 40);
+    serializedPacket->appendBit(0, 16);
+    ASSERT(serializedPacket->getSize() == 40);
     for (unsigned int i = 0; i < byteLength.toDecimal() * 8; i++)
-        serializedPacket.appendBit(rand() % 2);
-    serializedPacket.appendBit(0, 6); // tail bits
+        serializedPacket->appendBit(intuniform(0,1));
+    serializedPacket->appendBit(0, 6); // tail bits
     // FIXME: HACK, append bits
     int dataBitsLength = 6 + 16 + byteLength.toDecimal() * 8;
-    Ieee80211OFDMModulation ofdmModulation(phyFrame->getRate(), channelSpacing);
-    const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
-    unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
-    Ieee80211OFDMCode codec(phyFrame->getRate(), channelSpacing);
-    const Ieee80211ConvolutionalCode *fec = codec.getConvCode();
-    int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
-    int appendedBitsLength = dataBitsPerOFDMSymbol - dataBitsLength % dataBitsPerOFDMSymbol;
-    serializedPacket.appendBit(0, appendedBitsLength);
+    padding(serializedPacket, dataBitsLength, rate.toDecimal());
     return serializedPacket;
 }
+
 
 const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(const cPacket* macFrame) const
 {
@@ -164,7 +159,7 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createDataFieldPack
     return new TransmissionPacketModel(NULL, dataField);
 }
 
-const ITransmissionSymbolModel* Ieee80211LayeredTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const
+void Ieee80211LayeredTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const
 {
     if (levelOfDetail >= BIT_DOMAIN)
     {
@@ -226,15 +221,47 @@ const ITransmissionBitModel* Ieee80211LayeredTransmitter::createBitModel(
     unsigned int dataBitLength = dataFieldBits->getSize();
     for (unsigned int i = 0; i < dataFieldBits->getSize(); i++)
         encodedBits->appendBit(dataFieldBits->getBit(i));
+    // TODO: compliant, non-compliant
     Ieee80211OFDMModulation signalModulation(channelSpacing);
     Ieee80211OFDMModulation dataModulation(rate, channelSpacing);
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalModulation.getBitrate().get(), dataModulation.getBitrate().get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
+void Ieee80211LayeredTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength, uint8_t rate) const
+{
+    unsigned int codedBitsPerOFDMSymbol;
+    const Ieee80211Interleaving *interleaving = NULL;
+    const Ieee80211ConvolutionalCode *fec = NULL;
+    if (encoder)
+    {
+        const Ieee80211LayeredEncoderModule *encoderModule = check_and_cast<const Ieee80211LayeredEncoderModule *>(encoder);
+        const Ieee80211OFDMCode *code = encoderModule->getCode();
+        ASSERT(code != NULL);
+        interleaving = code->getInterleaving();
+        fec = code->getConvCode();
+    }
+    if (!interleaving) // non-compliant
+    {
+        Ieee80211OFDMModulation ofdmModulation(rate, channelSpacing);
+        const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
+        codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
+    }
+    else
+        codedBitsPerOFDMSymbol = interleaving->getNumberOfCodedBitsPerSymbol();
+    if (!fec) // non-compliant
+    {
+        const Ieee80211OFDMCode code(rate, channelSpacing);
+        fec = code.getConvCode();
+    }
+    unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
+    unsigned int appendedBitsLength = dataBitsPerOFDMSymbol - dataBitsLength % dataBitsPerOFDMSymbol;
+    serializedPacket->appendBit(0, appendedBitsLength);
+}
+
 const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
 {
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
-    BitVector *serializedPacket = new BitVector(serialize(packetModel->getPacket()));
+    BitVector *serializedPacket = serialize(packetModel->getPacket());
     const ITransmissionPacketModel *completePacketModel = new TransmissionPacketModel(packetModel->getPacket(), serializedPacket);
     delete packetModel;
     ASSERT(packetModel != NULL);

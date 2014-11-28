@@ -60,13 +60,14 @@ class INET_API Ieee80211LayeredTransmitter : public ITransmitter, public cSimple
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
         const ITransmissionAnalogModel* createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const;
-        BitVector serialize(const cPacket* packet) const; // FIXME: kludge
+        BitVector *serialize(const cPacket* packet) const; // FIXME: kludge
         uint8_t getRate(const BitVector* serializedPacket) const; // TODO: copy
         const ITransmissionPacketModel *createSignalFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
         const ITransmissionPacketModel *createDataFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
-        const ITransmissionSymbolModel *encodeAndModulate(const ITransmissionPacketModel *fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const;
+        void encodeAndModulate(const ITransmissionPacketModel *fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const;
         const ITransmissionSymbolModel *createSymbolModel(const ITransmissionSymbolModel *signalFieldSymbolModel, const ITransmissionSymbolModel *dataFieldSymbolModel) const;
         const ITransmissionBitModel *createBitModel(const ITransmissionBitModel *signalFieldBitModel, const ITransmissionBitModel *dataFieldBitModel, uint8_t rate) const;
+        void padding(BitVector *serializedPacket, unsigned int dataBitsLength, uint8_t rate) const;
 
     public:
         virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;
