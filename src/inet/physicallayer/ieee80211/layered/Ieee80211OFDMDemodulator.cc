@@ -27,12 +27,14 @@ namespace inet {
 namespace physicallayer {
 
 Ieee80211OFDMDemodulator::Ieee80211OFDMDemodulator(const Ieee80211OFDMModulation *ofdmModulation) :
+        ofdmModulation(ofdmModulation),
         demodulationScheme(ofdmModulation->getModulationScheme())
 {
 
 }
 
 Ieee80211OFDMDemodulator::Ieee80211OFDMDemodulator(const APSKModulationBase* demodulationScheme) :
+        ofdmModulation(NULL),
         demodulationScheme(demodulationScheme)
 {
 

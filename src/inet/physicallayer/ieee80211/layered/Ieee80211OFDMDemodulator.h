@@ -33,6 +33,7 @@ namespace physicallayer {
 class INET_API Ieee80211OFDMDemodulator : public IDemodulator
 {
     protected:
+        const Ieee80211OFDMModulation *ofdmModulation;
         const APSKModulationBase *demodulationScheme;
 
     protected:
@@ -42,6 +43,7 @@ class INET_API Ieee80211OFDMDemodulator : public IDemodulator
 
     public:
         const APSKModulationBase *getDemodulationScheme() const { return demodulationScheme; }
+        const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmModulation; }
         virtual const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
         void printToStream(std::ostream& stream) const { stream << "TODO"; }
         Ieee80211OFDMDemodulator(const Ieee80211OFDMModulation *ofdmModulation);
