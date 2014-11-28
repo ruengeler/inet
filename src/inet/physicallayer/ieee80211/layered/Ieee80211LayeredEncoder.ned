@@ -31,7 +31,7 @@ module Ieee80211LayeredEncoder like IEncoder
         string interleaverType = default("");
         double channelSpacing @unit(Hz);
         @display("bgb=140,313");
-        @class(Ieee80211LayeredEncoder);
+        @class(Ieee80211LayeredEncoderModule);
 
     submodules:
         fecEncoder: <fecType> like IFECCoder if fecType != "" {
