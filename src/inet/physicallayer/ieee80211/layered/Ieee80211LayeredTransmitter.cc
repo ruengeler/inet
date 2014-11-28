@@ -231,7 +231,7 @@ void Ieee80211LayeredTransmitter::padding(BitVector* serializedPacket, unsigned 
 {
     unsigned int codedBitsPerOFDMSymbol;
     const Ieee80211Interleaving *interleaving = NULL;
-    const Ieee80211ConvolutionalCode *fec = NULL;
+    const ConvolutionalCode *fec = NULL;
     if (encoder)
     {
         const Ieee80211LayeredEncoderModule *encoderModule = check_and_cast<const Ieee80211LayeredEncoderModule *>(encoder);

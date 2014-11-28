@@ -82,9 +82,9 @@ Ieee80211LayeredEncoder::Ieee80211LayeredEncoder(const IFECCoder* fecEncoder, co
         scrambler(scrambler),
         channelSpacing(channelSpacing)
 {
-    const Ieee80211ConvolutionalCode *fec = NULL;
+    const ConvolutionalCode *fec = NULL;
     if (fecEncoder)
-        fec = dynamic_cast<const Ieee80211ConvolutionalCode *>(fecEncoder->getForwardErrorCorrection());
+        fec = dynamic_cast<const ConvolutionalCode *>(fecEncoder->getForwardErrorCorrection());
     const Ieee80211Interleaving *interleaving = NULL;
     if (interleaver)
         interleaving = dynamic_cast<const Ieee80211Interleaving *>(interleaver->getInterleaving());

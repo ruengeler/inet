@@ -112,7 +112,7 @@ unsigned int Ieee80211LayeredReceiver::getSignalFieldLength(const BitVector *sig
     return length.toDecimal();
 }
 
-unsigned int Ieee80211LayeredReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const Ieee80211ConvolutionalCode *fec) const
+unsigned int Ieee80211LayeredReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
 {
     ASSERT(modulationScheme != NULL);
     unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
@@ -151,7 +151,7 @@ const IReceptionBitModel* Ieee80211LayeredReceiver::createSignalFieldReceptionBi
     return new ReceptionBitModel(ENCODED_SIGNAL_FIELD_LENGTH, -1, receptionBitModel->getHeaderBitRate(), -1, headerBits, receptionBitModel->getModulation());
 }
 
-const IReceptionBitModel* Ieee80211LayeredReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const Ieee80211ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
+const IReceptionBitModel* Ieee80211LayeredReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
 {
     unsigned int psduLengthInBits = getSignalFieldLength(signalFieldReceptionPacketModel->getSerializedPacket()) * 8;
     unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_BITS_LENGTH + PPDU_TAIL_BITS_LENGTH;

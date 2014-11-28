@@ -65,7 +65,7 @@ Ieee80211OFDMCode::Ieee80211OFDMCode(Hz channelSpacing) :
     interleaving = new Ieee80211Interleaving(OFDM_SYMBOL_SIZE, 1);
 }
 
-Ieee80211OFDMCode::Ieee80211OFDMCode(const Ieee80211ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling, Hz channelSpacing) :
+Ieee80211OFDMCode::Ieee80211OFDMCode(const ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling, Hz channelSpacing) :
         channelSpacing(channelSpacing),
         convCode(convCode),
         interleaving(interleaving),

@@ -34,7 +34,7 @@ class INET_API Ieee80211OFDMCode : public IIeee80211Code
 {
     protected:
         Hz channelSpacing;
-        const Ieee80211ConvolutionalCode *convCode;
+        const ConvolutionalCode *convCode;
         const Ieee80211Interleaving *interleaving;
         const Ieee80211Scrambling *scrambling;
 
@@ -44,14 +44,14 @@ class INET_API Ieee80211OFDMCode : public IIeee80211Code
         const Ieee80211Scrambling *computeScrambling() const;
 
     public:
-        const Ieee80211ConvolutionalCode *getConvCode() const { return convCode; }
+        const ConvolutionalCode *getConvCode() const { return convCode; }
         const Ieee80211Interleaving *getInterleaving() const { return interleaving; }
         const Ieee80211Scrambling *getScrambling() const { return scrambling; }
         const Hz getChannelSpacing() const { return channelSpacing; }
 
         Ieee80211OFDMCode(Hz channelSpacing);
         Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing);
-        Ieee80211OFDMCode(const Ieee80211ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling, Hz channelSpacing);
+        Ieee80211OFDMCode(const ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling, Hz channelSpacing);
 };
 
 } /* namespace physicallayer */
