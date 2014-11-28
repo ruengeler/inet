@@ -44,7 +44,7 @@ namespace physicallayer {
     (MAC) and Physical Layer (PHY) Specifications
     [4]  Puncturing matrices came from http://en.wikipedia.org/wiki/Convolutional_code#Punctured_convolutional_codes
  */
-class ConvolutionalCoder : public IFECCoder
+class INET_API ConvolutionalCoder : public IFECCoder
 {
     public:
         typedef std::vector<std::vector<ShortBitVector> > ShortBitVectorMatrix;
