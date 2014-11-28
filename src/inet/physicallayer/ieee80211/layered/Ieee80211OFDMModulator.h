@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_OFDMMODULATOR_H
-#define __INET_OFDMMODULATOR_H
+#ifndef __INET_IEEE80211OFDMMODULATOR_H
+#define __INET_IEEE80211OFDMMODULATOR_H
 
 #include "inet/physicallayer/contract/IModulator.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
@@ -54,4 +54,4 @@ class INET_API Ieee80211OFDMModulator : public IModulator
 } // namespace physicallayer
 } // namespace inet
 
-#endif /* __INET_OFDMMODULATOR_H */
+#endif /* __INET_IEEE80211OFDMMODULATOR_H */

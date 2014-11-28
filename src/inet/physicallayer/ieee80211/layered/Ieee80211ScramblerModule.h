@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 // 
-
-#ifndef __INET_IEEE80211SCRAMBLERMODULE_H_
-#define __INET_IEEE80211SCRAMBLERMODULE_H_
+#ifndef __INET_IEEE80211SCRAMBLERMODULE_H
+#define __INET_IEEE80211SCRAMBLERMODULE_H
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambling.h"
@@ -44,4 +43,4 @@ class INET_API Ieee80211ScramblerModule : public cSimpleModule, public IScramble
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211SCRAMBLERMODULE_H_ */
+#endif /* __INET_IEEE80211SCRAMBLERMODULE_H */
