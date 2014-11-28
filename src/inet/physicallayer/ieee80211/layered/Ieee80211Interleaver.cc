@@ -23,7 +23,7 @@ namespace physicallayer {
 BitVector Ieee80211Interleaver::interleave(const BitVector& deinterleavedBits) const
 {
     if (deinterleavedBits.getSize() % numberOfCodedBitsPerSymbol)
-        throw cRuntimeError("deinterleavedBits length must be a multiple of numberOfCodedBitsPerSymbol = %d", numberOfCodedBitsPerSymbol);
+        throw cRuntimeError("deinterleavedBits length = %d must be a multiple of numberOfCodedBitsPerSymbol = %d", deinterleavedBits.getSize(), numberOfCodedBitsPerSymbol);
     int numberOfSymbols = deinterleavedBits.getSize() / numberOfCodedBitsPerSymbol;
     EV_DEBUG << "Interleaving the following bits: " << deinterleavedBits << endl;
     BitVector interleavedBits;
