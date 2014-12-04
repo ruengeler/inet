@@ -26,9 +26,9 @@ namespace inet {
 namespace physicallayer {
 
 #define OFDM_SYMBOL_SIZE 48
-Define_Module(Ieee80211OFDMDecdoderModule);
+Define_Module(Ieee80211OFDMDecoderModule);
 
-void Ieee80211OFDMDecdoderModule::initialize(int stage)
+void Ieee80211OFDMDecoderModule::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -43,12 +43,12 @@ void Ieee80211OFDMDecdoderModule::initialize(int stage)
     }
 }
 
-const IReceptionPacketModel* Ieee80211OFDMDecdoderModule::decode(const IReceptionBitModel* bitModel) const
+const IReceptionPacketModel* Ieee80211OFDMDecoderModule::decode(const IReceptionBitModel* bitModel) const
 {
     return layeredDecoder->decode(bitModel);
 }
 
-Ieee80211OFDMDecdoderModule::~Ieee80211OFDMDecdoderModule()
+Ieee80211OFDMDecoderModule::~Ieee80211OFDMDecoderModule()
 {
     delete layeredDecoder;
 }
