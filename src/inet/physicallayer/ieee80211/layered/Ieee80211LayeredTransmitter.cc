@@ -94,7 +94,6 @@ BitVector *Ieee80211LayeredTransmitter::serialize(const cPacket* packet) const
     for (unsigned int i = 0; i < byteLength.toDecimal() * 8; i++)
         serializedPacket->appendBit(intuniform(0,1));
     serializedPacket->appendBit(0, 6); // tail bits
-    // FIXME: HACK, append bits
     int dataBitsLength = 6 + 16 + byteLength.toDecimal() * 8;
     padding(serializedPacket, dataBitsLength, rate.toDecimal());
     return serializedPacket;
@@ -221,10 +220,17 @@ const ITransmissionBitModel* Ieee80211LayeredTransmitter::createBitModel(
     unsigned int dataBitLength = dataFieldBits->getSize();
     for (unsigned int i = 0; i < dataFieldBits->getSize(); i++)
         encodedBits->appendBit(dataFieldBits->getBit(i));
-    // TODO: compliant, non-compliant
-    Ieee80211OFDMModulation signalModulation(channelSpacing);
-    Ieee80211OFDMModulation dataModulation(rate, channelSpacing);
-    return new TransmissionBitModel(signalBitLength, dataBitLength, signalModulation.getBitrate().get(), dataModulation.getBitrate().get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
+    Ieee80211OFDMModulation signalModulation(channelSpacing); // correct for both compliant and non-compliant mode
+    bps signalBitrate = signalModulation.getBitrate();
+    bps dataBitrate;
+    if (modulator)
+        dataBitrate = bitrate;
+    else
+    {
+        Ieee80211OFDMModulation dataModulation(rate, channelSpacing);
+        dataBitrate = dataModulation.getBitrate();
+    }
+    return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
 void Ieee80211LayeredTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength, uint8_t rate) const
