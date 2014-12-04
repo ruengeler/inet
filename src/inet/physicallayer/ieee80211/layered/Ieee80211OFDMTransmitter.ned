@@ -24,7 +24,7 @@ import inet.physicallayer.contract.IPulseShaper;
 import inet.physicallayer.contract.ITransmitter;
 
 
-module Ieee80211LayeredTransmitter like ITransmitter
+module Ieee80211OFDMTransmitter like ITransmitter
 {
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
@@ -40,7 +40,7 @@ module Ieee80211LayeredTransmitter like ITransmitter
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
         *.channelSpacing = channelSpacing;
-        @class(Ieee80211LayeredTransmitter);
+        @class(Ieee80211OFDMTransmitter);
 
     submodules:
         signalEncoder: <signalEncoderType> like IEncoder if signalEncoderType != "" {

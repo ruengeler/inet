@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredErrorModel.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMErrorModel.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
@@ -27,14 +27,14 @@
 namespace inet {
 namespace physicallayer {
 
-Define_Module(Ieee80211LayeredErrorModel);
+Define_Module(Ieee80211OFDMErrorModel);
 
-void Ieee80211LayeredErrorModel::initialize(int stage)
+void Ieee80211OFDMErrorModel::initialize(int stage)
 {
 
 }
 
-const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionBitModel* Ieee80211OFDMErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
     int signalBitLength = transmissionBitModel->getHeaderBitLength();
@@ -59,7 +59,7 @@ const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const Laye
     return new const ReceptionBitModel(signalBitLength, dataBitLength, signalBitRate, dataBitRate, corruptedBits, modulation);
 }
 
-const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionSymbolModel* Ieee80211OFDMErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
     const IModulation *modulation = transmissionSymbolModel->getModulation();
@@ -84,7 +84,7 @@ const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(cons
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
 }
 
-void Ieee80211LayeredErrorModel::corruptBits(BitVector *bits, double ber, int begin, int end) const
+void Ieee80211OFDMErrorModel::corruptBits(BitVector *bits, double ber, int begin, int end) const
 {
     for (int i = begin; i != end; i++)
     {
@@ -94,7 +94,7 @@ void Ieee80211LayeredErrorModel::corruptBits(BitVector *bits, double ber, int be
     }
 }
 
-OFDMSymbol *Ieee80211LayeredErrorModel::corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
+OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
 {
     std::vector<const APSKSymbol *> subcarrierSymbols = symbol->getSubCarrierSymbols();
     for (int j = 0; j < symbol->symbolSize(); j++)
@@ -110,7 +110,7 @@ OFDMSymbol *Ieee80211LayeredErrorModel::corruptOFDMSymbol(const OFDMSymbol *symb
     return new OFDMSymbol(subcarrierSymbols);
 }
 
-const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionSampleModel* Ieee80211OFDMErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     throw cRuntimeError("Unimplemented!");
     // TODO: implement sample error model
@@ -122,7 +122,7 @@ const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(cons
     return new const ReceptionSampleModel(sampleLength, sampleRate, samples, rssi);
 }
 
-const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR* snir) const
+const IReceptionPacketModel* Ieee80211OFDMErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     throw cRuntimeError("Unimplemented!");
     // TODO: implement error model

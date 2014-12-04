@@ -20,8 +20,8 @@ package inet.physicallayer.ieee80211.layered;
 import inet.physicallayer.contract.IErrorModel;
 
 
-module Ieee80211LayeredErrorModel like IErrorModel
+module Ieee80211OFDMErrorModel like IErrorModel
 {
     parameters:
-        @class(Ieee80211LayeredErrorModel);
+        @class(Ieee80211OFDMErrorModel);
 }

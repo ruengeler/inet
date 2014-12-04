@@ -16,7 +16,7 @@
 //
 
 #include "inet/mobility/contract/IMobility.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredTransmitter.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMTransmitter.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
@@ -33,9 +33,9 @@ namespace inet {
 
 namespace physicallayer {
 
-Define_Module(Ieee80211LayeredTransmitter);
+Define_Module(Ieee80211OFDMTransmitter);
 
-void Ieee80211LayeredTransmitter::initialize(int stage)
+void Ieee80211OFDMTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -64,7 +64,7 @@ void Ieee80211LayeredTransmitter::initialize(int stage)
 }
 
 // FIXME: Kludge
-BitVector *Ieee80211LayeredTransmitter::serialize(const cPacket* packet) const
+BitVector *Ieee80211OFDMTransmitter::serialize(const cPacket* packet) const
 {
     // HACK: Here we just compute the bit-correct PLCP header
     // and then we fill the remaining with random bits
@@ -100,7 +100,7 @@ BitVector *Ieee80211LayeredTransmitter::serialize(const cPacket* packet) const
 }
 
 
-const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(const cPacket* macFrame) const
+const ITransmissionPacketModel* Ieee80211OFDMTransmitter::createPacketModel(const cPacket* macFrame) const
 {
     const RadioTransmissionRequest *controlInfo = dynamic_cast<const RadioTransmissionRequest *>(macFrame->getControlInfo());
     bps currentBitrate;
@@ -122,7 +122,7 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createPacketModel(c
     return packetModel;
 }
 
-const ITransmissionAnalogModel* Ieee80211LayeredTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
+const ITransmissionAnalogModel* Ieee80211OFDMTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
 {
     simtime_t duration = headerBitLength / headerBitRate + payloadBitLength / payloadBitRate; // TODO: preamble duration
     const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
@@ -130,7 +130,7 @@ const ITransmissionAnalogModel* Ieee80211LayeredTransmitter::createAnalogModel(i
 }
 
 // TODO: copy
-uint8_t Ieee80211LayeredTransmitter::getRate(const BitVector* serializedPacket) const
+uint8_t Ieee80211OFDMTransmitter::getRate(const BitVector* serializedPacket) const
 {
     ShortBitVector rate;
     for (unsigned int i = 0; i < 4; i++)
@@ -138,7 +138,7 @@ uint8_t Ieee80211LayeredTransmitter::getRate(const BitVector* serializedPacket) 
     return rate.toDecimal();
 }
 
-const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createSignalFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
+const ITransmissionPacketModel* Ieee80211OFDMTransmitter::createSignalFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
 {
     // The SIGNAL field is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1), Tail (6),
     // fields, so the SIGNAL field is 24 bits long.
@@ -149,7 +149,7 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createSignalFieldPa
     return new TransmissionPacketModel(NULL, signalField);
 }
 
-const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createDataFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
+const ITransmissionPacketModel* Ieee80211OFDMTransmitter::createDataFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
 {
     BitVector *dataField = new BitVector();
     const BitVector *serializedPacket = completePacketModel->getSerializedPacket();
@@ -158,7 +158,7 @@ const ITransmissionPacketModel* Ieee80211LayeredTransmitter::createDataFieldPack
     return new TransmissionPacketModel(NULL, dataField);
 }
 
-void Ieee80211LayeredTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const
+void Ieee80211OFDMTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const
 {
     if (levelOfDetail >= BIT_DOMAIN)
     {
@@ -197,7 +197,7 @@ void Ieee80211LayeredTransmitter::encodeAndModulate(const ITransmissionPacketMod
     }
 }
 
-const ITransmissionSymbolModel* Ieee80211LayeredTransmitter::createSymbolModel(
+const ITransmissionSymbolModel* Ieee80211OFDMTransmitter::createSymbolModel(
         const ITransmissionSymbolModel* signalFieldSymbolModel,
         const ITransmissionSymbolModel* dataFieldSymbolModel) const
 {
@@ -209,7 +209,7 @@ const ITransmissionSymbolModel* Ieee80211LayeredTransmitter::createSymbolModel(
     return new TransmissionSymbolModel(0, 0, mergedSymbols, dataFieldSymbolModel->getModulation());
 }
 
-const ITransmissionBitModel* Ieee80211LayeredTransmitter::createBitModel(
+const ITransmissionBitModel* Ieee80211OFDMTransmitter::createBitModel(
         const ITransmissionBitModel* signalFieldBitModel,
         const ITransmissionBitModel* dataFieldBitModel,
         uint8_t rate) const
@@ -233,7 +233,7 @@ const ITransmissionBitModel* Ieee80211LayeredTransmitter::createBitModel(
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
-void Ieee80211LayeredTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength, uint8_t rate) const
+void Ieee80211OFDMTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength, uint8_t rate) const
 {
     unsigned int codedBitsPerOFDMSymbol;
     const Ieee80211Interleaving *interleaving = NULL;
@@ -264,7 +264,7 @@ void Ieee80211LayeredTransmitter::padding(BitVector* serializedPacket, unsigned 
     serializedPacket->appendBit(0, appendedBitsLength);
 }
 
-const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
+const ITransmission *Ieee80211OFDMTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
 {
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
     BitVector *serializedPacket = serialize(packetModel->getPacket());

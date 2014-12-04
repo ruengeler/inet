@@ -34,8 +34,7 @@
 namespace inet {
 namespace physicallayer {
 
-// TODO: rename Ieee80211LayeredOFDMReceiver
-class INET_API Ieee80211LayeredReceiver : public SNIRReceiverBase
+class INET_API Ieee80211OFDMReceiver : public SNIRReceiverBase
 {
     public:
         enum LevelOfDetail
@@ -81,7 +80,7 @@ class INET_API Ieee80211LayeredReceiver : public SNIRReceiverBase
         const IListeningDecision* computeListeningDecision(const IListening* listening, const IInterference* interference) const;
         const IListening* createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
         virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
-        Ieee80211LayeredReceiver();
+        Ieee80211OFDMReceiver();
 };
 
 } /* namespace physicallayer */

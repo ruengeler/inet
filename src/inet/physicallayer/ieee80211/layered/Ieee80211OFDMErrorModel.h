@@ -24,7 +24,7 @@
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredErrorModel : public ILayeredErrorModel, public cSimpleModule
+class INET_API Ieee80211OFDMErrorModel : public ILayeredErrorModel, public cSimpleModule
 {
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }

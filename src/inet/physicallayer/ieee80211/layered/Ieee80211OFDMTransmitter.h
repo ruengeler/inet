@@ -28,7 +28,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredTransmitter : public ITransmitter, public cSimpleModule
+class INET_API Ieee80211OFDMTransmitter : public ITransmitter, public cSimpleModule
 {
     // TODO: copy
     public:
@@ -78,7 +78,7 @@ class INET_API Ieee80211LayeredTransmitter : public ITransmitter, public cSimple
         virtual W getMaxPower() const { return power; }
         const Hz getBandwidth() const { return bandwidth; }
         const Hz getCarrierFrequency() const { return carrierFrequency; }
-        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredTransmitter"; }
+        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMTransmitter"; }
 };
 
 } // namespace physicallayer

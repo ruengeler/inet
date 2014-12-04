@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredReceiver.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMReceiver.h"
 #include "inet/physicallayer/contract/ISymbol.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/LayeredReceptionDecision.h"
@@ -49,9 +49,9 @@ namespace physicallayer {
 #define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
 
-Define_Module(Ieee80211LayeredReceiver);
+Define_Module(Ieee80211OFDMReceiver);
 
-Ieee80211LayeredReceiver::Ieee80211LayeredReceiver() :
+Ieee80211OFDMReceiver::Ieee80211OFDMReceiver() :
     errorModel(NULL),
     decoder(NULL),
     headerDecoder(NULL),
@@ -62,7 +62,7 @@ Ieee80211LayeredReceiver::Ieee80211LayeredReceiver() :
 {
 }
 
-void Ieee80211LayeredReceiver::initialize(int stage)
+void Ieee80211OFDMReceiver::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -94,7 +94,7 @@ void Ieee80211LayeredReceiver::initialize(int stage)
     }
 }
 
-uint8_t Ieee80211LayeredReceiver::getRate(const BitVector* serializedPacket) const
+uint8_t Ieee80211OFDMReceiver::getRate(const BitVector* serializedPacket) const
 {
     ShortBitVector rate;
     for (unsigned int i = 0; i < 4; i++)
@@ -102,7 +102,7 @@ uint8_t Ieee80211LayeredReceiver::getRate(const BitVector* serializedPacket) con
     return rate.toDecimal();
 }
 
-unsigned int Ieee80211LayeredReceiver::getSignalFieldLength(const BitVector *signalField) const
+unsigned int Ieee80211OFDMReceiver::getSignalFieldLength(const BitVector *signalField) const
 {
     ShortBitVector length;
     for (int i = SIGNAL_LENGTH_FIELD_START; i <= SIGNAL_LENGTH_FIELD_END; i++)
@@ -110,7 +110,7 @@ unsigned int Ieee80211LayeredReceiver::getSignalFieldLength(const BitVector *sig
     return length.toDecimal();
 }
 
-unsigned int Ieee80211LayeredReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
+unsigned int Ieee80211OFDMReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
 {
     ASSERT(modulationScheme != NULL);
     unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
@@ -119,7 +119,7 @@ unsigned int Ieee80211LayeredReceiver::calculatePadding(unsigned int dataFieldLe
 }
 
 
-const IReceptionSymbolModel* Ieee80211LayeredReceiver::createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
+const IReceptionSymbolModel* Ieee80211OFDMReceiver::createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
 {
 //    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
     const std::vector<const ISymbol *> *symbols = receptionSymbolModel->getSymbols();
@@ -129,7 +129,7 @@ const IReceptionSymbolModel* Ieee80211LayeredReceiver::createSignalFieldReceptio
     return new ReceptionSymbolModel(1, receptionSymbolModel->getSymbolRate(), signalSymbols);
 }
 
-const IReceptionSymbolModel* Ieee80211LayeredReceiver::createDataFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
+const IReceptionSymbolModel* Ieee80211OFDMReceiver::createDataFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
 {
     const std::vector<const ISymbol *> *symbols = receptionSymbolModel->getSymbols();
     std::vector<const ISymbol *> *dataSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
@@ -140,7 +140,7 @@ const IReceptionSymbolModel* Ieee80211LayeredReceiver::createDataFieldReceptionS
 }
 
 
-const IReceptionBitModel* Ieee80211LayeredReceiver::createSignalFieldReceptionBitModel(const IReceptionBitModel* receptionBitModel) const
+const IReceptionBitModel* Ieee80211OFDMReceiver::createSignalFieldReceptionBitModel(const IReceptionBitModel* receptionBitModel) const
 {
     BitVector *headerBits = new BitVector();
     const BitVector *bits = receptionBitModel->getBits();
@@ -149,7 +149,7 @@ const IReceptionBitModel* Ieee80211LayeredReceiver::createSignalFieldReceptionBi
     return new ReceptionBitModel(ENCODED_SIGNAL_FIELD_LENGTH, -1, receptionBitModel->getHeaderBitRate(), -1, headerBits, receptionBitModel->getModulation());
 }
 
-const IReceptionBitModel* Ieee80211LayeredReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
+const IReceptionBitModel* Ieee80211OFDMReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
 {
     unsigned int psduLengthInBits = getSignalFieldLength(signalFieldReceptionPacketModel->getSerializedPacket()) * 8;
     unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_BITS_LENGTH + PPDU_TAIL_BITS_LENGTH;
@@ -165,7 +165,7 @@ const IReceptionBitModel* Ieee80211LayeredReceiver::createDataFieldReceptionBitM
     return new ReceptionBitModel(-1, encodedDataFieldLengthInBits, -1, receptionBitModel->getPayloadBitRate(), dataBits, receptionBitModel->getModulation());
 }
 
-const IReceptionPacketModel *Ieee80211LayeredReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredScalarTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
+const IReceptionPacketModel *Ieee80211OFDMReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredScalarTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
 {
     const IReceptionSymbolModel *signalFieldReceptionSymbolModel = NULL;
     const IReceptionBitModel *signalFieldReceptionBitModel = NULL;
@@ -209,7 +209,7 @@ const IReceptionPacketModel *Ieee80211LayeredReceiver::demodulateAndDecodeSignal
     return signalFieldReceptionPacketModel;
 }
 
-const IReceptionPacketModel* Ieee80211LayeredReceiver::demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
+const IReceptionPacketModel* Ieee80211OFDMReceiver::demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
 {
     const IReceptionBitModel *dataFieldReceptionBitModel = NULL;
     const IReceptionSymbolModel *dataFieldReceptionSymbolModel = NULL;
@@ -251,7 +251,7 @@ const IReceptionPacketModel* Ieee80211LayeredReceiver::demodulateAndDecodeDataFi
     return dataFieldReceptionPacketModel;
 }
 
-const IReceptionPacketModel* Ieee80211LayeredReceiver::createCompleteReceptionPacketModel(const IReceptionPacketModel* signalFieldReceptionPacketModel, const IReceptionPacketModel* dataFieldReceptionPacketModel) const
+const IReceptionPacketModel* Ieee80211OFDMReceiver::createCompleteReceptionPacketModel(const IReceptionPacketModel* signalFieldReceptionPacketModel, const IReceptionPacketModel* dataFieldReceptionPacketModel) const
 {
     const BitVector *headerBits = signalFieldReceptionPacketModel->getSerializedPacket();
     BitVector *mergedBits = new BitVector(*headerBits);
@@ -263,7 +263,7 @@ const IReceptionPacketModel* Ieee80211LayeredReceiver::createCompleteReceptionPa
     return new ReceptionPacketModel(deserializedPacket, mergedBits, NULL, NULL, NULL, 0, true);
 }
 
-const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
+const IReceptionDecision *Ieee80211OFDMReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
 {
     const IRadio *receiver = reception->getReceiver();
     const IRadioMedium *medium = receiver->getMedium();
@@ -308,13 +308,13 @@ const IReceptionDecision *Ieee80211LayeredReceiver::computeReceptionDecision(con
     return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, NULL, NULL, NULL, NULL, true, true, hackedPacketModel->isPacketErrorless());
 }
 
-const IListening* Ieee80211LayeredReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
+const IListening* Ieee80211OFDMReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
 {
     return new BandListening(radio, startTime, endTime, startPosition, endPosition, carrierFrequency, bandwidth);
 }
 
 // TODO: copy
-const IListeningDecision* Ieee80211LayeredReceiver::computeListeningDecision(const IListening* listening, const IInterference* interference) const
+const IListeningDecision* Ieee80211OFDMReceiver::computeListeningDecision(const IListening* listening, const IInterference* interference) const
 {
     const IRadio *receiver = listening->getReceiver();
     const IRadioMedium *radioMedium = receiver->getMedium();
@@ -330,7 +330,7 @@ const IListeningDecision* Ieee80211LayeredReceiver::computeListeningDecision(con
 
 // TODO: this is not purely functional, see interface comment
 // TODO: copy
-bool Ieee80211LayeredReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
+bool Ieee80211OFDMReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
 {
     const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
     const NarrowbandReceptionBase *flatReception = check_and_cast<const NarrowbandReceptionBase *>(reception);

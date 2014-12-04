@@ -25,7 +25,7 @@ import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
 
 
-module Ieee80211LayeredReceiver like IReceiver
+module Ieee80211OFDMReceiver like IReceiver
 {
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
@@ -43,7 +43,7 @@ module Ieee80211LayeredReceiver like IReceiver
         double snirThreshold @unit(dB);
         double channelSpacing @unit(Hz);
         **.channelSpacing = channelSpacing;
-        @class(Ieee80211LayeredReceiver);
+        @class(Ieee80211OFDMReceiver);
 
     submodules:
         errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
