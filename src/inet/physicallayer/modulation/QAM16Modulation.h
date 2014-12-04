@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_QAM16MODULATION_H_
-#define __INET_QAM16MODULATION_H_
+#ifndef __INET_QAM16MODULATION_H
+#define __INET_QAM16MODULATION_H
 
 #include "inet/physicallayer/base/APSKModulationBase.h"
 
@@ -42,4 +42,4 @@ class INET_API QAM16Modulation : public APSKModulationBase
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /*__INET_QAM16MODULATION_H_ */
+#endif /*__INET_QAM16MODULATION_H */
