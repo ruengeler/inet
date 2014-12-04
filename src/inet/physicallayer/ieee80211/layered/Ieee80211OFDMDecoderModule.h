@@ -20,7 +20,7 @@
 
 #include "inet/common/INETDefs.h"
 #include "inet/physicallayer/contract/IDecoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredDecoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDecoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
@@ -29,10 +29,10 @@
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredDecoderModule : public cSimpleModule, public IDecoder
+class INET_API Ieee80211OFDMDecdoderModule : public cSimpleModule, public IDecoder
 {
     protected:
-        const Ieee80211LayeredDecoder *layeredDecoder;
+        const Ieee80211OFDMDecoder *layeredDecoder;
         const IScrambler *descrambler;
         const IFECCoder *fecDecoder;
         const IInterleaver *deinterleaver;
@@ -44,10 +44,10 @@ class INET_API Ieee80211LayeredDecoderModule : public cSimpleModule, public IDec
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
 
     public:
-        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredDecoder"; }
+        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMDecoder"; }
         const Ieee80211OFDMCode *getCode() const { return layeredDecoder->getCode(); }
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
-        virtual ~Ieee80211LayeredDecoderModule();
+        virtual ~Ieee80211OFDMDecdoderModule();
 };
 
 } /* namespace physicallayer */

@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredDecoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDecoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
@@ -39,7 +39,7 @@ namespace physicallayer {
 #define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
 
-Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const Ieee80211OFDMCode *code) :
+Ieee80211OFDMDecoder::Ieee80211OFDMDecoder(const Ieee80211OFDMCode *code) :
         descrambler(NULL),
         fecDecoder(NULL),
         deinterleaver(NULL)
@@ -53,7 +53,7 @@ Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const Ieee80211OFDMCode *code) 
         deinterleaver = new Ieee80211Interleaver(code->getInterleaving());
 }
 
-Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver, Hz channelSpacing) :
+Ieee80211OFDMDecoder::Ieee80211OFDMDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver, Hz channelSpacing) :
         descrambler(descrambler),
         fecDecoder(fecDecoder),
         deinterleaver(deinterleaver),
@@ -71,7 +71,7 @@ Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const IScrambler *descrambler, 
     code = new Ieee80211OFDMCode(fec, interleaving, scrambling, channelSpacing);
 }
 
-const IReceptionPacketModel* Ieee80211LayeredDecoder::decode(const IReceptionBitModel* bitModel) const
+const IReceptionPacketModel* Ieee80211OFDMDecoder::decode(const IReceptionBitModel* bitModel) const
 {
     BitVector *decodedBits = new BitVector(*bitModel->getBits());
     const IInterleaving *interleaving = NULL;
@@ -99,14 +99,14 @@ const IReceptionPacketModel* Ieee80211LayeredDecoder::decode(const IReceptionBit
     return createPacketModel(decodedBits, scrambling, forwardErrorCorrection, interleaving);
 }
 
-const IReceptionPacketModel* Ieee80211LayeredDecoder::createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const
+const IReceptionPacketModel* Ieee80211OFDMDecoder::createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const
 {
     double per = -1;
     bool packetErrorless = true; // TODO: compute packet error rate, packetErrorLess
     return new ReceptionPacketModel(NULL, decodedBits, fec, scrambling, interleaving, per, packetErrorless); // FIXME: memory leak
 }
 
-ShortBitVector Ieee80211LayeredDecoder::getSignalFieldRate(const BitVector& signalField) const
+ShortBitVector Ieee80211OFDMDecoder::getSignalFieldRate(const BitVector& signalField) const
 {
     ShortBitVector rate;
     for (int i = SIGNAL_RATE_FIELD_START; i <= SIGNAL_RATE_FIELD_END; i++)
@@ -114,7 +114,7 @@ ShortBitVector Ieee80211LayeredDecoder::getSignalFieldRate(const BitVector& sign
     return rate;
 }
 
-unsigned int Ieee80211LayeredDecoder::getSignalFieldLength(const BitVector& signalField) const
+unsigned int Ieee80211OFDMDecoder::getSignalFieldLength(const BitVector& signalField) const
 {
     ShortBitVector length;
     for (int i = SIGNAL_LENGTH_FIELD_START; i <= SIGNAL_LENGTH_FIELD_END; i++)
@@ -122,7 +122,7 @@ unsigned int Ieee80211LayeredDecoder::getSignalFieldLength(const BitVector& sign
     return length.toDecimal();
 }
 
-unsigned int Ieee80211LayeredDecoder::calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const Ieee80211ConvolutionalCode *fec) const
+unsigned int Ieee80211OFDMDecoder::calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const Ieee80211ConvolutionalCode *fec) const
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
@@ -131,7 +131,7 @@ unsigned int Ieee80211LayeredDecoder::calculatePadding(unsigned int dataFieldLen
     return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
 }
 
-Ieee80211LayeredDecoder::~Ieee80211LayeredDecoder()
+Ieee80211OFDMDecoder::~Ieee80211OFDMDecoder()
 {
     delete code;
     delete deinterleaver;

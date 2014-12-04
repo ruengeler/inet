@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "Ieee80211LayeredDecoderModule.h"
+#include "Ieee80211OFDMDecoderModule.h"
 #include "inet/physicallayer/common/DummySerializer.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
@@ -26,9 +26,9 @@ namespace inet {
 namespace physicallayer {
 
 #define OFDM_SYMBOL_SIZE 48
-Define_Module(Ieee80211LayeredDecoderModule);
+Define_Module(Ieee80211OFDMDecdoderModule);
 
-void Ieee80211LayeredDecoderModule::initialize(int stage)
+void Ieee80211OFDMDecdoderModule::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -39,16 +39,16 @@ void Ieee80211LayeredDecoderModule::initialize(int stage)
     }
     else if (stage == INITSTAGE_PHYSICAL_LAYER)
     {
-        layeredDecoder = new Ieee80211LayeredDecoder(descrambler , fecDecoder, deinterleaver, channelSpacing);
+        layeredDecoder = new Ieee80211OFDMDecoder(descrambler , fecDecoder, deinterleaver, channelSpacing);
     }
 }
 
-const IReceptionPacketModel* Ieee80211LayeredDecoderModule::decode(const IReceptionBitModel* bitModel) const
+const IReceptionPacketModel* Ieee80211OFDMDecdoderModule::decode(const IReceptionBitModel* bitModel) const
 {
     return layeredDecoder->decode(bitModel);
 }
 
-Ieee80211LayeredDecoderModule::~Ieee80211LayeredDecoderModule()
+Ieee80211OFDMDecdoderModule::~Ieee80211OFDMDecdoderModule()
 {
     delete layeredDecoder;
 }

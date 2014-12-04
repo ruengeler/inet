@@ -25,7 +25,7 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/common/BandListening.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredDecoderModule.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDecoderModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDemodulatorModule.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
@@ -202,7 +202,7 @@ const IReceptionPacketModel *Ieee80211LayeredReceiver::demodulateAndDecodeSignal
         else
         {
             const Ieee80211OFDMCode *code = new Ieee80211OFDMCode(channelSpacing);
-            const Ieee80211LayeredDecoder decoder(code);
+            const Ieee80211OFDMDecoder decoder(code);
             signalFieldReceptionPacketModel = decoder.decode(signalFieldReceptionBitModel);
         }
     }
@@ -244,7 +244,7 @@ const IReceptionPacketModel* Ieee80211LayeredReceiver::demodulateAndDecodeDataFi
             dataFieldReceptionPacketModel = decoder->decode(dataFieldReceptionBitModel);
         else
         {
-            const Ieee80211LayeredDecoder decoder(code);
+            const Ieee80211OFDMDecoder decoder(code);
             dataFieldReceptionPacketModel = decoder.decode(dataFieldReceptionBitModel);
         }
     }

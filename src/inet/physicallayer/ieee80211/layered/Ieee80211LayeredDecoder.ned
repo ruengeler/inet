@@ -23,14 +23,14 @@ import inet.physicallayer.contract.IInterleaver;
 import inet.physicallayer.contract.IScrambler;
 
 
-module Ieee80211LayeredDecoder like IDecoder
+module Ieee80211OFDMDecoder like IDecoder
 {
     parameters:
         string fecType = default("");
         string deinterleaverType = default("");
         string descramblerType = default("");
         double channelSpacing @unit(Hz);
-        @class(Ieee80211LayeredDecoderModule);
+        @class(Ieee80211OFDMDecoderModule);
 
     submodules:
         descrambler: <descramblerType> like IScrambler if descramblerType != "" {
