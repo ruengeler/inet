@@ -22,12 +22,16 @@
 #define __INET_PCAPDUMP_H
 
 #include "inet/common/INETDefs.h"
+#include "inet/linklayer/ethernet/EtherFrame.h"
+#include "inet/linklayer/ieee80211/mac/Ieee80211Frame_m.h"
 
 namespace inet {
 
 // Foreign declarations:
 class IPv4Datagram;
 class IPv6Datagram;
+
+using namespace ieee80211;
 
 /**
  * Dumps packets into a PCAP file; see the "pcap-savefile" man page or
@@ -37,44 +41,45 @@ class IPv6Datagram;
  */
 class PcapDump
 {
-  protected:
-    FILE *dumpfile;    // pcap file
-    unsigned int snaplen;    // max. length of packets in pcap file
+    protected:
+        FILE *dumpfile;         // pcap file
+        unsigned int snaplen;   // max. length of packets in pcap file
 
-  public:
-    /**
-     * Constructor. It does not open the output file.
-     */
-    PcapDump();
+    public:
+        /**
+         * Constructor. It does not open the output file.
+         */
+        PcapDump();
 
-    /**
-     * Destructor. It closes the output file if it is open.
-     */
-    ~PcapDump();
+        /**
+         * Destructor. It closes the output file if it is open.
+         */
+        ~PcapDump();
 
-    /**
-     * Opens a PCAP file with the given file name. The snaplen parameter
-     * is the length that packets will be truncated to. Throws an exception
-     * if the file cannot be opened.
-     */
-    void openPcap(const char *filename, unsigned int snaplen);
+        /**
+         * Opens a PCAP file with the given file name. The snaplen parameter
+         * is the length that packets will be truncated to. Throws an exception
+         * if the file cannot be opened.
+         */
+        void openPcap(const char *filename, unsigned int snaplen, unsigned int linktype);
 
-    /**
-     * Returns true if the pcap file is currently open.
-     */
-    bool isOpen() const { return dumpfile != NULL; }
+        /**
+         * Returns true if the pcap file is currently open.
+         */
+        bool isOpen() const { return dumpfile != NULL; }
 
-    /**
-     * Records the given packet into the output file if it is open,
-     * and throws an exception otherwise.
-     */
-    void writeFrame(simtime_t time, const IPv4Datagram *ipPacket);
-    void writeIPv6Frame(simtime_t stime, const IPv6Datagram *ipPacket);
+        /**
+         * Records the given packet into the output file if it is open,
+         * and throws an exception otherwise.
+         */
+        void writeFrame(simtime_t time, const IPv4Datagram *ipPacket);
+        void writeEtherFrame(simtime_t stime, const EthernetIIFrame *etherPacket);
+        void writeIeee80211Frame(simtime_t stime, Ieee80211Frame *ieee80211Packet);
 
-    /**
-     * Closes the output file if it is open.
-     */
-    void closePcap();
+        /**
+         * Closes the output file if it is open.
+         */
+        void closePcap();
 };
 
 } // namespace inet

@@ -18,9 +18,17 @@
 
 package inet.examples.inet.pcaprecorder;
 
+
 import inet.common.misc.NetAnimTrace;
+import inet.common.packet.PcapRecorder;
+import inet.common.queue.Sink;
+import inet.common.serializer.PcapParser;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
+import inet.networklayer.configurator.ipv6.FlatNetworkConfigurator6;
 import inet.node.inet.StandardHost;
+import inet.node.inet.WirelessHost;
+import inet.node.ipv6.StandardHost6;
+import inet.node.wireless.AccessPoint;
 import ned.DatarateChannel;
 
 
@@ -34,11 +42,7 @@ network PcapRecorderTest
             delay = 0.1us;
         }
     submodules:
-        client0: StandardHost {
-            parameters:
-                @display("p=164,36;i=device/pc3");
-        }
-        client1: StandardHost {
+        client: StandardHost {
             parameters:
                 @display("p=164,136;i=device/pc3");
         }
@@ -54,7 +58,83 @@ network PcapRecorderTest
             @display("p=46,105");
         }
     connections:
-        client0.pppg++ <--> C <--> server.pppg++;
-        client1.ethg++ <--> C <--> server.ethg++;
+        client.ethg++ <--> C <--> server.ethg++;
 }
 
+
+network PcapRecorderTestIPv6
+{
+    @display("bgb=306,193");
+    types:
+        channel C extends DatarateChannel
+        {
+            datarate = 10Mbps;
+            delay = 0.1us;
+        }
+    submodules:
+        client: StandardHost6 {
+            parameters:
+                @display("p=164,136;i=device/pc3");
+        }
+        server: StandardHost6 {
+            parameters:
+                @display("p=260,87;i=device/pc2");
+        }
+        configurator: FlatNetworkConfigurator6 {
+            parameters:
+                @display("p=46,28");
+        }
+    connections:
+        client.ethg++ <--> C <--> server.ethg++;
+}
+
+network PcapRecorderTest80211
+{
+    submodules:
+        client: WirelessHost {
+            parameters:
+                @display("p=164,136");
+                wlan[*].mgmtType = "Ieee80211MgmtSTASimplified";
+        }
+        server: WirelessHost {
+            parameters:
+                @display("p=260,87");
+                wlan[*].mgmtType = "Ieee80211MgmtSTASimplified";
+        }
+        ap: AccessPoint {
+            parameters:
+                @display("p=239,178");
+                wlan[*].mgmtType = "Ieee80211MgmtAPSimplified";
+        }
+        radioChannel: SimplifiedRadioChannel {
+            parameters:
+                numChannels = 2;
+                @display("p=61,46");
+        }
+        configurator: IPv4NetworkConfigurator {
+            parameters:
+                config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");
+                @display("p=61,108");
+        }
+}
+
+network PcapParserTest
+{
+    submodules:
+        PCAP: PcapParser {
+            @display("p=58,56");
+        }
+        Sink: Sink {
+            @display("p=212,56");
+        }
+    connections:
+        PCAP.packageOut --> Sink.in++;
+}
+
+network PcapToPcap extends PcapParserTest
+{
+    submodules:
+        Recorder: PcapRecorder {
+            @display("p=134,119");
+        }
+}

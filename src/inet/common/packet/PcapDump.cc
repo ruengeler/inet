@@ -22,8 +22,12 @@
 #include <errno.h>
 
 #include "inet/common/packet/PcapDump.h"
+#include "inet/common/serializer/pcap.h"
 
 #include "inet/networklayer/common/IPProtocolId_m.h"
+
+#include "inet/common/serializer/headerserializers/ethernet/EthernetSerializer.h"
+#include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
 
 #ifdef WITH_UDP
 #include "inet/transportlayer/udp/UDPPacket_m.h"
@@ -41,30 +45,7 @@
 
 namespace inet {
 
-#define MAXBUFLENGTH    65536
-
-#define PCAP_MAGIC      0xa1b2c3d4
-
-/* "libpcap" file header (minus magic number). */
-struct pcap_hdr
-{
-    uint32 magic;    /* magic */
-    uint16 version_major;    /* major version number */
-    uint16 version_minor;    /* minor version number */
-    uint32 thiszone;    /* GMT to local correction */
-    uint32 sigfigs;    /* accuracy of timestamps */
-    uint32 snaplen;    /* max length of captured packets, in octets */
-    uint32 network;    /* data link type */
-};
-
-/* "libpcap" record header. */
-struct pcaprec_hdr
-{
-    int32 ts_sec;    /* timestamp seconds */
-    uint32 ts_usec;    /* timestamp microseconds */
-    uint32 incl_len;    /* number of octets of packet saved in file */
-    uint32 orig_len;    /* actual length of packet */
-};
+using namespace serializer;
 
 PcapDump::PcapDump()
 {
@@ -76,7 +57,7 @@ PcapDump::~PcapDump()
     closePcap();
 }
 
-void PcapDump::openPcap(const char *filename, unsigned int snaplen_par)
+void PcapDump::openPcap(const char* filename, unsigned int snaplen_par, unsigned int linktype)
 {
     struct pcap_hdr fh;
 
@@ -96,7 +77,7 @@ void PcapDump::openPcap(const char *filename, unsigned int snaplen_par)
     fh.thiszone = 0;
     fh.sigfigs = 0;
     fh.snaplen = snaplen;
-    fh.network = 0;
+    fh.network = linktype;
     fwrite(&fh, sizeof(fh), 1, dumpfile);
 }
 
@@ -110,10 +91,15 @@ void PcapDump::writeFrame(simtime_t stime, const IPv4Datagram *ipPacket)
     memset((void *)&buf, 0, sizeof(buf));
 
     struct pcaprec_hdr ph;
-    ph.ts_sec = (int32)stime.dbl();
-    ph.ts_usec = (uint32)((stime.dbl() - ph.ts_sec) * 1000000);
-    // Write Ethernet header
-    uint32 hdr = 2;    //AF_INET
+
+    simtime_t stime_usec;
+    int64 temp_sec;
+    stime.split(SIMTIME_S, temp_sec, stime_usec);
+    ph.ts_sec = (int32)temp_sec;
+    ph.ts_usec = stime_usec.inUnit(SIMTIME_US);
+
+     // Write Ethernet header
+    uint32 hdr = 2; //AF_INET
 
     int32 serialized_ip = serializer::IPv4Serializer().serialize(ipPacket, buf, sizeof(buf), true);
     ph.orig_len = serialized_ip + sizeof(uint32);
@@ -122,38 +108,61 @@ void PcapDump::writeFrame(simtime_t stime, const IPv4Datagram *ipPacket)
     fwrite(&ph, sizeof(ph), 1, dumpfile);
     fwrite(&hdr, sizeof(uint32), 1, dumpfile);
     fwrite(buf, ph.incl_len - sizeof(uint32), 1, dumpfile);
-#else // ifdef WITH_IPv4
+#else
     throw cRuntimeError("Cannot write frame: INET compiled without IPv4 feature");
-#endif // ifdef WITH_IPv4
+#endif
 }
 
-void PcapDump::writeIPv6Frame(simtime_t stime, const IPv6Datagram *ipPacket)
+void PcapDump::writeEtherFrame(simtime_t stime, const EthernetIIFrame *etherPacket)
 {
     if (!dumpfile)
         throw cRuntimeError("Cannot write frame: pcap output file is not open");
 
-#ifdef WITH_IPv6
     uint8 buf[MAXBUFLENGTH];
     memset((void *)&buf, 0, sizeof(buf));
 
     struct pcaprec_hdr ph;
-    ph.ts_sec = (int32)stime.dbl();
-    ph.ts_usec = (uint32)((stime.dbl() - ph.ts_sec) * 1000000);
-    // Write Ethernet header
-    uint32 hdr = 2;    //AF_INET
 
-    int32 serialized_ip = serializer::IPv6Serializer().serialize(ipPacket, buf, sizeof(buf));
-    if (serialized_ip > 0) {
-        ph.orig_len = serialized_ip + sizeof(uint32);
+    simtime_t stime_usec;
+    int64 temp_sec;
+    stime.split(SIMTIME_S, temp_sec, stime_usec);
+    ph.ts_sec = (int32)temp_sec;
+    ph.ts_usec = stime_usec.inUnit(SIMTIME_US);
+
+    int32 serialized_ethernet = EthernetSerializer().serialize(etherPacket, buf, sizeof(buf));
+    if (serialized_ethernet > 0) {
+        ph.orig_len = serialized_ethernet;
 
         ph.incl_len = ph.orig_len > snaplen ? snaplen : ph.orig_len;
         fwrite(&ph, sizeof(ph), 1, dumpfile);
-        fwrite(&hdr, sizeof(uint32), 1, dumpfile);
-        fwrite(buf, ph.incl_len - sizeof(uint32), 1, dumpfile);
+        fwrite(buf, ph.incl_len, 1, dumpfile);
     }
-#else // ifdef WITH_IPv6
-    throw cRuntimeError("Cannot write frame: INET compiled without IPv6 feature");
-#endif // ifdef WITH_IPv6
+}
+
+void PcapDump::writeIeee80211Frame(simtime_t stime, Ieee80211Frame *ieee80211Packet)
+{
+    if (!dumpfile)
+        throw cRuntimeError("Cannot write frame: pcap output file is not open");
+
+    uint8 buf[MAXBUFLENGTH];
+    memset((void*)&buf, 0, sizeof(buf));
+
+    struct pcaprec_hdr ph;
+
+    simtime_t stime_usec;
+    int64 temp_sec;
+    stime.split(SIMTIME_S, temp_sec, stime_usec);
+    ph.ts_sec = (int32)temp_sec;
+    ph.ts_usec = stime_usec.inUnit(SIMTIME_US);
+
+    int32 serialized_ieee80211 = Ieee80211Serializer().serialize(ieee80211Packet, buf, sizeof(buf));
+    if (serialized_ieee80211 > 0) {
+        ph.orig_len = serialized_ieee80211;
+
+        ph.incl_len = ph.orig_len > snaplen ? snaplen : ph.orig_len;
+        fwrite(&ph, sizeof(ph), 1, dumpfile);
+        fwrite(buf, ph.incl_len, 1, dumpfile);
+    }
 }
 
 void PcapDump::closePcap()
