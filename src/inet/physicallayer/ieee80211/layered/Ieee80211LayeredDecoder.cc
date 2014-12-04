@@ -59,9 +59,9 @@ Ieee80211LayeredDecoder::Ieee80211LayeredDecoder(const IScrambler *descrambler, 
         deinterleaver(deinterleaver),
         channelSpacing(channelSpacing)
 {
-    const Ieee80211ConvolutionalCode *fec = NULL;
+    const ConvolutionalCode *fec = NULL;
     if (fecDecoder)
-        fec = dynamic_cast<const Ieee80211ConvolutionalCode *>(fecDecoder->getForwardErrorCorrection());
+        fec = dynamic_cast<const ConvolutionalCode *>(fecDecoder->getForwardErrorCorrection());
     const Ieee80211Interleaving *interleaving = NULL;
     if (deinterleaver)
         interleaving = dynamic_cast<const Ieee80211Interleaving *>(deinterleaver->getInterleaving());
