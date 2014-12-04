@@ -27,8 +27,8 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/common/BandListening.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredDecoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDemodulator.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredDecoderModule.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDemodulatorModule.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
@@ -226,7 +226,7 @@ const IReceptionPacketModel* Ieee80211LayeredReceiver::demodulateAndDecodeDataFi
         if (demodulator) // non-compliant mode
         {
             dataFieldReceptionBitModel = demodulator->demodulate(dataFieldReceptionSymbolModel);
-            const Ieee80211OFDMDemodulator *ofdmDemodulator = check_and_cast<const Ieee80211OFDMDemodulator *>(demodulator);
+            const Ieee80211OFDMDemodulatorModule *ofdmDemodulator = check_and_cast<const Ieee80211OFDMDemodulatorModule *>(demodulator);
             dataDemodulationScheme = ofdmDemodulator->getDemodulationScheme();
         }
         else // compliant mode
@@ -238,17 +238,12 @@ const IReceptionPacketModel* Ieee80211LayeredReceiver::demodulateAndDecodeDataFi
     if (levelOfDetail >= BIT_DOMAIN)
     {
         const Ieee80211OFDMCode *code = NULL;
-        if (!decoder)
+        if (!decoder || !dataFieldReceptionBitModel)
             code = new Ieee80211OFDMCode(rate, channelSpacing);
         if (!dataFieldReceptionBitModel)
             dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvCode(), receptionBitModel, signalFieldReceptionPacketModel);
         if (decoder) // non-compliant mode
-        {
             dataFieldReceptionPacketModel = decoder->decode(dataFieldReceptionBitModel);
-            const Ieee80211LayeredDecoder *ieee80211Decoder = check_and_cast<const Ieee80211LayeredDecoder *>(decoder);
-            const Ieee80211OFDMCode *code = ieee80211Decoder->getCode();
-            dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvCode(), receptionBitModel, signalFieldReceptionPacketModel);
-        }
         else
         {
             const Ieee80211LayeredDecoder decoder(code);
