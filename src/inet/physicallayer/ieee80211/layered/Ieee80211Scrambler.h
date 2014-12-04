@@ -27,9 +27,7 @@
 namespace inet {
 namespace physicallayer {
 
-/* TODO: It is not a completely generic scrambler, it implements a 802.11a scrambler, however it can be parameterized
- * with a seed and a generator polynomial. Make it more generic and implement other scramblers. For example: there is
- * difference between a multiplicative scrambler and an additive scrambler.
+/*
  *
  * It is a IEEE 802.11 data scrambler/descrambler implementation.
  * The details can be found in: Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications,
