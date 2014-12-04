@@ -18,9 +18,13 @@
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 
 namespace inet {
-
 namespace physicallayer {
 
-} // namespace physicallayer
+LayeredScalarTransmission::LayeredScalarTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, Hz bandwidth, Hz carrierFrequency, W power) :
+    LayeredTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, bandwidth),
+    carrierFrequency(carrierFrequency),
+    power(power)
+{}
 
+} // namespace physicallayer
 } // namespace inet

@@ -15,59 +15,27 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_LAYEREDTRANSMISSION_H
-#define __INET_LAYEREDTRANSMISSION_H
+#ifndef __INET_LAYEREDSCALARTRANSMISSION_H
+#define __INET_LAYEREDSCALARTRANSMISSION_H
 
-#include "inet/physicallayer/contract/ISignalPacketModel.h"
-#include "inet/physicallayer/contract/ISignalBitModel.h"
-#include "inet/physicallayer/contract/ISignalSymbolModel.h"
-#include "inet/physicallayer/contract/ISignalSampleModel.h"
-#include "inet/physicallayer/contract/ISignalAnalogModel.h"
-#include "inet/physicallayer/base/TransmissionBase.h"
+#include "inet/physicallayer/layered/LayeredTransmission.h"
 
 namespace inet {
-
 namespace physicallayer {
 
-class INET_API LayeredScalarTransmission : public TransmissionBase
+class INET_API LayeredScalarTransmission : public LayeredTransmission
 {
   protected:
-    const ITransmissionPacketModel *packetModel;
-    const ITransmissionBitModel    *bitModel;
-    const ITransmissionSymbolModel *symbolModel;
-    const ITransmissionSampleModel *sampleModel;
-    const ITransmissionAnalogModel *analogModel;
-
-    const Hz bandwidth;
     const Hz carrierFrequency;
     const W power;
 
   public:
-    LayeredScalarTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, Hz bandwidth, Hz carrierFreequency, W power) :
-        TransmissionBase(transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation),
-        packetModel(packetModel),
-        bitModel(bitModel),
-        symbolModel(symbolModel),
-        sampleModel(sampleModel),
-        analogModel(analogModel),
-        bandwidth(bandwidth),
-        carrierFrequency(carrierFreequency),
-        power(power)
-    {}
-
-    virtual const ITransmissionPacketModel *getPacketModel() const { return packetModel; }
-    virtual const ITransmissionBitModel    *getBitModel()    const { return bitModel; }
-    virtual const ITransmissionSymbolModel *getSymbolModel() const { return symbolModel; }
-    virtual const ITransmissionSampleModel *getSampleModel() const { return sampleModel; }
-    virtual const ITransmissionAnalogModel *getAnalogModel() const { return analogModel; }
-
-    const Hz getBandwidth() const { return bandwidth; }
     const Hz getCarrierFrequency() const { return carrierFrequency; }
     const W getPower() const { return power; }
+    LayeredScalarTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, Hz bandwidth, Hz carrierFrequency, W power);
 };
 
 } // namespace physicallayer
-
 } // namespace inet
 
-#endif // ifndef __INET_LAYEREDTRANSMISSION_H
+#endif // __INET_LAYEREDSCALARTRANSMISSION_H
