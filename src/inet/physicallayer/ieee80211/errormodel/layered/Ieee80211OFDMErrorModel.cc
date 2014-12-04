@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMErrorModel.h"
+#include "inet/physicallayer/ieee80211/errormodel/layered/Ieee80211OFDMErrorModel.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
