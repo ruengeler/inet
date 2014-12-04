@@ -296,6 +296,7 @@ const ITransmission *Ieee80211LayeredTransmitter::createTransmission(const IRadi
             else // compliant mode
             {
                 // TODO: implement
+                throw cRuntimeError("Compliant pulse shaper is unimplemented!");
             }
         }
         else
