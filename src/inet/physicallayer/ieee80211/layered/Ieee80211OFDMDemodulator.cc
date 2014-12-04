@@ -40,7 +40,7 @@ Ieee80211OFDMDemodulator::Ieee80211OFDMDemodulator(const APSKModulationBase* dem
 
 }
 
-BitVector Ieee80211OFDMDemodulator::demodulateSymbol(const OFDMSymbol *signalSymbol) const
+BitVector Ieee80211OFDMDemodulator::demodulateSymbol(const Ieee80211OFDMSymbol *signalSymbol) const
 {
     std::vector<const APSKSymbol*> apskSymbols = signalSymbol->getSubCarrierSymbols();
     BitVector field;
@@ -75,7 +75,7 @@ const IReceptionBitModel* Ieee80211OFDMDemodulator::demodulate(const IReceptionS
     BitVector *bitRepresentation = new BitVector();
     for (unsigned int i = 0; i < symbols->size(); i++)
     {
-        const OFDMSymbol *symbol = dynamic_cast<const OFDMSymbol *>(symbols->at(i));
+        const Ieee80211OFDMSymbol *symbol = dynamic_cast<const Ieee80211OFDMSymbol *>(symbols->at(i));
         BitVector bits = demodulateSymbol(symbol);
         for (unsigned int j = 0; j < bits.getSize(); j++)
             bitRepresentation->appendBit(bits.getBit(j));

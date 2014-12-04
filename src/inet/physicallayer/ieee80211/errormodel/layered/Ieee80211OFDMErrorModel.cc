@@ -73,11 +73,11 @@ const IReceptionSymbolModel* Ieee80211OFDMErrorModel::computeSymbolModel(const L
     const std::vector<const ISymbol*> *symbols = transmissionSymbolModel->getSymbols();
     std::vector<const ISymbol*> *corruptedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
     // Only the first symbol is signal field symbol
-    corruptedSymbols->push_back(corruptOFDMSymbol(check_and_cast<const OFDMSymbol *>(symbols->at(0)), headerSER, signalFieldConstellationSize, constellationDiagramForSignalField));
+    corruptedSymbols->push_back(corruptOFDMSymbol(check_and_cast<const Ieee80211OFDMSymbol *>(symbols->at(0)), headerSER, signalFieldConstellationSize, constellationDiagramForSignalField));
     // The remaining are all data field symbols
     for (unsigned int i = 1; i < symbols->size(); i++)
     {
-        OFDMSymbol *corruptedOFDMSymbol = corruptOFDMSymbol(check_and_cast<const OFDMSymbol *>(symbols->at(i)), dataSER,
+        Ieee80211OFDMSymbol *corruptedOFDMSymbol = corruptOFDMSymbol(check_and_cast<const Ieee80211OFDMSymbol *>(symbols->at(i)), dataSER,
                                                             dataFieldConstellationSize, constellationDiagramForDataField);
         corruptedSymbols->push_back(corruptedOFDMSymbol);
     }
@@ -94,7 +94,7 @@ void Ieee80211OFDMErrorModel::corruptBits(BitVector *bits, double ber, int begin
     }
 }
 
-OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
+Ieee80211OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const Ieee80211OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
 {
     std::vector<const APSKSymbol *> subcarrierSymbols = symbol->getSubCarrierSymbols();
     for (int j = 0; j < symbol->symbolSize(); j++)
@@ -107,7 +107,7 @@ OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const OFDMSymbol *symbol,
             subcarrierSymbols[j] = corruptedSubcarrierSymbol;
         }
     }
-    return new OFDMSymbol(subcarrierSymbols);
+    return new Ieee80211OFDMSymbol(subcarrierSymbols);
 }
 
 const IReceptionSampleModel* Ieee80211OFDMErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const

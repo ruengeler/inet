@@ -22,7 +22,7 @@
 #include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
 #include "inet/physicallayer/contract/layered/IDemodulator.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
-#include "inet/physicallayer/modulation/OFDMSymbol.h"
+#include "inet/physicallayer/modulation/ieee80211/Ieee80211OFDMSymbol.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
@@ -37,7 +37,7 @@ class INET_API Ieee80211OFDMDemodulator : public IDemodulator
         const APSKModulationBase *demodulationScheme;
 
     protected:
-        BitVector demodulateSymbol(const OFDMSymbol *signalSymbol) const;
+        BitVector demodulateSymbol(const Ieee80211OFDMSymbol *signalSymbol) const;
         const IReceptionBitModel *createBitModel(const BitVector *bitRepresentation, int signalFieldBitLength, double signalFieldBitRate, int dataFieldBitLength, double dataFieldBitRate) const;
         bool isPilotOrDcSubcarrier(int i) const;
 

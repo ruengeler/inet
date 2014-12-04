@@ -69,7 +69,7 @@ int Ieee80211OFDMModulator::getSubcarrierIndex(int ofdmSymbolIndex) const
         throw cRuntimeError("The domain of the M(k) (k = %d) function is [0,47]", ofdmSymbolIndex);
 }
 
-void Ieee80211OFDMModulator::insertPilotSubcarriers(OFDMSymbol *ofdmSymbol, int symbolID) const
+void Ieee80211OFDMModulator::insertPilotSubcarriers(Ieee80211OFDMSymbol *ofdmSymbol, int symbolID) const
 {
     ofdmSymbol->pushAPSKSymbol(new APSKSymbol(polarityVector[symbolID] * Complex(1,0)), 5);
     ofdmSymbol->pushAPSKSymbol(new APSKSymbol(polarityVector[symbolID] * Complex(1,0)), 19);
@@ -100,7 +100,7 @@ const ITransmissionSymbolModel *Ieee80211OFDMModulator::modulate(const ITransmis
     }
     // Divide the complex number string into groups of 48 complex numbers.
     // Each such group is associated with one OFDM symbol.
-    OFDMSymbol *ofdmSymbol = new OFDMSymbol(); // TODO: fix memory leak
+    Ieee80211OFDMSymbol *ofdmSymbol = new Ieee80211OFDMSymbol(); // TODO: fix memory leak
     int symbolID = 1;
     for (unsigned int i = 0; i < apskSymbols.size(); i++)
     {
@@ -114,7 +114,7 @@ const ITransmissionSymbolModel *Ieee80211OFDMModulator::modulate(const ITransmis
             insertPilotSubcarriers(ofdmSymbol, symbolID);
             EV_DEBUG << "Modulated #" << symbolID << " DATA field: " << *ofdmSymbol << endl;
             ofdmSymbols->push_back(ofdmSymbol);
-            ofdmSymbol = new OFDMSymbol();
+            ofdmSymbol = new Ieee80211OFDMSymbol();
             symbolID++;
         }
     }

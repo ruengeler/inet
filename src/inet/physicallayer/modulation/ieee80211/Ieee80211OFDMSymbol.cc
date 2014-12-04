@@ -15,19 +15,19 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/modulation/OFDMSymbol.h"
+#include "inet/physicallayer/modulation/ieee80211/Ieee80211OFDMSymbol.h"
 
 namespace inet {
 namespace physicallayer {
 
-void physicallayer::OFDMSymbol::pushAPSKSymbol(const APSKSymbol* apskSymbol, int subcarrierIndex)
+void Ieee80211OFDMSymbol::pushAPSKSymbol(const APSKSymbol* apskSymbol, int subcarrierIndex)
 {
     if (subcarrierIndex >= 53)
         throw cRuntimeError("Out of range with subcarrierIndex = %d", subcarrierIndex);
     subcarrierSymbols[subcarrierIndex] = apskSymbol;
 }
 
-std::ostream& operator<<(std::ostream& out, const OFDMSymbol& symbol)
+std::ostream& operator<<(std::ostream& out, const Ieee80211OFDMSymbol& symbol)
 {
     if (symbol.subcarrierSymbols[0])
         out << *symbol.subcarrierSymbols[0];
@@ -41,10 +41,9 @@ std::ostream& operator<<(std::ostream& out, const OFDMSymbol& symbol)
     return out;
 }
 
-OFDMSymbol::~OFDMSymbol()
+Ieee80211OFDMSymbol::~Ieee80211OFDMSymbol()
 {
     // Dynamically created pilot symbols need to be deleted
-    // TODO: Ieee80211 specific
     delete subcarrierSymbols[5];
     delete subcarrierSymbols[19];
     delete subcarrierSymbols[33];

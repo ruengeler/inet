@@ -22,7 +22,7 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
-#include "inet/physicallayer/modulation/OFDMSymbol.h"
+#include "inet/physicallayer/modulation/ieee80211/Ieee80211OFDMSymbol.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 
 namespace inet {
@@ -39,7 +39,7 @@ class INET_API Ieee80211OFDMModulator : public IModulator
 
   protected:
     int getSubcarrierIndex(int ofdmSymbolIndex) const;
-    void insertPilotSubcarriers(OFDMSymbol *ofdmSymbol, int symbolID) const;
+    void insertPilotSubcarriers(Ieee80211OFDMSymbol *ofdmSymbol, int symbolID) const;
 
   public:
     virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const;
