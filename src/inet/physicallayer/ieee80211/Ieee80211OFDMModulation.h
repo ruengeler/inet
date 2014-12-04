@@ -34,16 +34,20 @@ class INET_API Ieee80211OFDMModulation : public IModulation
         uint8_t signalRateField;
         Hz channelSpacing;
         bps bitrate;
-        simtime_t slotDuration; // todo
+        simtime_t slotTime; // todo
+        simtime_t symbolDuration; // todo
+        simtime_t guardInterval; // todo
 
     protected:
         const APSKModulationBase* computeModulation(uint8_t rate) const;
         bps computeDataBitrate(uint8_t rate, Hz channelSpacing) const;
         bps computeHeaderBitrate(Hz channelSpacing) const;
         uint8_t calculateRateField(Hz channelSpacing, bps bitrate) const;
+        simtime_t computeSlotTime(Hz channelSpacing) const;
+        simtime_t computeSymbolDuration(Hz channelSpacing) const;
+        simtime_t computeGuardInterval(Hz channelSpacing) const;
 
     public:
-        // TODO: delete
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const { return modulationScheme->calculateBER(snir, bandwidth, bitrate); }
         virtual double calculateSER(double snir) const { return modulationScheme->calculateSER(snir); }
         virtual Hz getChannelSpacing() const { return channelSpacing; }
@@ -53,7 +57,6 @@ class INET_API Ieee80211OFDMModulation : public IModulation
         Ieee80211OFDMModulation(Hz channelSpacing); // header
         Ieee80211OFDMModulation(uint8_t signalRateField, Hz channelSpacing); // data
         Ieee80211OFDMModulation(bps dataRate, Hz channelSpacing); // data
-        virtual ~Ieee80211OFDMModulation();
 };
 
 } /* namespace physicallayer */

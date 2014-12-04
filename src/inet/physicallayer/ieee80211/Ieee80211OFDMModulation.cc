@@ -51,6 +51,45 @@ bps Ieee80211OFDMModulation::computeHeaderBitrate(Hz channelSpacing) const
         throw cRuntimeError("Invalid channel spacing %lf", channelSpacing.get());
 }
 
+simtime_t Ieee80211OFDMModulation::computeSlotTime(Hz channelSpacing) const
+{
+//    The slot time for the OFDM PHY shall be 9 μ s for 20 MHz channel spacing, shall be 13 μs for 10 MHz
+//    channel spacing, and shall be 21 μs for 5 MHz channel spacing.
+    if (channelSpacing == MHz(20))
+        return 9.0 / 1000000.0;
+    else if (channelSpacing == MHz(10))
+        return 13.0 / 1000000.0;
+    else if (channelSpacing == MHz(5))
+        return 21.0 / 1000000.0;
+    else
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+}
+
+simtime_t Ieee80211OFDMModulation::computeSymbolDuration(Hz channelSpacing) const
+{
+    // Table 18-12—Major parameters of the OFDM PHY
+    if (channelSpacing == MHz(20))
+        return 4.0 / 1000000.0;
+    else if (channelSpacing == MHz(10))
+        return 8.0 / 1000000.0;
+    else if (channelSpacing == MHz(5))
+        return 16.0 / 1000000.0;
+    else
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+}
+
+simtime_t Ieee80211OFDMModulation::computeGuardInterval(Hz channelSpacing) const
+{
+    // Table 18-12—Major parameters of the OFDM PHY
+    if (channelSpacing == MHz(20))
+        return 0.8 / 1000000.0;
+    else if (channelSpacing == MHz(10))
+        return 1.6 / 1000000.0;
+    else if (channelSpacing == MHz(5))
+        return 3.2 / 1000000.0;
+    else
+        throw cRuntimeError("Unknown channel spacing = %lf", channelSpacing);
+}
 
 uint8_t Ieee80211OFDMModulation::calculateRateField(Hz channelSpacing, bps bitrate) const
 {
@@ -114,12 +153,16 @@ bps Ieee80211OFDMModulation::computeDataBitrate(uint8_t rate, Hz channelSpacing)
         throw cRuntimeError("Invalid rate field: %d", rate);
 }
 
+
 Ieee80211OFDMModulation::Ieee80211OFDMModulation(uint8_t signalRateField, Hz channelSpacing) :
         signalRateField(signalRateField),
         channelSpacing(channelSpacing)
 {
     modulationScheme = computeModulation(signalRateField);
     bitrate = computeDataBitrate(signalRateField, channelSpacing);
+    slotTime = computeSlotTime(channelSpacing);
+    symbolDuration = computeSymbolDuration(channelSpacing);
+    guardInterval = computeGuardInterval(channelSpacing);
 }
 
 Ieee80211OFDMModulation::Ieee80211OFDMModulation(bps dataRate, Hz channelSpacing) :
@@ -128,6 +171,9 @@ Ieee80211OFDMModulation::Ieee80211OFDMModulation(bps dataRate, Hz channelSpacing
 {
     signalRateField = calculateRateField(channelSpacing, dataRate);
     modulationScheme = computeModulation(signalRateField);
+    slotTime = computeSlotTime(channelSpacing);
+    symbolDuration = computeSymbolDuration(channelSpacing);
+    guardInterval = computeGuardInterval(channelSpacing);
 }
 
 Ieee80211OFDMModulation::Ieee80211OFDMModulation(Hz channelSpacing) :
@@ -136,10 +182,9 @@ Ieee80211OFDMModulation::Ieee80211OFDMModulation(Hz channelSpacing) :
     bitrate = computeHeaderBitrate(channelSpacing);
     modulationScheme = &BPSKModulation::singleton;
     signalRateField = 0;
-}
-
-Ieee80211OFDMModulation::~Ieee80211OFDMModulation()
-{
+    slotTime = computeSlotTime(channelSpacing);
+    symbolDuration = computeSymbolDuration(channelSpacing);
+    guardInterval = computeGuardInterval(channelSpacing);
 }
 
 } /* namespace physicallayer */
