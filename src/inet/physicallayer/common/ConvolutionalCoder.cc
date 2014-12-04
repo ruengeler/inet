@@ -494,7 +494,7 @@ std::pair<BitVector, bool> ConvolutionalCoder::decode(const BitVector& encodedBi
         for (int i = 1; i != numberOfStates; i++)
         {
             TrellisGraphNode currentNode = trellisGraph[i][time];
-            if (!currentNode.symbol != -1 && currentNode.comulativeHammingDistance < bestNode.comulativeHammingDistance)
+            if (currentNode.symbol != -1 && currentNode.comulativeHammingDistance < bestNode.comulativeHammingDistance)
                 bestNode = currentNode;
         }
     }
