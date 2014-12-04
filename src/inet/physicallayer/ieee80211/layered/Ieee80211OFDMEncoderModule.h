@@ -18,15 +18,15 @@
 #ifndef __INET_IEEE80211LAYEREDENCODERMODULE_H
 #define __INET_IEEE80211LAYEREDENCODERMODULE_H
 
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoder.h"
 
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredEncoderModule : public IEncoder, public cSimpleModule
+class INET_API Ieee80211OFDMEncoderModule : public IEncoder, public cSimpleModule
 {
     protected:
-        const Ieee80211LayeredEncoder *encoder;
+        const Ieee80211OFDMEncoder *encoder;
         const ISerializer *serializer;
         const IScrambler *scrambler;
         const IFECCoder *fecEncoder;
@@ -40,10 +40,10 @@ class INET_API Ieee80211LayeredEncoderModule : public IEncoder, public cSimpleMo
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
 
     public:
-        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211LayeredEncoder"; }
+        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMEncoder"; }
         const Ieee80211OFDMCode *getCode() const { return encoder->getCode(); }
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
-        virtual ~Ieee80211LayeredEncoderModule();
+        virtual ~Ieee80211OFDMEncoderModule();
 };
 
 } /* namespace physicallayer */

@@ -25,8 +25,8 @@
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoderModule.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoderModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulator.h"
 
 namespace inet {
@@ -171,7 +171,7 @@ void Ieee80211LayeredTransmitter::encodeAndModulate(const ITransmissionPacketMod
                 code = new Ieee80211OFDMCode(channelSpacing);
             else // data
                 code = new Ieee80211OFDMCode(rate, channelSpacing);
-            const Ieee80211LayeredEncoder encoder(code);
+            const Ieee80211OFDMEncoder encoder(code);
             fieldBitModel = encoder.encode(fieldPacketModel);
         }
     }
@@ -240,7 +240,7 @@ void Ieee80211LayeredTransmitter::padding(BitVector* serializedPacket, unsigned 
     const ConvolutionalCode *fec = NULL;
     if (encoder)
     {
-        const Ieee80211LayeredEncoderModule *encoderModule = check_and_cast<const Ieee80211LayeredEncoderModule *>(encoder);
+        const Ieee80211OFDMEncoderModule *encoderModule = check_and_cast<const Ieee80211OFDMEncoderModule *>(encoder);
         const Ieee80211OFDMCode *code = encoderModule->getCode();
         ASSERT(code != NULL);
         interleaving = code->getInterleaving();

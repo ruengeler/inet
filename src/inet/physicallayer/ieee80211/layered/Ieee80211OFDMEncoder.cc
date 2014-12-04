@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
 #include "inet/common/ShortBitVector.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
@@ -35,7 +35,7 @@ namespace physicallayer {
 #define PPDU_TAIL_BITS_LENGTH 6
 #define OFDM_SYMBOL_SIZE 48
 
-const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmissionPacketModel* packetModel) const
+const ITransmissionBitModel* Ieee80211OFDMEncoder::encode(const ITransmissionPacketModel* packetModel) const
 {
     const BitVector *serializedPacket = packetModel->getSerializedPacket();
     BitVector *encodedBits = new BitVector(*serializedPacket);
@@ -63,8 +63,8 @@ const ITransmissionBitModel* Ieee80211LayeredEncoder::encode(const ITransmission
     return new TransmissionBitModel(encodedBits, forwardErrorCorrection, scrambling, interleaving);
 }
 
-Ieee80211LayeredEncoder::Ieee80211LayeredEncoder(const Ieee80211OFDMCode *code) :
-        Ieee80211LayeredEncoder()
+Ieee80211OFDMEncoder::Ieee80211OFDMEncoder(const Ieee80211OFDMCode *code) :
+        Ieee80211OFDMEncoder()
 {
     this->code = new Ieee80211OFDMCode(*code);
     channelSpacing = code->getChannelSpacing();
@@ -76,7 +76,7 @@ Ieee80211LayeredEncoder::Ieee80211LayeredEncoder(const Ieee80211OFDMCode *code) 
         fecEncoder = new ConvolutionalCoder(code->getConvCode());
 }
 
-Ieee80211LayeredEncoder::Ieee80211LayeredEncoder(const IFECCoder* fecEncoder, const IInterleaver* interleaver, const IScrambler* scrambler, Hz channelSpacing) :
+Ieee80211OFDMEncoder::Ieee80211OFDMEncoder(const IFECCoder* fecEncoder, const IInterleaver* interleaver, const IScrambler* scrambler, Hz channelSpacing) :
         fecEncoder(fecEncoder),
         interleaver(interleaver),
         scrambler(scrambler),
@@ -94,7 +94,7 @@ Ieee80211LayeredEncoder::Ieee80211LayeredEncoder(const IFECCoder* fecEncoder, co
     code = new Ieee80211OFDMCode(fec, interleaving, scrambling, channelSpacing);
 }
 
-Ieee80211LayeredEncoder::Ieee80211LayeredEncoder() :
+Ieee80211OFDMEncoder::Ieee80211OFDMEncoder() :
         fecEncoder(NULL),
         interleaver(NULL),
         scrambler(NULL),
@@ -103,7 +103,7 @@ Ieee80211LayeredEncoder::Ieee80211LayeredEncoder() :
 {
 }
 
-Ieee80211LayeredEncoder::~Ieee80211LayeredEncoder()
+Ieee80211OFDMEncoder::~Ieee80211OFDMEncoder()
 {
     delete fecEncoder;
     delete interleaver;

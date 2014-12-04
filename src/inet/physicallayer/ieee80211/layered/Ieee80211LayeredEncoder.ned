@@ -23,7 +23,7 @@ import inet.physicallayer.contract.IInterleaver;
 import inet.physicallayer.contract.IScrambler;
 
 
-module Ieee80211LayeredEncoder like IEncoder
+module Ieee80211OFDMEncoder like IEncoder
 {
     parameters:
         string fecType = default("");
@@ -31,7 +31,7 @@ module Ieee80211LayeredEncoder like IEncoder
         string interleaverType = default("");
         double channelSpacing @unit(Hz);
         @display("bgb=140,313");
-        @class(Ieee80211LayeredEncoderModule);
+        @class(Ieee80211OFDMEncoderModule);
 
     submodules:
         fecEncoder: <fecType> like IFECCoder if fecType != "" {

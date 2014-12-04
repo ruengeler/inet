@@ -31,7 +31,7 @@
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredEncoder : public IEncoder
+class INET_API Ieee80211OFDMEncoder : public IEncoder
 {
     protected:
         const IFECCoder *fecEncoder;
@@ -44,10 +44,10 @@ class INET_API Ieee80211LayeredEncoder : public IEncoder
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
         virtual void printToStream(std::ostream& stream) const { stream << "IEEE80211 Layered Encoder"; }
         const Ieee80211OFDMCode *getCode() const { return code; }
-        Ieee80211LayeredEncoder();
-        Ieee80211LayeredEncoder(const Ieee80211OFDMCode *code);
-        Ieee80211LayeredEncoder(const IFECCoder *fecEncoder, const IInterleaver *interleaver, const IScrambler *scrambler, Hz channelSpacing);
-        ~Ieee80211LayeredEncoder();
+        Ieee80211OFDMEncoder();
+        Ieee80211OFDMEncoder(const Ieee80211OFDMCode *code);
+        Ieee80211OFDMEncoder(const IFECCoder *fecEncoder, const IInterleaver *interleaver, const IScrambler *scrambler, Hz channelSpacing);
+        ~Ieee80211OFDMEncoder();
 };
 
 } /* namespace physicallayer */

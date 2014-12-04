@@ -15,14 +15,14 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "Ieee80211LayeredEncoderModule.h"
+#include "Ieee80211OFDMEncoderModule.h"
 
 namespace inet {
 namespace physicallayer {
 
-Define_Module(Ieee80211LayeredEncoderModule);
+Define_Module(Ieee80211OFDMEncoderModule);
 
-void Ieee80211LayeredEncoderModule::initialize(int stage)
+void Ieee80211OFDMEncoderModule::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -34,16 +34,16 @@ void Ieee80211LayeredEncoderModule::initialize(int stage)
     }
     else if (stage == INITSTAGE_PHYSICAL_LAYER)
     {
-        encoder = new Ieee80211LayeredEncoder(fecEncoder, interleaver, scrambler, channelSpacing);
+        encoder = new Ieee80211OFDMEncoder(fecEncoder, interleaver, scrambler, channelSpacing);
     }
 }
 
-const ITransmissionBitModel* Ieee80211LayeredEncoderModule::encode(const ITransmissionPacketModel* packetModel) const
+const ITransmissionBitModel* Ieee80211OFDMEncoderModule::encode(const ITransmissionPacketModel* packetModel) const
 {
     return encoder->encode(packetModel);
 }
 
-Ieee80211LayeredEncoderModule::~Ieee80211LayeredEncoderModule()
+Ieee80211OFDMEncoderModule::~Ieee80211OFDMEncoderModule()
 {
     delete encoder;
 }
