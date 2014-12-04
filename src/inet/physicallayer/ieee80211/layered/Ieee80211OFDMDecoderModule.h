@@ -15,11 +15,11 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDDECODERMODULE_H
-#define __INET_IEEE80211LAYEREDDECODERMODULE_H
+#ifndef __INET_IEEE80211OFDMDECODERMODULE_H
+#define __INET_IEEE80211OFDMDECODERMODULE_H
 
 #include "inet/common/INETDefs.h"
-#include "inet/physicallayer/contract/IDecoder.h"
+#include "inet/physicallayer/contract/layered/IDecoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDecoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
@@ -53,4 +53,4 @@ class INET_API Ieee80211OFDMDecoderModule : public cSimpleModule, public IDecode
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211LAYEREDDECODERMODULE_H */
+#endif /* __INET_IEEE80211OFDMDECODERMODULE_H */

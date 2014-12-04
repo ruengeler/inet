@@ -15,10 +15,10 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKMODULATIONBASE_H_
-#define __INET_APSKMODULATIONBASE_H_
+#ifndef __INET_APSKMODULATIONBASE_H
+#define __INET_APSKMODULATIONBASE_H
 
-#include "inet/physicallayer/contract/IAPSKModulation.h"
+#include "inet/physicallayer/contract/layered/IAPSKModulation.h"
 #include "inet/common/ShortBitVector.h"
 #include "inet/physicallayer/modulation/APSKSymbol.h"
 
@@ -52,4 +52,4 @@ class INET_API APSKModulationBase : public IAPSKModulation
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_APSKMODULATIONBASE_H_ */
+#endif /* __INET_APSKMODULATIONBASE_H */

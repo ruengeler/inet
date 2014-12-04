@@ -18,7 +18,7 @@
 #ifndef __INET_IEEE80211SCRAMBLING_H
 #define __INET_IEEE80211SCRAMBLING_H
 
-#include "inet/physicallayer/contract/IScrambler.h"
+#include "inet/physicallayer/contract/layered/IScrambler.h"
 #include "inet/common/ShortBitVector.h"
 
 namespace inet {

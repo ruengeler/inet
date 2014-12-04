@@ -20,10 +20,10 @@
 
 #include "inet/physicallayer/contract/IReceptionDecision.h"
 #include "inet/physicallayer/common/ReceptionDecision.h"
-#include "inet/physicallayer/contract/ISignalBitModel.h"
-#include "inet/physicallayer/contract/ISignalSymbolModel.h"
-#include "inet/physicallayer/contract/ISignalSampleModel.h"
-#include "inet/physicallayer/contract/ISignalAnalogModel.h"
+#include "inet/physicallayer/contract/layered/ISignalBitModel.h"
+#include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
+#include "inet/physicallayer/contract/layered/ISignalSampleModel.h"
+#include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 
 namespace inet {
 namespace physicallayer {

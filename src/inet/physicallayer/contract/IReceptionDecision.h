@@ -20,7 +20,7 @@
 
 #include "inet/physicallayer/contract/IReception.h"
 #include "inet/physicallayer/contract/RadioControlInfo_m.h"
-#include "ISignalPacketModel.h"
+#include "inet/physicallayer/contract/layered/ISignalPacketModel.h"
 
 namespace inet {
 

@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211CONVOLUTIONALCODE_H_
-#define __INET_IEEE80211CONVOLUTIONALCODE_H_
+#ifndef __INET_IEEE80211CONVOLUTIONALCODE_H
+#define __INET_IEEE80211CONVOLUTIONALCODE_H
 
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
 #include "inet/physicallayer/common/ConvolutionalCode.h"
@@ -47,4 +47,4 @@ class INET_API Ieee80211ConvolutionalCode : public ConvolutionalCode
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211CONVOLUTIONALCODE_H_ */
+#endif /* __INET_IEEE80211CONVOLUTIONALCODE_H */

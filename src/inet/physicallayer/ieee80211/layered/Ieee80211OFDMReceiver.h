@@ -15,18 +15,18 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDRECEIVER_H
-#define __INET_IEEE80211LAYEREDRECEIVER_H
+#ifndef __INET_IEEE80211OFDMRECEIVER_H
+#define __INET_IEEE80211OFDMRECEIVER_H
 
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/IRadioMedium.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/base/SNIRReceiverBase.h"
-#include "inet/physicallayer/contract/IDecoder.h"
-#include "inet/physicallayer/contract/IDemodulator.h"
-#include "inet/physicallayer/contract/IPulseFilter.h"
-#include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
+#include "inet/physicallayer/contract/layered/IDecoder.h"
+#include "inet/physicallayer/contract/layered/IDemodulator.h"
+#include "inet/physicallayer/contract/layered/IPulseFilter.h"
+#include "inet/physicallayer/contract/layered/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
@@ -86,4 +86,4 @@ class INET_API Ieee80211OFDMReceiver : public SNIRReceiverBase
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* IEEE80211LAYEREDRECEIVER_H */
+#endif /* __INET_IEEE80211OFDMRECEIVER_H */

@@ -16,7 +16,6 @@
 //
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
 #include "inet/common/ShortBitVector.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"

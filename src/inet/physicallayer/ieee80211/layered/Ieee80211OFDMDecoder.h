@@ -15,10 +15,10 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDDECODER_H
-#define __INET_IEEE80211LAYEREDDECODER_H
+#ifndef __INET_IEEE80211OFDMDECODER_H
+#define __INET_IEEE80211OFDMDECODER_H
 
-#include "inet/physicallayer/contract/ISerializer.h"
+#include "inet/physicallayer/contract/layered/ISerializer.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
@@ -26,9 +26,9 @@
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
-#include "inet/physicallayer/contract/ISignalPacketModel.h"
-#include "inet/physicallayer/contract/ISignalBitModel.h"
-#include "inet/physicallayer/contract/IDecoder.h"
+#include "inet/physicallayer/contract/layered/ISignalPacketModel.h"
+#include "inet/physicallayer/contract/layered/ISignalBitModel.h"
+#include "inet/physicallayer/contract/layered/IDecoder.h"
 
 namespace inet {
 namespace physicallayer {
@@ -60,4 +60,4 @@ class INET_API Ieee80211OFDMDecoder : public IDecoder
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211LAYEREDDECODER_H */
+#endif /* __INET_IEEE80211OFDMDECODER_H */

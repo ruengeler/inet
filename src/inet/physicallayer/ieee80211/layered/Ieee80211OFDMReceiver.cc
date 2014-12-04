@@ -16,7 +16,7 @@
 //
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMReceiver.h"
-#include "inet/physicallayer/contract/ISymbol.h"
+#include "inet/physicallayer/contract/layered/ISymbol.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/LayeredReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredScalarReception.h"

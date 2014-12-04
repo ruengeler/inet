@@ -15,14 +15,14 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDENCODER_H
-#define __INET_IEEE80211LAYEREDENCODER_H
+#ifndef __INET_IEEE80211OFDMENCODER_H
+#define __INET_IEEE80211OFDMENCODER_H
 
-#include "inet/physicallayer/contract/IEncoder.h"
-#include "inet/physicallayer/contract/ISerializer.h"
-#include "inet/physicallayer/contract/IFECCoder.h"
-#include "inet/physicallayer/contract/IScrambler.h"
-#include "inet/physicallayer/contract/IInterleaver.h"
+#include "inet/physicallayer/contract/layered/IEncoder.h"
+#include "inet/physicallayer/contract/layered/ISerializer.h"
+#include "inet/physicallayer/contract/layered/IFECCoder.h"
+#include "inet/physicallayer/contract/layered/IScrambler.h"
+#include "inet/physicallayer/contract/layered/IInterleaver.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
@@ -53,4 +53,4 @@ class INET_API Ieee80211OFDMEncoder : public IEncoder
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211LAYEREDENCODER_H */
+#endif /* __INET_IEEE80211OFDMENCODER_H */

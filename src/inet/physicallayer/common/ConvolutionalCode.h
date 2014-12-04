@@ -18,7 +18,7 @@
 #ifndef __INET_CONVOLUTIONALCODE_H
 #define __INET_CONVOLUTIONALCODE_H
 
-#include "inet/physicallayer/contract/IFECCoder.h"
+#include "inet/physicallayer/contract/layered/IFECCoder.h"
 
 namespace inet {
 namespace physicallayer {

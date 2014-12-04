@@ -15,13 +15,13 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDTRANSMITTER_H
-#define __INET_IEEE80211LAYEREDTRANSMITTER_H
+#ifndef __INET_IEEE80211OFDMTRANSMITTER_H
+#define __INET_IEEE80211OFDMTRANSMITTER_H
 
-#include "inet/physicallayer/contract/IEncoder.h"
-#include "inet/physicallayer/contract/IModulator.h"
-#include "inet/physicallayer/contract/IPulseShaper.h"
-#include "inet/physicallayer/contract/IDigitalAnalogConverter.h"
+#include "inet/physicallayer/contract/layered/IEncoder.h"
+#include "inet/physicallayer/contract/layered/IModulator.h"
+#include "inet/physicallayer/contract/layered/IPulseShaper.h"
+#include "inet/physicallayer/contract/layered/IDigitalAnalogConverter.h"
 #include "inet/physicallayer/contract/ITransmitter.h"
 
 namespace inet {
@@ -84,4 +84,4 @@ class INET_API Ieee80211OFDMTransmitter : public ITransmitter, public cSimpleMod
 } // namespace physicallayer
 } // namespace inet
 
-#endif /* __INET_IEEE80211LAYEREDTRANSMITTER_H */
+#endif /* __INET_IEEE80211OFDMTRANSMITTER_H */

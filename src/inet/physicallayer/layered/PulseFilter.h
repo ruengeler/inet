@@ -18,7 +18,7 @@
 #ifndef __INET_PULSEFILTER_H
 #define __INET_PULSEFILTER_H
 
-#include "inet/physicallayer/contract/IPulseFilter.h"
+#include "inet/physicallayer/contract/layered/IPulseFilter.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 

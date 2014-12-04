@@ -20,7 +20,7 @@
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMPhyFrame_m.h"
-#include "inet/physicallayer/contract/ISignalAnalogModel.h"
+#include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"

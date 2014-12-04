@@ -19,7 +19,7 @@
 #define __INET_IEEE80211SCRAMBLER_H
 
 #include "inet/common/INETDefs.h"
-#include "inet/physicallayer/contract/IScrambler.h"
+#include "inet/physicallayer/contract/layered/IScrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambling.h"
 #include "inet/common/BitVector.h"
 #include "inet/common/ShortBitVector.h"

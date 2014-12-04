@@ -18,9 +18,9 @@
 #ifndef __INET_OFDMDEMODULATOR_H
 #define __INET_OFDMDEMODULATOR_H
 
-#include "inet/physicallayer/contract/ISignalBitModel.h"
-#include "inet/physicallayer/contract/ISignalSymbolModel.h"
-#include "inet/physicallayer/contract/IDemodulator.h"
+#include "inet/physicallayer/contract/layered/ISignalBitModel.h"
+#include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
+#include "inet/physicallayer/contract/layered/IDemodulator.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/modulation/OFDMSymbol.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"

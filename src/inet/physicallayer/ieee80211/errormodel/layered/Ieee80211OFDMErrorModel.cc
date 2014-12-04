@@ -16,7 +16,7 @@
 //
 
 #include "inet/physicallayer/ieee80211/errormodel/layered/Ieee80211OFDMErrorModel.h"
-#include "inet/physicallayer/contract/IAPSKModulation.h"
+#include "inet/physicallayer/contract/layered/IAPSKModulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"

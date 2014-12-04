@@ -19,9 +19,9 @@
 #define __INET_ISIGNALPACKETMODEL_H
 
 #include "inet/physicallayer/contract/IPrintableObject.h"
-#include "inet/physicallayer/contract/IFECCoder.h"
-#include "inet/physicallayer/contract/IScrambler.h"
-#include "inet/physicallayer/contract/IInterleaver.h"
+#include "inet/physicallayer/contract/layered/IFECCoder.h"
+#include "inet/physicallayer/contract/layered/IScrambler.h"
+#include "inet/physicallayer/contract/layered/IInterleaver.h"
 
 namespace inet {
 

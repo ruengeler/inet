@@ -18,7 +18,7 @@
 #ifndef __INET_STUBMODULATOR_H
 #define __INET_STUBMODULATOR_H
 
-#include "inet/physicallayer/contract/IModulator.h"
+#include "inet/physicallayer/contract/layered/IModulator.h"
 
 namespace inet {
 namespace physicallayer {

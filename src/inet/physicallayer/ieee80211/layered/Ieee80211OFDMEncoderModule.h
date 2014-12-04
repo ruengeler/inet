@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211LAYEREDENCODERMODULE_H
-#define __INET_IEEE80211LAYEREDENCODERMODULE_H
+#ifndef __INET_IEEE80211OFDMENCODERMODULE_H
+#define __INET_IEEE80211OFDMENCODERMODULE_H
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoder.h"
 
@@ -49,4 +49,4 @@ class INET_API Ieee80211OFDMEncoderModule : public IEncoder, public cSimpleModul
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211LAYEREDENCODERMODULE_H */
+#endif /* __INET_IEEE80211OFDMENCODERMODULE_H */

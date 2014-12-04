@@ -18,8 +18,8 @@
 #ifndef __INET_IPULSESHAPER_H
 #define __INET_IPULSESHAPER_H
 
-#include "inet/physicallayer/contract/ISignalSymbolModel.h"
-#include "inet/physicallayer/contract/ISignalSampleModel.h"
+#include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
+#include "inet/physicallayer/contract/layered/ISignalSampleModel.h"
 
 namespace inet {
 

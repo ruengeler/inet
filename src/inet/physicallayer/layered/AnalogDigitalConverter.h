@@ -18,7 +18,7 @@
 #ifndef __INET_ANALOGDIGITALCONVERTER_H
 #define __INET_ANALOGDIGITALCONVERTER_H
 
-#include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
+#include "inet/physicallayer/contract/layered/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 

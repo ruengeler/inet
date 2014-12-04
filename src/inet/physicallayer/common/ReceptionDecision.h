@@ -19,7 +19,7 @@
 #define __INET_RECEPTIONDECISION_H
 
 #include "inet/physicallayer/contract/IReceptionDecision.h"
-#include "inet/physicallayer/contract/ISignalPacketModel.h"
+#include "inet/physicallayer/contract/layered/ISignalPacketModel.h"
 
 namespace inet {
 

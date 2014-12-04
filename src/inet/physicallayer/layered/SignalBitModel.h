@@ -20,7 +20,7 @@
 
 #include <vector>
 #include "inet/common/BitVector.h"
-#include "inet/physicallayer/contract/ISignalBitModel.h"
+#include "inet/physicallayer/contract/layered/ISignalBitModel.h"
 
 namespace inet {
 
