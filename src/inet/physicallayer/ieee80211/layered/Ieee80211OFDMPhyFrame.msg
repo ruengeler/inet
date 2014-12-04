@@ -33,7 +33,7 @@ namespace inet::physicallayer;
 // IEEE 802.11 PHY. For detailed description, you may refer to 18.3.2 PLCP
 // frame format, Figure 18-1—PPDU frame format in IEEE Std. 802.11-2012.
 //
-packet Ieee80211PHYFrame
+packet Ieee80211OFDMPhyFrame
 {
     int rate;
     int length;

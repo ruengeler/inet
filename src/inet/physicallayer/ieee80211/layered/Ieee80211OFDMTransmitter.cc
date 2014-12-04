@@ -19,7 +19,7 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMTransmitter.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211PHYFrame_m.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMPhyFrame_m.h"
 #include "inet/physicallayer/contract/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
@@ -68,7 +68,7 @@ BitVector *Ieee80211OFDMTransmitter::serialize(const cPacket* packet) const
 {
     // HACK: Here we just compute the bit-correct PLCP header
     // and then we fill the remaining with random bits
-    const Ieee80211PHYFrame *phyFrame = check_and_cast<const Ieee80211PHYFrame*>(packet);
+    const Ieee80211OFDMPhyFrame *phyFrame = check_and_cast<const Ieee80211OFDMPhyFrame*>(packet);
     BitVector *serializedPacket = new BitVector();
     // RATE, 4 bits
     ShortBitVector rate(phyFrame->getRate(), 4);
@@ -113,7 +113,7 @@ const ITransmissionPacketModel* Ieee80211OFDMTransmitter::createPacketModel(cons
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
-    Ieee80211PHYFrame * phyFrame = new Ieee80211PHYFrame();
+    Ieee80211OFDMPhyFrame * phyFrame = new Ieee80211OFDMPhyFrame();
     phyFrame->setRate(rate);
     phyFrame->setLength(macFrame->getByteLength());
     phyFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
