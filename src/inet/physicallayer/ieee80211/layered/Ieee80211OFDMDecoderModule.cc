@@ -25,7 +25,6 @@
 namespace inet {
 namespace physicallayer {
 
-#define OFDM_SYMBOL_SIZE 48
 Define_Module(Ieee80211OFDMDecoderModule);
 
 void Ieee80211OFDMDecoderModule::initialize(int stage)

@@ -24,20 +24,10 @@
 #include "inet/physicallayer/contract/layered/IAPSKModulation.h"
 #include "inet/physicallayer/common/DummySerializer.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDefs.h"
 
 namespace inet {
 namespace physicallayer {
-
-#define OFDM_SYMBOL_SIZE 48
-#define ENCODED_SIGNAL_FIELD_LENGTH 48
-// Table L-7—Bit assignment for SIGNAL field
-#define SIGNAL_RATE_FIELD_START 0
-#define SIGNAL_RATE_FIELD_END 3
-#define SIGNAL_LENGTH_FIELD_START 5
-#define SIGNAL_LENGTH_FIELD_END 16
-#define SIGNAL_PARITY_FIELD 17
-#define PPDU_SERVICE_FIELD_BITS_LENGTH 16
-#define PPDU_TAIL_BITS_LENGTH 6
 
 Ieee80211OFDMDecoder::Ieee80211OFDMDecoder(const Ieee80211OFDMCode *code) :
         descrambler(NULL),

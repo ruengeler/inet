@@ -26,13 +26,10 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDefs.h"
 
 namespace inet {
 namespace physicallayer {
-
-#define PPDU_SERVICE_FIELD_BITS_LENGTH 16
-#define PPDU_TAIL_BITS_LENGTH 6
-#define OFDM_SYMBOL_SIZE 48
 
 const ITransmissionBitModel* Ieee80211OFDMEncoder::encode(const ITransmissionPacketModel* packetModel) const
 {
