@@ -16,8 +16,6 @@
 //
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredReceiver.h"
-#include "inet/physicallayer/contract/ISNIR.h"
-#include "inet/physicallayer/contract/IErrorModel.h"
 #include "inet/physicallayer/contract/ISymbol.h"
 #include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/LayeredReceptionDecision.h"

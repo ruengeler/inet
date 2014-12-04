@@ -28,6 +28,8 @@
 #include "inet/physicallayer/contract/IPulseFilter.h"
 #include "inet/physicallayer/contract/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
+#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
+#include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
 
 namespace inet {
 namespace physicallayer {
