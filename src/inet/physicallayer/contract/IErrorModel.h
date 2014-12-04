@@ -18,35 +18,20 @@
 #ifndef __INET_IERRORMODEL_H
 #define __INET_IERRORMODEL_H
 
-#include "ISNIR.h"
-#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
+#include "inet/physicallayer/contract/ISNIR.h"
 
 namespace inet {
-
 namespace physicallayer {
 
 class INET_API IErrorModel : public IPrintableObject
 {
   public:
     virtual double computePacketErrorRate(const ISNIR *snir) const = 0;
-
     virtual double computeBitErrorRate(const ISNIR *snir) const = 0;
-
     virtual double computeSymbolErrorRate(const ISNIR *snir) const = 0;
 };
 
-// TODO: move ILayeredErrorModel after the layered radio is merged in
-class INET_API ILayeredErrorModel : public IPrintableObject
-{
-  public:
-    virtual const IReceptionPacketModel *computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
-    virtual const IReceptionBitModel *computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
-    virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
-    virtual const IReceptionSampleModel *computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const = 0;
-};
-
 } // namespace physicallayer
-
 } // namespace inet
 
 #endif // ifndef __INET_IERRORMODEL_H
