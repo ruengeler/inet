@@ -18,25 +18,26 @@
 #ifndef __IENT_IEEE80211LAYEREDERRORMODEL_H
 #define __INET_IEEE80211LAYEREDERRORMODEL_H
 
-#include "inet/physicallayer/layered/LayeredErrorModel.h"
+#include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
 #include "inet/physicallayer/modulation/OFDMSymbol.h"
 
 namespace inet {
 namespace physicallayer {
 
-class INET_API Ieee80211LayeredErrorModel : public LayeredErrorModel
+class INET_API Ieee80211LayeredErrorModel : public ILayeredErrorModel, public cSimpleModule
 {
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
         OFDMSymbol *corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const;
+        void corruptBits(BitVector *bits, double ber, int begin, int end) const;
 
     public:
-        virtual const IReceptionPacketModel *computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const;
-        virtual const IReceptionBitModel *computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const;
-        virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const;
-        virtual const IReceptionSampleModel *computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR *snir) const;
+        virtual const IReceptionPacketModel *computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
+        virtual const IReceptionBitModel *computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
+        virtual const IReceptionSymbolModel *computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
+        virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const;
         virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211 Layered Error Model"; }
 };
 

@@ -34,7 +34,7 @@ void Ieee80211LayeredErrorModel::initialize(int stage)
 
 }
 
-const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
+const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
     const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
     int signalBitLength = transmissionBitModel->getHeaderBitLength();
@@ -59,9 +59,8 @@ const IReceptionBitModel* Ieee80211LayeredErrorModel::computeBitModel(const Laye
     return new const ReceptionBitModel(signalBitLength, dataBitLength, signalBitRate, dataBitRate, corruptedBits, modulation);
 }
 
-const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
+const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
-    // TODO: implement error model
     const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
     const IModulation *modulation = transmissionSymbolModel->getModulation();
     const APSKModulationBase *dataModulation = check_and_cast<const APSKModulationBase *>(modulation);
@@ -85,6 +84,16 @@ const IReceptionSymbolModel* Ieee80211LayeredErrorModel::computeSymbolModel(cons
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
 }
 
+void Ieee80211LayeredErrorModel::corruptBits(BitVector *bits, double ber, int begin, int end) const
+{
+    for (int i = begin; i != end; i++)
+    {
+        double p = uniform(0,1);
+        if (p <= ber)
+            bits->toggleBit(i);
+    }
+}
+
 OFDMSymbol *Ieee80211LayeredErrorModel::corruptOFDMSymbol(const OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
 {
     std::vector<const APSKSymbol *> subcarrierSymbols = symbol->getSubCarrierSymbols();
@@ -101,8 +110,9 @@ OFDMSymbol *Ieee80211LayeredErrorModel::corruptOFDMSymbol(const OFDMSymbol *symb
     return new OFDMSymbol(subcarrierSymbols);
 }
 
-const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
+const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    throw cRuntimeError("Unimplemented!");
     // TODO: implement sample error model
     const ITransmissionSampleModel *transmissionSampleModel = transmission->getSampleModel();
     int sampleLength = transmissionSampleModel->getSampleLength();
@@ -112,8 +122,9 @@ const IReceptionSampleModel* Ieee80211LayeredErrorModel::computeSampleModel(cons
     return new const ReceptionSampleModel(sampleLength, sampleRate, samples, rssi);
 }
 
-const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(const LayeredScalarTransmission *transmission, const ISNIR* snir) const
+const IReceptionPacketModel* Ieee80211LayeredErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    throw cRuntimeError("Unimplemented!");
     // TODO: implement error model
     const ITransmissionPacketModel *transmissionPacketModel = transmission->getPacketModel();
     const cPacket *packet = transmissionPacketModel->getPacket();
