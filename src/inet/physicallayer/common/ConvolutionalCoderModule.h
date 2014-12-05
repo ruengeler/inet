@@ -15,15 +15,15 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_CONVOLUTIONALCODERMODULE_H_
-#define __INET_CONVOLUTIONALCODERMODULE_H_
+#ifndef __INET_CONVOLUTIONALCODERMODULE_H
+#define __INET_CONVOLUTIONALCODERMODULE_H
 
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
 
 namespace inet {
 namespace physicallayer {
 
-class ConvolutionalCoderModule : public cSimpleModule, public IFECCoder
+class INET_API ConvolutionalCoderModule : public cSimpleModule, public IFECCoder
 {
     protected:
         ConvolutionalCoder *convolutionalCoder;
@@ -43,4 +43,4 @@ class ConvolutionalCoderModule : public cSimpleModule, public IFECCoder
 } /* namespace physicallayer */
 } /* namespace inet */
 
-#endif /* __INET_CONVOLUTIONALCODERMODULE_H_ */
+#endif /* __INET_CONVOLUTIONALCODERMODULE_H */
