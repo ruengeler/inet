@@ -247,6 +247,7 @@ const IReceptionPacketModel* Ieee80211OFDMReceiver::demodulateAndDecodeDataField
             const Ieee80211OFDMDecoder decoder(code);
             dataFieldReceptionPacketModel = decoder.decode(dataFieldReceptionBitModel);
         }
+        delete code;
     }
     return dataFieldReceptionPacketModel;
 }
