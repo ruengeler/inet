@@ -28,6 +28,7 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoderModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulator.h"
+#include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
 
 namespace inet {
 
@@ -166,7 +167,7 @@ void Ieee80211OFDMTransmitter::encodeAndModulate(const ITransmissionPacketModel*
             fieldBitModel = encoder->encode(fieldPacketModel);
         else // compliant mode
         {
-            const Ieee80211OFDMCode *code;
+            const Ieee80211OFDMCode *code = NULL;
             if (isSignalField) // signal
                 code = new Ieee80211OFDMCode(channelSpacing);
             else // data
