@@ -32,7 +32,6 @@ namespace physicallayer {
 class INET_API Ieee80211OFDMModulator : public IModulator
 {
   protected:
-    int preambleSymbolLength;
     const Ieee80211OFDMModulation *ofdmModulation;
     const APSKModulationBase *modulationScheme;
     static const int polarityVector[127];
