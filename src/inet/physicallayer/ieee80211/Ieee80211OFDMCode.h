@@ -54,6 +54,7 @@ class INET_API Ieee80211OFDMCode : public IIeee80211Code
         Ieee80211OFDMCode(Hz channelSpacing);
         Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing);
         Ieee80211OFDMCode(const ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling, Hz channelSpacing);
+        ~Ieee80211OFDMCode();
 };
 
 } /* namespace physicallayer */

@@ -75,6 +75,13 @@ Ieee80211OFDMCode::Ieee80211OFDMCode(const ConvolutionalCode* convCode, const Ie
 {
 }
 
+Ieee80211OFDMCode::~Ieee80211OFDMCode()
+{
+    delete convCode;
+    delete interleaving;
+    delete scrambling;
+}
+
 } /* namespace physicallayer */
 } /* namespace inet */
 
