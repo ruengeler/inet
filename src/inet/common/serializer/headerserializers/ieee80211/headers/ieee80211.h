@@ -53,6 +53,18 @@ struct ieee80211_plcp_hdr {
     uint16_t    i_crc;
 } __PACKED__;
 
+/* 18.3.2 PLCP frame format */
+struct ieee80211_ofdm_plcp_hdr
+{
+   unsigned int rate : 4;
+   unsigned int reserved : 1;
+   unsigned int length : 12;
+   unsigned int parity : 1;
+   unsigned int tail : 6;
+   unsigned int service : 16;
+} __PACKED__;
+
+
 #define IEEE80211_PLCP_SFD      0xF3A0
 #define IEEE80211_PLCP_SERVICE  0x00
 #define IEEE80211_PLCP_SERVICE_LOCKED   0x04
