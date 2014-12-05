@@ -60,9 +60,8 @@ const ITransmissionBitModel* Ieee80211OFDMEncoder::encode(const ITransmissionPac
 }
 
 Ieee80211OFDMEncoder::Ieee80211OFDMEncoder(const Ieee80211OFDMCode *code) :
-        Ieee80211OFDMEncoder()
+        code(code)
 {
-    this->code = new Ieee80211OFDMCode(*code);
     channelSpacing = code->getChannelSpacing();
     if (code->getScrambling())
         scrambler = new Ieee80211Scrambler(code->getScrambling());
