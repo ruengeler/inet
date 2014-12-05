@@ -504,6 +504,9 @@ std::pair<BitVector, bool> ConvolutionalCoder::decode(const BitVector& encodedBi
         return std::pair<BitVector, bool>(BitVector::UNDEF, false);
     }
     BitVector decodedMsg = traversePath(bestNode, trellisGraph);
+    for (int i = 0; i < numberOfStates; i++)
+        delete[] trellisGraph[i];
+    delete[] trellisGraph;
     EV_DEBUG << "Recovered message: " << decodedMsg << endl
     << " Number of errors: " << bestNode.numberOfErrors
     << " Cumulative error (Hamming distance): " << bestNode.comulativeHammingDistance
