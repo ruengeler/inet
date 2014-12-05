@@ -49,7 +49,7 @@ double QAM64Modulation::calculateBER(double snir, double bandwidth, double bitra
 double QAM64Modulation::calculateSER(double snir) const
 {
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1 / sqrt(m)) * c - (1 - 2 / sqrt(m) + 1 / m) * c * c;
+    return 2 * (1 - 1.0 / sqrt(m)) * c - (1 - 2.0 / sqrt(m) + 1.0 / m) * c * c;
 }
 
 } /* namespace physicallayer */

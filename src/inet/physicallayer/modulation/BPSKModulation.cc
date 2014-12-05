@@ -38,7 +38,7 @@ double BPSKModulation::calculateSER(double snir) const
 {
     // TODO: revise
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1 / sqrt(2)) * c - (1 - 2 / sqrt(2) + 1 / 2) * c * c;
+    return 2 * (1 - 1.0 / sqrt(2)) * c - (1 - 2.0 / sqrt(2) + 1.0 / 2) * c * c;
 }
 
 } /* namespace physicallayer */

@@ -36,7 +36,7 @@ double QPSKModulation::calculateBER(double snir, double bandwidth, double bitrat
 double QPSKModulation::calculateSER(double snir) const
 {
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1 / sqrt(4)) * c - (1 - 2 / sqrt(4) + 1 / 4) * c * c;
+    return 2 * (1 - 1.0 / sqrt(4)) * c - (1 - 2.0 / sqrt(4) + 1.0 / 4) * c * c;
 }
 
 } /* namespace physicallayer */
