@@ -116,8 +116,8 @@ RadioMedium::~RadioMedium()
         delete transmissionCacheEntry.frame;
         const std::vector<ReceptionCacheEntry> *receptionCacheEntries = transmissionCacheEntry.receptionCacheEntries;
         if (receptionCacheEntries) {
-            for (std::vector<ReceptionCacheEntry>::const_iterator jt = receptionCacheEntries->begin(); jt != receptionCacheEntries->end(); jt++) {
-                const ReceptionCacheEntry& cacheEntry = *jt;
+            for (const auto & cacheEntry : *receptionCacheEntries) {
+                
                 delete cacheEntry.arrival;
                 delete cacheEntry.listening;
                 delete cacheEntry.reception;
@@ -450,12 +450,12 @@ void RadioMedium::removeCachedDecision(const IRadio *radio, const ITransmission 
 
 void RadioMedium::invalidateCachedDecisions(const ITransmission *transmission)
 {
-    for (auto it = transmissionCache.begin(); it != transmissionCache.end(); it++) {
-        const TransmissionCacheEntry& transmissionCacheEntry = *it;
+    for (auto & transmissionCacheEntry : transmissionCache) {
+        
         std::vector<ReceptionCacheEntry> *receptionCacheEntries = transmissionCacheEntry.receptionCacheEntries;
         if (receptionCacheEntries) {
-            for (auto jt = receptionCacheEntries->begin(); jt != receptionCacheEntries->end(); jt++) {
-                ReceptionCacheEntry& cacheEntry = *jt;
+            for (auto & cacheEntry : *receptionCacheEntries) {
+                
                 const IReceptionDecision *decision = cacheEntry.decision;
                 if (decision) {
                     const IReception *reception = decision->getReception();
@@ -516,40 +516,40 @@ inline double maxIgnoreNaN(double a, double b)
 mps RadioMedium::computeMaxSpeed() const
 {
     mps maxSpeed = mps(par("maxSpeed"));
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
-        maxSpeed = maxIgnoreNaN(maxSpeed, mps((*it)->getAntenna()->getMobility()->getMaxSpeed()));
+    for (const auto & elem : radios)
+        maxSpeed = maxIgnoreNaN(maxSpeed, mps((elem)->getAntenna()->getMobility()->getMaxSpeed()));
     return maxSpeed;
 }
 
 W RadioMedium::computeMaxTransmissionPower() const
 {
     W maxTransmissionPower = W(par("maxTransmissionPower"));
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
-        maxTransmissionPower = maxIgnoreNaN(maxTransmissionPower, (*it)->getTransmitter()->getMaxPower());
+    for (const auto & elem : radios)
+        maxTransmissionPower = maxIgnoreNaN(maxTransmissionPower, (elem)->getTransmitter()->getMaxPower());
     return maxTransmissionPower;
 }
 
 W RadioMedium::computeMinInterferencePower() const
 {
     W minInterferencePower = mW(math::dBm2mW(par("minInterferencePower")));
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
-        minInterferencePower = minIgnoreNaN(minInterferencePower, (*it)->getReceiver()->getMinInterferencePower());
+    for (const auto & elem : radios)
+        minInterferencePower = minIgnoreNaN(minInterferencePower, (elem)->getReceiver()->getMinInterferencePower());
     return minInterferencePower;
 }
 
 W RadioMedium::computeMinReceptionPower() const
 {
     W minReceptionPower = mW(math::dBm2mW(par("minReceptionPower")));
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
-        minReceptionPower = minIgnoreNaN(minReceptionPower, (*it)->getReceiver()->getMinReceptionPower());
+    for (const auto & elem : radios)
+        minReceptionPower = minIgnoreNaN(minReceptionPower, (elem)->getReceiver()->getMinReceptionPower());
     return minReceptionPower;
 }
 
 double RadioMedium::computeMaxAntennaGain() const
 {
     double maxAntennaGain = math::dB2fraction(par("maxAntennaGain"));
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
-        maxAntennaGain = maxIgnoreNaN(maxAntennaGain, (*it)->getAntenna()->getMaxGain());
+    for (const auto & elem : radios)
+        maxAntennaGain = maxIgnoreNaN(maxAntennaGain, (elem)->getAntenna()->getMaxGain());
     return maxAntennaGain;
 }
 
@@ -670,8 +670,8 @@ void RadioMedium::removeNonInterferingTransmissions()
         delete transmissionCacheEntry.frame;
         const std::vector<ReceptionCacheEntry> *receptionCacheEntries = transmissionCacheEntry.receptionCacheEntries;
         if (receptionCacheEntries) {
-            for (std::vector<ReceptionCacheEntry>::const_iterator jt = receptionCacheEntries->begin(); jt != receptionCacheEntries->end(); jt++) {
-                const ReceptionCacheEntry& cacheEntry = *jt;
+            for (const auto & cacheEntry : *receptionCacheEntries) {
+                
                 delete cacheEntry.arrival;
                 delete cacheEntry.listening;
                 delete cacheEntry.reception;
@@ -1098,8 +1098,8 @@ void RadioMedium::receiveSignal(cComponent *source, simsignal_t signal, long val
 {
     if (signal == IRadio::radioModeChangedSignal || signal == IRadio::listeningChangedSignal || signal == NF_INTERFACE_CONFIG_CHANGED) {
         const Radio *receiverRadio = check_and_cast<const Radio *>(source);
-        for (auto it = transmissions.begin(); it != transmissions.end(); it++) {
-            const ITransmission *transmission = *it;
+        for (auto transmission : transmissions) {
+            
             const Radio *transmitterRadio = check_and_cast<const Radio *>(transmission->getTransmitter());
             ReceptionCacheEntry *receptionCacheEntry = getReceptionCacheEntry(receiverRadio, transmission);
             if (receptionCacheEntry && signal == IRadio::listeningChangedSignal) {
@@ -1246,9 +1246,9 @@ Coord RadioMedium::computeConstraintAreaMin() const
     Coord constraintAreaMin = Coord::NIL;
     if (radios.size() > 0)
         constraintAreaMin = radios[0]->getAntenna()->getMobility()->getConstraintAreaMin();
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
+    for (const auto & elem : radios)
     {
-        const IMobility *mobility = (*it)->getAntenna()->getMobility();
+        const IMobility *mobility = (elem)->getAntenna()->getMobility();
         Coord currConstreaintAreaMin = mobility->getConstraintAreaMin();
 
         if (constraintAreaMin.x > currConstreaintAreaMin.x)
@@ -1266,9 +1266,9 @@ Coord RadioMedium::computeConstreaintAreaMax() const
     Coord constraintAreaMax = Coord::NIL;
     if (radios.size() > 0)
         constraintAreaMax = radios[0]->getAntenna()->getMobility()->getConstraintAreaMax();
-    for (std::vector<const IRadio *>::const_iterator it = radios.begin(); it != radios.end(); it++)
+    for (const auto & elem : radios)
     {
-        const IMobility *mobility = (*it)->getAntenna()->getMobility();
+        const IMobility *mobility = (elem)->getAntenna()->getMobility();
         Coord currConstraintAreaMax = mobility->getConstraintAreaMax();
 
         if (constraintAreaMax.x < currConstraintAreaMax.x)
