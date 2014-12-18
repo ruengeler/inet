@@ -204,7 +204,7 @@ void TCPSACKRexmitQueue::setSackedBit(uint32 fromSeqNum, uint32 toSeqNum)
 
         ASSERT(i != rexmitQueue.end() && seqLE(i->beginSeqNum, fromSeqNum) && seqLess(fromSeqNum, i->endSeqNum));
 
-        if (i->beginSeqNum != fromSeqNum) {
+        if (i != rexmitQueue.end() && i->beginSeqNum != fromSeqNum) {
             Region region = *i;
 
             region.endSeqNum = fromSeqNum;
