@@ -23,6 +23,7 @@ import inet.physicallayer.contract.IDemodulator;
 import inet.physicallayer.contract.IErrorModel;
 import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
+import inet.physicallayer.contract.ISerializer;
 
 
 module Ieee80211OFDMReceiver like IReceiver

@@ -21,8 +21,8 @@
 #include "inet/physicallayer/analogmodel/ScalarTransmission.h"
 #include "inet/physicallayer/analogmodel/ScalarReception.h"
 #include "inet/physicallayer/analogmodel/ScalarNoise.h"
-#include "inet/physicallayer/analogmodel/ScalarSNIR.h"
-#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
+#include "inet/physicallayer/analogmodel/layered/LayeredSNIR.h"
+#include "inet/physicallayer/layered/LayeredTransmission.h"
 
 namespace inet {
 
@@ -36,44 +36,46 @@ bool LayeredScalarAnalogModel::areOverlappingBands(Hz carrierFrequency1, Hz band
            carrierFrequency1 - bandwidth1 / 2 <= carrierFrequency2 + bandwidth2 / 2;
 }
 
-const ScalarReceptionSignalAnalogModel* LayeredScalarAnalogModel::computeReceptionAnalogModel(const ScalarTransmissionSignalAnalogModel* transmissionAnalogModel) const
+const ScalarReceptionSignalAnalogModel* LayeredScalarAnalogModel::computeReceptionAnalogModel(const IRadio *receiverRadio, const ITransmission *transmission, const IArrival *arrival, const IRadioMedium *channel, const ScalarTransmissionSignalAnalogModel* analogModel) const
 {
-    double snir = -1; // TODO: calculate
-    simtime_t duration = transmissionAnalogModel->getDuration();
-    W power = transmissionAnalogModel->getPower();
-    Hz carrierFrequency = transmissionAnalogModel->getCarrierFrequency();
-    Hz bandwidth = transmissionAnalogModel->getBandwidth();
-    return new const ScalarReceptionSignalAnalogModel(duration, power, carrierFrequency, bandwidth, snir);
-}
-
-const IReception *LayeredScalarAnalogModel::computeReception(const IRadio *receiverRadio, const ITransmission *transmission) const
-{
-    const IRadioMedium *channel = receiverRadio->getMedium();
     const IRadio *transmitterRadio = transmission->getTransmitter();
     const IAntenna *receiverAntenna = receiverRadio->getAntenna();
     const IAntenna *transmitterAntenna = transmitterRadio->getAntenna();
-    const LayeredScalarTransmission *scalarTransmission = check_and_cast<const LayeredScalarTransmission *>(transmission);
-    const IArrival *arrival = channel->getArrival(receiverRadio, transmission);
-    const simtime_t receptionStartTime = arrival->getStartTime();
-    const simtime_t receptionEndTime = arrival->getEndTime();
     const Coord receptionStartPosition = arrival->getStartPosition();
     const Coord receptionEndPosition = arrival->getEndPosition();
-    const EulerAngles receptionStartOrientation = arrival->getStartOrientation();
-    const EulerAngles receptionEndOrientation = arrival->getEndOrientation();
     const EulerAngles transmissionDirection = computeTransmissionDirection(transmission, arrival);
     const EulerAngles transmissionAntennaDirection = transmission->getStartOrientation() - transmissionDirection;
     const EulerAngles receptionAntennaDirection = transmissionDirection - arrival->getStartOrientation();
     double transmitterAntennaGain = transmitterAntenna->computeGain(transmissionAntennaDirection);
     double receiverAntennaGain = receiverAntenna->computeGain(receptionAntennaDirection);
     m distance = m(receptionStartPosition.distance(transmission->getStartPosition()));
-    double pathLoss = channel->getPathLoss()->computePathLoss(channel->getPropagation()->getPropagationSpeed(), scalarTransmission->getCarrierFrequency(), distance);
-    double obstacleLoss = channel->getObstacleLoss() ? channel->getObstacleLoss()->computeObstacleLoss(scalarTransmission->getCarrierFrequency(), transmission->getStartPosition(), receptionStartPosition) : 1;
-    W transmissionPower = scalarTransmission->getPower();
+    double pathLoss = channel->getPathLoss()->computePathLoss(channel->getPropagation()->getPropagationSpeed(), analogModel->getCarrierFrequency(), distance);
+    double obstacleLoss = channel->getObstacleLoss() ? channel->getObstacleLoss()->computeObstacleLoss(analogModel->getCarrierFrequency(), transmission->getStartPosition(), receptionStartPosition) : 1;
+    W transmissionPower = analogModel->getPower();
     W receptionPower = transmissionPower * std::min(1.0, transmitterAntennaGain * receiverAntennaGain * pathLoss * obstacleLoss);
-    const ScalarTransmissionSignalAnalogModel *transmissionSignalAnalogModel = check_and_cast<const ScalarTransmissionSignalAnalogModel*>(scalarTransmission->getAnalogModel());
-    return new LayeredScalarReception(computeReceptionAnalogModel(transmissionSignalAnalogModel), receiverRadio, transmission, receptionStartTime, receptionEndTime, receptionStartPosition, receptionEndPosition, receptionStartOrientation, receptionEndOrientation, scalarTransmission->getCarrierFrequency(), scalarTransmission->getBandwidth(), receptionPower);
+    double snir = -1; // TODO: calculate
+    simtime_t duration = analogModel->getDuration();
+    Hz carrierFrequency = analogModel->getCarrierFrequency();
+    Hz bandwidth = analogModel->getBandwidth();
+    return new const ScalarReceptionSignalAnalogModel(duration, receptionPower, carrierFrequency, bandwidth, snir);
 }
 
+const IReception *LayeredScalarAnalogModel::computeReception(const IRadio *receiverRadio, const ITransmission *transmission) const
+{
+    const IRadioMedium *channel = receiverRadio->getMedium();
+    const IArrival *arrival = channel->getArrival(receiverRadio, transmission);
+    const simtime_t receptionStartTime = arrival->getStartTime();
+    const simtime_t receptionEndTime = arrival->getEndTime();
+    const EulerAngles receptionStartOrientation = arrival->getStartOrientation();
+    const EulerAngles receptionEndOrientation = arrival->getEndOrientation();
+    const Coord receptionStartPosition = arrival->getStartPosition();
+    const Coord receptionEndPosition = arrival->getEndPosition();
+    const LayeredTransmission *layeredTransmission = check_and_cast<const LayeredTransmission *>(transmission);
+    const ScalarTransmissionSignalAnalogModel *analogModel = dynamic_cast<const ScalarTransmissionSignalAnalogModel *>(layeredTransmission->getAnalogModel());
+    return new LayeredReception(computeReceptionAnalogModel(receiverRadio, transmission, arrival, channel, analogModel), receiverRadio, transmission, receptionStartTime, receptionEndTime, receptionStartPosition, receptionEndPosition, receptionStartOrientation, receptionEndOrientation);
+}
+
+// TODO: copy with some trivial changes
 const INoise *LayeredScalarAnalogModel::computeNoise(const IListening *listening, const IInterference *interference) const
 {
     const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
@@ -84,9 +86,10 @@ const INoise *LayeredScalarAnalogModel::computeNoise(const IListening *listening
     std::map<simtime_t, W> *powerChanges = new std::map<simtime_t, W>();
     const std::vector<const IReception *> *interferingReceptions = interference->getInterferingReceptions();
     for (std::vector<const IReception *>::const_iterator it = interferingReceptions->begin(); it != interferingReceptions->end(); it++) {
-        const ScalarReception *reception = check_and_cast<const ScalarReception *>(*it);
-        if (carrierFrequency == reception->getCarrierFrequency() && bandwidth == reception->getBandwidth()) {
-            W power = reception->getPower();
+        const LayeredReception *reception = check_and_cast<const LayeredReception *>(*it);
+        const ScalarReceptionSignalAnalogModel *analogModel = dynamic_cast<const ScalarReceptionSignalAnalogModel *>(reception->getAnalogModel());
+        if (carrierFrequency == analogModel->getCarrierFrequency() && bandwidth == analogModel->getBandwidth()) {
+            W power = analogModel->getPower();
             simtime_t startTime = reception->getStartTime();
             simtime_t endTime = reception->getEndTime();
             if (startTime < noiseStartTime)
@@ -104,7 +107,7 @@ const INoise *LayeredScalarAnalogModel::computeNoise(const IListening *listening
             else
                 powerChanges->insert(std::pair<simtime_t, W>(endTime, -power));
         }
-        else if (areOverlappingBands(carrierFrequency, bandwidth, reception->getCarrierFrequency(), reception->getBandwidth()))
+        else if (areOverlappingBands(carrierFrequency, bandwidth, analogModel->getCarrierFrequency(), analogModel->getBandwidth()))
             throw cRuntimeError("Overlapping bands are not supported");
     }
     const ScalarNoise *scalarBackgroundNoise = dynamic_cast<const ScalarNoise *>(interference->getBackgroundNoise());
@@ -134,9 +137,9 @@ const INoise *LayeredScalarAnalogModel::computeNoise(const IListening *listening
 
 const ISNIR *LayeredScalarAnalogModel::computeSNIR(const IReception *reception, const INoise *noise) const
 {
-    const ScalarReception *scalarReception = check_and_cast<const ScalarReception *>(reception);
+    const LayeredReception *layeredReception = check_and_cast<const LayeredReception *>(reception);
     const ScalarNoise *scalarNoise = check_and_cast<const ScalarNoise *>(noise);
-    return new ScalarSNIR(scalarReception, scalarNoise);
+    return new LayeredSNIR(layeredReception, scalarNoise);
 }
 
 } // namespace physicallayer

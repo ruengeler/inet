@@ -28,7 +28,6 @@
 #include "inet/physicallayer/contract/layered/IPulseFilter.h"
 #include "inet/physicallayer/contract/layered/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
-#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
 
 namespace inet {
@@ -72,7 +71,7 @@ class INET_API Ieee80211OFDMReceiver : public SNIRReceiverBase
         const IReceptionSymbolModel *createDataFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
         const IReceptionBitModel *createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel *receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
         const IReceptionBitModel *createSignalFieldReceptionBitModel(const IReceptionBitModel *receptionBitModel) const;
-        const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredScalarTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel,  const IReceptionBitModel *&receptionBitModel) const;
+        const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel,  const IReceptionBitModel *&receptionBitModel) const;
         const IReceptionPacketModel *demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
 
     public:

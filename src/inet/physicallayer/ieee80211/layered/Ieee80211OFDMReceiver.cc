@@ -17,9 +17,8 @@
 
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMReceiver.h"
 #include "inet/physicallayer/contract/layered/ISymbol.h"
-#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/LayeredReceptionDecision.h"
-#include "inet/physicallayer/layered/LayeredScalarReception.h"
+#include "inet/physicallayer/layered/LayeredReception.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
@@ -34,6 +33,7 @@
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/base/NarrowbandNoiseBase.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
+#include "inet/physicallayer/analogmodel/ScalarAnalogModel.h"
 
 namespace inet {
 namespace physicallayer {
@@ -165,7 +165,7 @@ const IReceptionBitModel* Ieee80211OFDMReceiver::createDataFieldReceptionBitMode
     return new ReceptionBitModel(-1, encodedDataFieldLengthInBits, -1, receptionBitModel->getPayloadBitRate(), dataBits, receptionBitModel->getModulation());
 }
 
-const IReceptionPacketModel *Ieee80211OFDMReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredScalarTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
+const IReceptionPacketModel *Ieee80211OFDMReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
 {
     const IReceptionSymbolModel *signalFieldReceptionSymbolModel = NULL;
     const IReceptionBitModel *signalFieldReceptionBitModel = NULL;
@@ -268,8 +268,8 @@ const IReceptionDecision *Ieee80211OFDMReceiver::computeReceptionDecision(const 
 {
     const IRadio *receiver = reception->getReceiver();
     const IRadioMedium *medium = receiver->getMedium();
-    const LayeredScalarTransmission *transmission = dynamic_cast<const LayeredScalarTransmission*>(reception->getTransmission());
-    const LayeredScalarReception *layeredReception = dynamic_cast<const LayeredScalarReception*>(reception);
+    const LayeredTransmission *transmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
+    const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
     if (!receptionAnalogModel)
         throw cRuntimeError("Reception analog model is obligatory");
@@ -334,13 +334,15 @@ const IListeningDecision* Ieee80211OFDMReceiver::computeListeningDecision(const 
 bool Ieee80211OFDMReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
 {
     const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
-    const NarrowbandReceptionBase *flatReception = check_and_cast<const NarrowbandReceptionBase *>(reception);
-    if (bandListening->getCarrierFrequency() != flatReception->getCarrierFrequency() || bandListening->getBandwidth() != flatReception->getBandwidth()) {
+    const LayeredReception *scalarReception = check_and_cast<const LayeredReception *>(reception);
+    // TODO: scalar
+    const ScalarReceptionSignalAnalogModel *analogModel = dynamic_cast<const ScalarReceptionSignalAnalogModel*>(scalarReception->getAnalogModel());
+    if (bandListening->getCarrierFrequency() != analogModel->getCarrierFrequency() || bandListening->getBandwidth() != analogModel->getBandwidth()) {
         EV_DEBUG << "Computing reception possible: listening and reception bands are different -> reception is impossible" << endl;
         return false;
     }
     else {
-        W minReceptionPower = flatReception->computeMinPower(reception->getStartTime(), reception->getEndTime());
+        W minReceptionPower = scalarReception->computeMinPower(reception->getStartTime(), reception->getEndTime());
         bool isReceptionPossible = minReceptionPower >= sensitivity;
         EV_DEBUG << "Computing reception possible: minimum reception power = " << minReceptionPower << ", sensitivity = " << sensitivity << " -> reception is " << (isReceptionPossible ? "possible" : "impossible") << endl;
         return isReceptionPossible;

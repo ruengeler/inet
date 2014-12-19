@@ -57,6 +57,7 @@ class INET_API ScalarSignalAnalogModel : public SignalAnalogModel
     virtual void printToStream(std::ostream &stream) const;
 
     virtual W getPower() const { return power; }
+    virtual W computeMinPower(simtime_t startTime, simtime_t endTime) const { return power; }
     virtual Hz getCarrierFrequency() const { return carrierFrequency; }
     virtual Hz getBandwidth() const { return bandwidth; }
 };

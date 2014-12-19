@@ -18,11 +18,11 @@
 #include "inet/physicallayer/ieee80211/errormodel/layered/Ieee80211OFDMErrorModel.h"
 #include "inet/physicallayer/contract/layered/IAPSKModulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
-#include "inet/physicallayer/layered/LayeredScalarTransmission.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSampleModel.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {
 namespace physicallayer {
@@ -49,9 +49,10 @@ const IReceptionBitModel* Ieee80211OFDMErrorModel::computeBitModel(const Layered
     if (dynamic_cast<const IAPSKModulation *>(modulation))
     {
         const IAPSKModulation *apskModulation = (const IAPSKModulation *) modulation;
-        double dataFieldBer = apskModulation->calculateBER(snir->getMin(), transmission->getBandwidth().get(), dataBitRate);
+        const ScalarTransmissionSignalAnalogModel *analogModel = dynamic_cast<const ScalarTransmissionSignalAnalogModel *>(transmission->getAnalogModel());
+        double dataFieldBer = apskModulation->calculateBER(snir->getMin(), analogModel->getBandwidth().get(), dataBitRate);
         corruptBits(corruptedBits, dataFieldBer, signalBitLength, corruptedBits->getSize());
-        double signalFieldBer = BPSKModulation::singleton.calculateBER(snir->getMin(), transmission->getBandwidth().get(), signalBitRate);
+        double signalFieldBer = BPSKModulation::singleton.calculateBER(snir->getMin(), analogModel->getBandwidth().get(), signalBitRate);
         corruptBits(corruptedBits, signalFieldBer, 0, signalBitLength);
     }
     else

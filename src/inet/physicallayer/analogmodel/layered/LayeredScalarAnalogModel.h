@@ -20,7 +20,7 @@
 
 #include "inet/physicallayer/base/AnalogModelBase.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/layered/LayeredScalarReception.h"
+#include "inet/physicallayer/layered/LayeredReception.h"
 
 namespace inet {
 
@@ -30,7 +30,7 @@ class INET_API LayeredScalarAnalogModel : public AnalogModelBase
 {
   protected:
     virtual bool areOverlappingBands(Hz carrierFrequency1, Hz bandwidth1, Hz carrierFrequency2, Hz bandwidth2) const;
-    const ScalarReceptionSignalAnalogModel* computeReceptionAnalogModel(const ScalarTransmissionSignalAnalogModel* analogModel) const;
+    const ScalarReceptionSignalAnalogModel* computeReceptionAnalogModel(const IRadio *receiverRadio, const ITransmission *transmission, const IArrival *arrival, const IRadioMedium *channel, const ScalarTransmissionSignalAnalogModel* analogModel) const;
 
   public:
     virtual void printToStream(std::ostream& stream) const { stream << "LayeredScalarAnalogModel"; }

@@ -32,6 +32,7 @@ class INET_API ISignalAnalogModel : public IPrintableObject
 {
   public:
     virtual const simtime_t getDuration() const = 0;
+    virtual W computeMinPower(simtime_t startTime, simtime_t endTime) const = 0;
 };
 
 class INET_API ITransmissionAnalogModel : public virtual ISignalAnalogModel
