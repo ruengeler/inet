@@ -28,12 +28,17 @@ LayeredReceptionDecision::LayeredReceptionDecision(
         const IReceptionSampleModel* sampleModel,
         const IReceptionAnalogModel* analogModel, bool isReceptionPossible,
         bool isReceptionAttempted, bool isReceptionSuccessful) :
-                ReceptionDecision(reception, indication, packetModel, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful),
+                ReceptionDecision(reception, indication, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful),
                 bitModel(bitModel),
                 symbolModel(symbolModel),
                 sampleModel(sampleModel),
                 analogModel(analogModel)
 {
+}
+
+const cPacket *LayeredReceptionDecision::getMacFrame() const
+{
+    return packetModel->getPacket();
 }
 
 } /* namespace physicallayer */

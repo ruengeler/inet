@@ -161,7 +161,7 @@ const IReceptionDecision *NarrowbandReceiverBase::computeReceptionDecision(const
     if (bandListening->getCarrierFrequency() == flatReception->getCarrierFrequency() && bandListening->getBandwidth() == flatReception->getBandwidth())
         return SNIRReceiverBase::computeReceptionDecision(listening, reception, interference);
     else
-        return new ReceptionDecision(reception, new RadioReceptionIndication(), NULL, false, false, false);
+        return new ReceptionDecision(reception, new RadioReceptionIndication(), false, false, false);
 }
 
 } // namespace physicallayer

@@ -20,6 +20,7 @@
 
 #include "inet/physicallayer/contract/IReceptionDecision.h"
 #include "inet/physicallayer/common/ReceptionDecision.h"
+#include "inet/physicallayer/contract/layered/ISignalPacketModel.h"
 #include "inet/physicallayer/contract/layered/ISignalBitModel.h"
 #include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
 #include "inet/physicallayer/contract/layered/ISignalSampleModel.h"
@@ -31,16 +32,19 @@ namespace physicallayer {
 class INET_API LayeredReceptionDecision : public ReceptionDecision
 {
     protected:
+        const IReceptionPacketModel *packetModel;
         const IReceptionBitModel    *bitModel;
         const IReceptionSymbolModel *symbolModel;
         const IReceptionSampleModel *sampleModel;
         const IReceptionAnalogModel *analogModel;
 
     public:
-        virtual const IReceptionAnalogModel* getAnalogModel() const { return analogModel; }
+        virtual const cPacket *getMacFrame() const;
+        virtual const IReceptionPacketModel* getPacketModel() const { return packetModel; }
         virtual const IReceptionBitModel* getBitModel() const { return bitModel; }
-        virtual const IReceptionSampleModel* getSampleModel() const { return sampleModel; }
         virtual const IReceptionSymbolModel* getSymbolModel() const { return symbolModel; }
+        virtual const IReceptionSampleModel* getSampleModel() const { return sampleModel; }
+        virtual const IReceptionAnalogModel* getAnalogModel() const { return analogModel; }
 
         virtual void printToStream(std::ostream& stream) const { stream << "Layered Reception Decision"; }
         LayeredReceptionDecision(const IReception *reception, const RadioReceptionIndication *indication, const IReceptionPacketModel *packetModel, const IReceptionBitModel *bitModel, const IReceptionSymbolModel *symbolModel, const IReceptionSampleModel *sampleModel, const IReceptionAnalogModel *analogModel, bool isReceptionPossible, bool isReceptionAttempted, bool isReceptionSuccessful);

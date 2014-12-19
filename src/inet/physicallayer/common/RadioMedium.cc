@@ -969,12 +969,10 @@ cPacket *RadioMedium::receivePacket(const IRadio *radio, IRadioFrame *radioFrame
                          << "E " << reception->getEndTime() << " " << reception->getEndPosition() << " "
                          << "D " << decision->isReceptionPossible() << " " << decision->isReceptionAttempted() << " " << decision->isReceptionSuccessful() << endl;
     }
-    const ISignalPacketModel *packetModel = decision->getPacketModel();
-    cPacket *macFrame;
-    if (packetModel)
-        macFrame = packetModel->getPacket()->dup();
-    else
-        macFrame = check_and_cast<cPacket *>(radioFrame)->decapsulate();
+    cPacket *macFrame = const_cast<cPacket *>(decision->getMacFrame());
+    cPacket *radioPacket = check_and_cast<cPacket *>(radioFrame);
+    if (radioPacket->getEncapsulatedPacket() == macFrame)
+        radioPacket->decapsulate();
     macFrame->setBitError(!decision->isReceptionSuccessful());
     macFrame->setControlInfo(const_cast<RadioReceptionIndication *>(decision->getIndication()));
     delete listening;

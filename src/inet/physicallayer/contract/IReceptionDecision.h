@@ -80,12 +80,6 @@ class INET_API IReceptionDecision : public IPrintableObject // TODO: revise name
     virtual bool isReceptionSuccessful() const = 0;
 
     /*
-     * Returns the packet model of the transmission or NULL if packet
-     * domain is not modeled in the actual radio architecture.
-     */
-    virtual const ISignalPacketModel *getPacketModel() const = 0;
-
-    /*
      * If packet domain is present it returns the MAC frame contained
      * in the packet model, if not, it returns the MAC frame referenced
      * by the transmission.

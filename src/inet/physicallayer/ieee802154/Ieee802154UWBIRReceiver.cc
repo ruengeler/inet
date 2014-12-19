@@ -83,7 +83,7 @@ const IReceptionDecision *Ieee802154UWBIRReceiver::computeReceptionDecision(cons
         isReceptionSuccessful &= !bits->at(bitLength + i);
     }
     delete bits;
-    return new ReceptionDecision(reception, indication, NULL, true, true, isReceptionSuccessful);
+    return new ReceptionDecision(reception, indication, true, true, isReceptionSuccessful);
 }
 
 std::vector<bool> *Ieee802154UWBIRReceiver::decode(const IReception *reception, const std::vector<const IReception *> *interferingReceptions, const INoise *backgroundNoise) const

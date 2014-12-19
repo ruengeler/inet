@@ -63,7 +63,7 @@ const IReceptionDecision *SNIRReceiverBase::computeReceptionDecision(const IList
     bool isReceptionAttempted = isReceptionPossible && computeIsReceptionAttempted(listening, reception, interference);
     bool isReceptionSuccessful = isReceptionAttempted && computeIsReceptionSuccessful(snir);
     const RadioReceptionIndication *indication = isReceptionAttempted ? computeReceptionIndication(snir) : NULL;
-    return new ReceptionDecision(reception, indication, NULL, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful);
+    return new ReceptionDecision(reception, indication, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful);
 }
 
 } // namespace physicallayer

@@ -21,10 +21,9 @@ namespace inet {
 
 namespace physicallayer {
 
-ReceptionDecision::ReceptionDecision(const IReception *reception, const RadioReceptionIndication *indication, const IReceptionPacketModel *packetModel, bool isReceptionPossible, bool isReceptionAttempted, bool isReceptionSuccessful) :
+ReceptionDecision::ReceptionDecision(const IReception *reception, const RadioReceptionIndication *indication, bool isReceptionPossible, bool isReceptionAttempted, bool isReceptionSuccessful) :
     reception(reception),
     indication(indication),
-    packetModel(packetModel),
     isSynchronizationPossible_(false),
     isSynchronizationAttempted_(false),
     isSynchronizationSuccessful_(false),
@@ -45,8 +44,6 @@ void ReceptionDecision::printToStream(std::ostream& stream) const
 
 const cPacket* inet::physicallayer::ReceptionDecision::getMacFrame() const
 {
-    if (packetModel)
-        return packetModel->getPacket();
     return reception->getTransmission()->getMacFrame();
 }
 
