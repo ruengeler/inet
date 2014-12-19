@@ -23,6 +23,7 @@
 namespace inet {
 namespace physicallayer {
 
+// TODO: review this, do we really need it? (used in the error model to get the modulation scheme)
 class INET_API StubModulator : public cSimpleModule, public IModulator
 {
     protected:

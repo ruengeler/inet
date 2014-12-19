@@ -26,6 +26,7 @@ namespace inet {
 
 namespace physicallayer {
 
+// TODO: factor out common parts with ScalarAnalogModel
 class INET_API LayeredScalarAnalogModel : public AnalogModelBase
 {
   protected:
