@@ -27,7 +27,7 @@
 #include "inet/physicallayer/contract/IArrival.h"
 #include "inet/physicallayer/contract/IInterference.h"
 #include "inet/physicallayer/contract/IPropagation.h"
-#include "inet/physicallayer/contract/layered/IAnalogModel.h"
+#include "inet/physicallayer/contract/IAnalogModel.h"
 #include "inet/physicallayer/contract/IBackgroundNoise.h"
 #include "inet/linklayer/common/MACAddress.h"
 #include "inet/common/TrailFigure.h"

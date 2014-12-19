@@ -25,7 +25,7 @@
 #include "inet/physicallayer/contract/IPropagation.h"
 #include "inet/physicallayer/contract/IPathLoss.h"
 #include "inet/physicallayer/contract/IObstacleLoss.h"
-#include "inet/physicallayer/contract/layered/IAnalogModel.h"
+#include "inet/physicallayer/contract/IAnalogModel.h"
 #include "inet/physicallayer/contract/IBackgroundNoise.h"
 #include "inet/physicallayer/contract/ISNIR.h"
 #include "inet/physicallayer/contract/IReceptionDecision.h"
