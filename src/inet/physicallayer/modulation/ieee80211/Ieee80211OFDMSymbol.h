@@ -19,7 +19,7 @@
 #define __INET_OFDMSYMBOL_H
 
 #include "inet/physicallayer/contract/layered/ISymbol.h"
-#include "inet/physicallayer/modulation/APSKSymbol.h"
+#include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 
 namespace inet {
 namespace physicallayer {

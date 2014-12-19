@@ -20,7 +20,7 @@
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
-#include "inet/physicallayer/modulation/APSKSymbol.h"
+#include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 
 namespace inet {

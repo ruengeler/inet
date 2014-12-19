@@ -20,7 +20,7 @@
 
 #include "inet/physicallayer/contract/layered/IAPSKModulation.h"
 #include "inet/common/ShortBitVector.h"
-#include "inet/physicallayer/modulation/APSKSymbol.h"
+#include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 
 namespace inet {
 namespace physicallayer {
