@@ -36,7 +36,6 @@ class INET_API LayeredTransmission : public TransmissionBase
         const ITransmissionSymbolModel *symbolModel;
         const ITransmissionSampleModel *sampleModel;
         const ITransmissionAnalogModel *analogModel;
-        const Hz bandwidth;
 
     public:
         virtual const ITransmissionPacketModel *getPacketModel() const { return packetModel; }
@@ -44,8 +43,7 @@ class INET_API LayeredTransmission : public TransmissionBase
         virtual const ITransmissionSymbolModel *getSymbolModel() const { return symbolModel; }
         virtual const ITransmissionSampleModel *getSampleModel() const { return sampleModel; }
         virtual const ITransmissionAnalogModel *getAnalogModel() const { return analogModel; }
-        const Hz getBandwidth() const { return bandwidth; }
-        LayeredTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, Hz bandwidth);
+        LayeredTransmission(const ITransmissionPacketModel *packetModel, const ITransmissionBitModel *bitModel, const ITransmissionSymbolModel *symbolModel, const ITransmissionSampleModel *sampleModel, const ITransmissionAnalogModel *analogModel, const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation);
 };
 
 } /* namespace physicallayer */

@@ -23,23 +23,23 @@
 #include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
 #include "inet/physicallayer/contract/layered/ISignalSampleModel.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
-#include "inet/physicallayer/analogmodel/ScalarReception.h"
+#include "inet/physicallayer/base/ReceptionBase.h"
 
 namespace inet {
 
 namespace physicallayer {
-// TODO: do not inherit from ScalarReception
-class INET_API LayeredScalarReception : public ScalarReception
+
+class INET_API LayeredReception : public ReceptionBase
 {
   protected:
     const IReceptionAnalogModel *analogModel;
 
   public:
-    LayeredScalarReception(const IReceptionAnalogModel *analogModel, const IRadio *radio, const ITransmission *transmission, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation, const Hz carrierFrequency, const Hz bandwidth, const W power) :
-        ScalarReception(radio, transmission, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation, carrierFrequency, bandwidth, power),
+    LayeredReception(const IReceptionAnalogModel *analogModel, const IRadio *radio, const ITransmission *transmission, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition, const EulerAngles startOrientation, const EulerAngles endOrientation) :
+        ReceptionBase(radio, transmission, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation),
         analogModel(analogModel)
     {}
-
+    virtual W computeMinPower(simtime_t startTime, simtime_t endTime) const { return analogModel->computeMinPower(startTime, endTime); }
     virtual const IReceptionAnalogModel *getAnalogModel() const { return analogModel; }
 };
 
