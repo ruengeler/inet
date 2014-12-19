@@ -60,13 +60,12 @@ class INET_API APSKTransmitter : public ITransmitter, public cSimpleModule
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
         const ITransmissionAnalogModel* createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const;
         BitVector *serialize(const cPacket* packet) const; // FIXME: kludge
-        uint8_t getRate(const BitVector* serializedPacket) const; // TODO: copy
         const ITransmissionPacketModel *createSignalFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
         const ITransmissionPacketModel *createDataFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
-        void encodeAndModulate(const ITransmissionPacketModel *fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const;
+        void encodeAndModulate(const ITransmissionPacketModel *fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, bool isSignalField) const;
         const ITransmissionSymbolModel *createSymbolModel(const ITransmissionSymbolModel *signalFieldSymbolModel, const ITransmissionSymbolModel *dataFieldSymbolModel) const;
-        const ITransmissionBitModel *createBitModel(const ITransmissionBitModel *signalFieldBitModel, const ITransmissionBitModel *dataFieldBitModel, uint8_t rate) const;
-        void padding(BitVector *serializedPacket, unsigned int dataBitsLength, uint8_t rate) const;
+        const ITransmissionBitModel *createBitModel(const ITransmissionBitModel *signalFieldBitModel, const ITransmissionBitModel *dataFieldBitModel) const;
+        void padding(BitVector *serializedPacket, unsigned int dataBitsLength) const;
 
     public:
         virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;

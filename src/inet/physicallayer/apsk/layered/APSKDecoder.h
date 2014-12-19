@@ -43,7 +43,6 @@ class INET_API APSKDecoder : public IDecoder
 
     protected:
         const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
-        ShortBitVector getSignalFieldRate(const BitVector& signalField) const;
         unsigned int getSignalFieldLength(const BitVector& signalField) const;
         unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const Ieee80211ConvolutionalCode *fec) const;
 

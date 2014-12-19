@@ -40,7 +40,7 @@ class INET_API APSKCode : public IIeee80211Code
         const Ieee80211Scrambling *scrambling;
 
     protected:
-        const Ieee80211ConvolutionalCode *computeFec(uint8_t rate) const;
+        const Ieee80211ConvolutionalCode *computeFec() const;
         const Ieee80211Interleaving *computeInterleaving(const IModulation *modulationScheme) const;
         const Ieee80211Scrambling *computeScrambling() const;
 
@@ -50,7 +50,6 @@ class INET_API APSKCode : public IIeee80211Code
         const Ieee80211Scrambling *getScrambling() const { return scrambling; }
 
         APSKCode();
-        APSKCode(uint8_t signalFieldRate);
         APSKCode(const ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling);
         ~APSKCode();
 };

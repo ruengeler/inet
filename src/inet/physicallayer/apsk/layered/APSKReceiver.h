@@ -61,7 +61,6 @@ class INET_API APSKReceiver : public SNIRReceiverBase
 
     protected:
         virtual void initialize(int stage);
-        uint8_t getRate(const BitVector *serializedPacket) const;
         unsigned int getSignalFieldLength(const BitVector *signalField) const;
         unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const;
 

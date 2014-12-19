@@ -95,14 +95,6 @@ const IReceptionPacketModel* APSKDecoder::createPacketModel(const BitVector *dec
     return new ReceptionPacketModel(NULL, decodedBits, fec, scrambling, interleaving, per, packetErrorless); // FIXME: memory leak
 }
 
-ShortBitVector APSKDecoder::getSignalFieldRate(const BitVector& signalField) const
-{
-    ShortBitVector rate;
-    for (int i = SIGNAL_RATE_FIELD_START; i <= SIGNAL_RATE_FIELD_END; i++)
-        rate.appendBit(signalField.getBit(i));
-    return rate;
-}
-
 unsigned int APSKDecoder::getSignalFieldLength(const BitVector& signalField) const
 {
     ShortBitVector length;

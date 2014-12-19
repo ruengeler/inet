@@ -70,10 +70,6 @@ BitVector *APSKTransmitter::serialize(const cPacket* packet) const
     // and then we fill the remaining with random bits
     const Ieee80211OFDMPhyFrame *phyFrame = check_and_cast<const Ieee80211OFDMPhyFrame*>(packet);
     BitVector *serializedPacket = new BitVector();
-    // RATE, 4 bits
-    ShortBitVector rate(phyFrame->getRate(), 4);
-    for (unsigned int i = 0; i < rate.getSize(); i++)
-        serializedPacket->appendBit(rate.getBit(i));
     // Reserved, 1 bit
     serializedPacket->appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
     // Length, 12 bits
@@ -95,7 +91,7 @@ BitVector *APSKTransmitter::serialize(const cPacket* packet) const
         serializedPacket->appendBit(intuniform(0,1));
     serializedPacket->appendBit(0, 6); // tail bits
     int dataBitsLength = 6 + 16 + byteLength.toDecimal() * 8;
-    padding(serializedPacket, dataBitsLength, rate.toDecimal());
+    padding(serializedPacket, dataBitsLength);
     return serializedPacket;
 }
 
@@ -109,12 +105,10 @@ const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket
     else
         currentBitrate = bitrate;
     Ieee80211OFDMModulation ofdmModulation(currentBitrate, Hz(0));
-    int rate = ofdmModulation.getSignalRateField();
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
     Ieee80211OFDMPhyFrame * phyFrame = new Ieee80211OFDMPhyFrame();
-    phyFrame->setRate(rate);
     phyFrame->setLength(macFrame->getByteLength());
     phyFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
     phyFrame->setBitLength(phyFrame->getLength() + plcpHeaderLength);
@@ -127,15 +121,6 @@ const ITransmissionAnalogModel* APSKTransmitter::createAnalogModel(int headerBit
     simtime_t duration = headerBitLength / headerBitRate + payloadBitLength / payloadBitRate; // TODO: preamble duration
     const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
     return transmissionAnalogModel;
-}
-
-// TODO: copy
-uint8_t APSKTransmitter::getRate(const BitVector* serializedPacket) const
-{
-    ShortBitVector rate;
-    for (unsigned int i = 0; i < 4; i++)
-        rate.appendBit(serializedPacket->getBit(i));
-    return rate.toDecimal();
 }
 
 const ITransmissionPacketModel* APSKTransmitter::createSignalFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
@@ -158,7 +143,7 @@ const ITransmissionPacketModel* APSKTransmitter::createDataFieldPacketModel(cons
     return new TransmissionPacketModel(NULL, dataField);
 }
 
-void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, uint8_t rate, bool isSignalField) const
+void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, bool isSignalField) const
 {
     if (levelOfDetail >= BIT_DOMAIN)
     {
@@ -170,7 +155,7 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
             if (isSignalField) // signal
                 code = new APSKCode();
             else // data
-                code = new APSKCode(rate);
+                code = new APSKCode();
             const APSKEncoder encoder(code);
             fieldBitModel = encoder.encode(fieldPacketModel);
         }
@@ -187,7 +172,7 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
                 if (isSignalField) // signal
                     ofdmModulation = new Ieee80211OFDMModulation(Hz(0));
                 else // data
-                    ofdmModulation = new Ieee80211OFDMModulation(rate, Hz(0));
+                    ofdmModulation = new Ieee80211OFDMModulation(0, Hz(0));
                 APSKModulator modulator(ofdmModulation);
                 fieldSymbolModel = modulator.modulate(fieldBitModel);
             }
@@ -211,8 +196,7 @@ const ITransmissionSymbolModel* APSKTransmitter::createSymbolModel(
 
 const ITransmissionBitModel* APSKTransmitter::createBitModel(
         const ITransmissionBitModel* signalFieldBitModel,
-        const ITransmissionBitModel* dataFieldBitModel,
-        uint8_t rate) const
+        const ITransmissionBitModel* dataFieldBitModel) const
 {
     BitVector *encodedBits = new BitVector(*signalFieldBitModel->getBits());
     unsigned int signalBitLength = signalFieldBitModel->getBits()->getSize();
@@ -227,13 +211,13 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
         dataBitrate = bitrate;
     else
     {
-        Ieee80211OFDMModulation dataModulation(rate, Hz(0));
+        Ieee80211OFDMModulation dataModulation(0, Hz(0));
         dataBitrate = dataModulation.getBitrate();
     }
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
-void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength, uint8_t rate) const
+void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength) const
 {
     unsigned int codedBitsPerOFDMSymbol;
     const Ieee80211Interleaving *interleaving = NULL;
@@ -248,7 +232,7 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
     }
     if (!interleaving) // non-compliant
     {
-        Ieee80211OFDMModulation ofdmModulation(rate, Hz(0));
+        Ieee80211OFDMModulation ofdmModulation(0, Hz(0));
         const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
         codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
     }
@@ -256,7 +240,7 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
         codedBitsPerOFDMSymbol = interleaving->getNumberOfCodedBitsPerSymbol();
     if (!fec) // non-compliant
     {
-        const APSKCode code(rate);
+        const APSKCode code;
         fec = code.getConvCode();
     }
     unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
@@ -278,12 +262,11 @@ const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitt
     const ITransmissionSymbolModel *dataFieldSymbolModel = NULL;
     const ITransmissionPacketModel *signalFieldPacketModel = createSignalFieldPacketModel(completePacketModel);
     const ITransmissionPacketModel *dataFieldPacketModel = createDataFieldPacketModel(completePacketModel);
-    uint8_t rate = getRate(serializedPacket);
-    encodeAndModulate(signalFieldPacketModel, signalFieldBitModel, signalFieldSymbolModel, signalEncoder, signalModulator, rate, true);
-    encodeAndModulate(dataFieldPacketModel, dataFieldBitModel, dataFieldSymbolModel, encoder, modulator, rate, false);
+    encodeAndModulate(signalFieldPacketModel, signalFieldBitModel, signalFieldSymbolModel, signalEncoder, signalModulator, true);
+    encodeAndModulate(dataFieldPacketModel, dataFieldBitModel, dataFieldSymbolModel, encoder, modulator, false);
     const ITransmissionBitModel *bitModel = NULL;
     if (levelOfDetail >= BIT_DOMAIN)
-        bitModel = createBitModel(signalFieldBitModel, dataFieldBitModel, rate);
+        bitModel = createBitModel(signalFieldBitModel, dataFieldBitModel);
     const ITransmissionSymbolModel *symbolModel = NULL;
     if (levelOfDetail >= SYMBOL_DOMAIN)
         symbolModel = createSymbolModel(signalFieldSymbolModel, dataFieldSymbolModel);

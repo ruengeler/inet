@@ -41,8 +41,6 @@ namespace physicallayer {
 #define OFDM_SYMBOL_SIZE 48
 #define ENCODED_SIGNAL_FIELD_LENGTH 48
 // Table L-7—Bit assignment for SIGNAL field
-#define SIGNAL_RATE_FIELD_START 0
-#define SIGNAL_RATE_FIELD_END 3
 #define SIGNAL_LENGTH_FIELD_START 5
 #define SIGNAL_LENGTH_FIELD_END 16
 #define SIGNAL_PARITY_FIELD 17
@@ -91,14 +89,6 @@ void APSKReceiver::initialize(int stage)
         else
             throw cRuntimeError("Unknown level of detail='%s'", levelOfDetailStr);
     }
-}
-
-uint8_t APSKReceiver::getRate(const BitVector* serializedPacket) const
-{
-    ShortBitVector rate;
-    for (unsigned int i = 0; i < 4; i++)
-        rate.appendBit(serializedPacket->getBit(i));
-    return rate.toDecimal();
 }
 
 unsigned int APSKReceiver::getSignalFieldLength(const BitVector *signalField) const
@@ -214,8 +204,7 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     const IReceptionSymbolModel *dataFieldReceptionSymbolModel = NULL;
     const IReceptionPacketModel *dataFieldReceptionPacketModel = NULL;
     const BitVector *serializedSignalField = signalFieldReceptionPacketModel->getSerializedPacket();
-    uint8_t rate = getRate(serializedSignalField);
-    const Ieee80211OFDMModulation ofdmModulation(rate, Hz(0));
+    const Ieee80211OFDMModulation ofdmModulation(0, Hz(0));
     const APSKModulationBase *dataDemodulationScheme = ofdmModulation.getModulationScheme();
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
@@ -236,7 +225,7 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     {
         const APSKCode *code = NULL;
         if (!decoder || !dataFieldReceptionBitModel)
-            code = new APSKCode(rate);
+            code = new APSKCode();
         if (!dataFieldReceptionBitModel)
             dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvCode(), receptionBitModel, signalFieldReceptionPacketModel);
         if (decoder) // non-compliant mode

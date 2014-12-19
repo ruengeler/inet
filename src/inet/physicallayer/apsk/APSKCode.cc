@@ -23,18 +23,9 @@ namespace physicallayer {
 
 #define OFDM_SYMBOL_SIZE 48
 
-const Ieee80211ConvolutionalCode* APSKCode::computeFec(uint8_t rate) const
+const Ieee80211ConvolutionalCode* APSKCode::computeFec() const
 {
-    // Table 18-6—Contents of the SIGNAL field
-    // Table 18-4—Modulation-dependent parameters
-    if (rate == 1101_b || rate == 0101_b || rate == 1001_b)
-        return new Ieee80211ConvolutionalCode(1, 2);
-    else if (rate == 1111_b || rate == 0111_b || rate == 1011_b || rate == 0111_b)
-        return new Ieee80211ConvolutionalCode(3, 4);
-    else if (rate == 0001_b)
-        return new Ieee80211ConvolutionalCode(2, 3);
-    else
-        throw cRuntimeError("Unknown rate field  = %d", rate);
+    return new Ieee80211ConvolutionalCode(1, 2);
 }
 
 const Ieee80211Interleaving* APSKCode::computeInterleaving(const IModulation *modulationScheme) const
@@ -44,14 +35,6 @@ const Ieee80211Interleaving* APSKCode::computeInterleaving(const IModulation *mo
     return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
 }
 
-APSKCode::APSKCode(uint8_t signalFieldRate)
-{
-    convCode = computeFec(signalFieldRate);
-    Ieee80211OFDMModulation ofdmModulation(signalFieldRate, Hz(0));
-    interleaving = computeInterleaving(ofdmModulation.getModulationScheme());
-    scrambling = computeScrambling();
-}
-
 const Ieee80211Scrambling* APSKCode::computeScrambling() const
 {
     // Default scrambling
@@ -59,7 +42,7 @@ const Ieee80211Scrambling* APSKCode::computeScrambling() const
 }
 
 APSKCode::APSKCode() :
-        scrambling(NULL)
+    scrambling(NULL)
 {
     convCode = new Ieee80211ConvolutionalCode(1,2);
     interleaving = new Ieee80211Interleaving(OFDM_SYMBOL_SIZE, 1);
