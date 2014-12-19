@@ -22,7 +22,7 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
-#include "inet/physicallayer/modulation/ieee80211/Ieee80211OFDMSymbol.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMSymbol.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 
 namespace inet {

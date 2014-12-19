@@ -19,7 +19,7 @@
 #define __INET_IEEE80211LAYEREDERRORMODEL_H
 
 #include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
-#include "inet/physicallayer/modulation/ieee80211/Ieee80211OFDMSymbol.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMSymbol.h"
 
 namespace inet {
 namespace physicallayer {
