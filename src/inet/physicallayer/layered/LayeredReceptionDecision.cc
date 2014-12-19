@@ -29,6 +29,7 @@ LayeredReceptionDecision::LayeredReceptionDecision(
         const IReceptionAnalogModel* analogModel, bool isReceptionPossible,
         bool isReceptionAttempted, bool isReceptionSuccessful) :
                 ReceptionDecision(reception, indication, isReceptionPossible, isReceptionAttempted, isReceptionSuccessful),
+                packetModel(packetModel),
                 bitModel(bitModel),
                 symbolModel(symbolModel),
                 sampleModel(sampleModel),
