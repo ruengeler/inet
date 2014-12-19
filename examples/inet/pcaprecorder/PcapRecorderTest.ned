@@ -29,6 +29,7 @@ import inet.node.inet.StandardHost;
 import inet.node.inet.WirelessHost;
 import inet.node.ipv6.StandardHost6;
 import inet.node.wireless.AccessPoint;
+import inet.physicallayer.ieee80211.Ieee80211ScalarRadioMedium;
 import ned.DatarateChannel;
 
 
@@ -106,9 +107,8 @@ network PcapRecorderTest80211
                 @display("p=239,178");
                 wlan[*].mgmtType = "Ieee80211MgmtAPSimplified";
         }
-        radioChannel: SimplifiedRadioChannel {
+        radioMedium: Ieee80211ScalarRadioMedium {
             parameters:
-                numChannels = 2;
                 @display("p=61,46");
         }
         configurator: IPv4NetworkConfigurator {
