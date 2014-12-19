@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-package inet.physicallayer.layered;
+package inet.physicallayer.ieee80211.layered;
 
 import inet.physicallayer.common.RadioMedium;
 
