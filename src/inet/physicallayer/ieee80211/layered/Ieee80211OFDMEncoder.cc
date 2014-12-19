@@ -60,6 +60,9 @@ const ITransmissionBitModel* Ieee80211OFDMEncoder::encode(const ITransmissionPac
 }
 
 Ieee80211OFDMEncoder::Ieee80211OFDMEncoder(const Ieee80211OFDMCode *code) :
+        fecEncoder(NULL),
+        interleaver(NULL),
+        scrambler(NULL),
         code(code)
 {
     channelSpacing = code->getChannelSpacing();
@@ -79,13 +82,13 @@ Ieee80211OFDMEncoder::Ieee80211OFDMEncoder(const IFECCoder* fecEncoder, const II
 {
     const ConvolutionalCode *fec = NULL;
     if (fecEncoder)
-        fec = dynamic_cast<const ConvolutionalCode *>(fecEncoder->getForwardErrorCorrection());
+        fec = check_and_cast<const ConvolutionalCode *>(fecEncoder->getForwardErrorCorrection());
     const Ieee80211Interleaving *interleaving = NULL;
     if (interleaver)
-        interleaving = dynamic_cast<const Ieee80211Interleaving *>(interleaver->getInterleaving());
+        interleaving = check_and_cast<const Ieee80211Interleaving *>(interleaver->getInterleaving());
     const Ieee80211Scrambling *scrambling = NULL;
     if (scrambler)
-        scrambling = dynamic_cast<const Ieee80211Scrambling *>(scrambler->getScrambling());
+        scrambling = check_and_cast<const Ieee80211Scrambling *>(scrambler->getScrambling());
     code = new Ieee80211OFDMCode(fec, interleaving, scrambling, channelSpacing);
 }
 

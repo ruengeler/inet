@@ -123,7 +123,6 @@ unsigned int Ieee80211OFDMDecoder::calculatePadding(unsigned int dataFieldLength
 
 Ieee80211OFDMDecoder::~Ieee80211OFDMDecoder()
 {
-    delete code;
     delete deinterleaver;
     delete descrambler;
     delete fecDecoder;
