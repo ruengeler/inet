@@ -971,8 +971,8 @@ cPacket *RadioMedium::receivePacket(const IRadio *radio, IRadioFrame *radioFrame
     }
     cPacket *macFrame = const_cast<cPacket *>(decision->getMacFrame());
     cPacket *radioPacket = check_and_cast<cPacket *>(radioFrame);
-    if (radioPacket->getEncapsulatedPacket() == macFrame)
-        radioPacket->decapsulate();
+    if (radioPacket->getEncapsulatedPacket()->getTreeId() == macFrame->getTreeId())
+        macFrame = radioPacket->decapsulate();
     macFrame->setBitError(!decision->isReceptionSuccessful());
     macFrame->setControlInfo(const_cast<RadioReceptionIndication *>(decision->getIndication()));
     delete listening;
