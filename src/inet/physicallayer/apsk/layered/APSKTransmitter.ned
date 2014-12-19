@@ -34,12 +34,10 @@ module APSKTransmitter like ITransmitter
         string modulatorType = default("");
         string pulseShaperType = default("");
         string digitalAnalogConverterType = default("");
-        double channelSpacing @unit(Hz);
         double bitrate @unit(bps);
         double power @unit(W);
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
-        *.channelSpacing = channelSpacing;
         @class(APSKTransmitter);
 
     submodules:

@@ -80,7 +80,6 @@ void APSKReceiver::initialize(int stage)
         carrierFrequency = Hz(par("carrierFrequency"));
         bandwidth = Hz(par("bandwidth"));
         snirThreshold = math::dB2fraction(par("snirThreshold"));
-        channelSpacing = Hz(par("channelSpacing"));
 
         const char *levelOfDetailStr = par("levelOfDetail").stringValue();
         if (strcmp("bit", levelOfDetailStr) == 0)
@@ -201,7 +200,7 @@ const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const 
             signalFieldReceptionPacketModel = decoder->decode(signalFieldReceptionBitModel);
         else
         {
-            const APSKCode *code = new APSKCode(channelSpacing);
+            const APSKCode *code = new APSKCode();
             const APSKDecoder decoder(code);
             signalFieldReceptionPacketModel = decoder.decode(signalFieldReceptionBitModel);
         }
@@ -216,7 +215,7 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     const IReceptionPacketModel *dataFieldReceptionPacketModel = NULL;
     const BitVector *serializedSignalField = signalFieldReceptionPacketModel->getSerializedPacket();
     uint8_t rate = getRate(serializedSignalField);
-    const Ieee80211OFDMModulation ofdmModulation(rate, channelSpacing);
+    const Ieee80211OFDMModulation ofdmModulation(rate, Hz(0));
     const APSKModulationBase *dataDemodulationScheme = ofdmModulation.getModulationScheme();
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
@@ -237,7 +236,7 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     {
         const APSKCode *code = NULL;
         if (!decoder || !dataFieldReceptionBitModel)
-            code = new APSKCode(rate, channelSpacing);
+            code = new APSKCode(rate);
         if (!dataFieldReceptionBitModel)
             dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvCode(), receptionBitModel, signalFieldReceptionPacketModel);
         if (decoder) // non-compliant mode

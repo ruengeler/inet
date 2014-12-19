@@ -36,7 +36,6 @@ class INET_API APSKDecoderModule : public cSimpleModule, public IDecoder
         const IScrambler *descrambler;
         const IFECCoder *fecDecoder;
         const IInterleaver *deinterleaver;
-        Hz channelSpacing;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }

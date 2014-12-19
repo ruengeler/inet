@@ -49,7 +49,6 @@ void APSKTransmitter::initialize(int stage)
         power = W(par("power"));
         bandwidth = Hz(par("bandwidth"));
         carrierFrequency = Hz(par("carrierFrequency"));
-        channelSpacing = Hz(par("channelSpacing"));
         bitrate = bps(par("bitrate"));
 
         const char *levelOfDetailStr = par("levelOfDetail").stringValue();
@@ -109,7 +108,7 @@ const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket
         currentBitrate = controlInfo->getBitrate();
     else
         currentBitrate = bitrate;
-    Ieee80211OFDMModulation ofdmModulation(currentBitrate, channelSpacing);
+    Ieee80211OFDMModulation ofdmModulation(currentBitrate, Hz(0));
     int rate = ofdmModulation.getSignalRateField();
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
@@ -169,9 +168,9 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
         {
             const APSKCode *code = NULL;
             if (isSignalField) // signal
-                code = new APSKCode(channelSpacing);
+                code = new APSKCode();
             else // data
-                code = new APSKCode(rate, channelSpacing);
+                code = new APSKCode(rate);
             const APSKEncoder encoder(code);
             fieldBitModel = encoder.encode(fieldPacketModel);
         }
@@ -186,9 +185,9 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
             {
                 const Ieee80211OFDMModulation *ofdmModulation;
                 if (isSignalField) // signal
-                    ofdmModulation = new Ieee80211OFDMModulation(channelSpacing);
+                    ofdmModulation = new Ieee80211OFDMModulation(Hz(0));
                 else // data
-                    ofdmModulation = new Ieee80211OFDMModulation(rate, channelSpacing);
+                    ofdmModulation = new Ieee80211OFDMModulation(rate, Hz(0));
                 APSKModulator modulator(ofdmModulation);
                 fieldSymbolModel = modulator.modulate(fieldBitModel);
             }
@@ -221,14 +220,14 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
     unsigned int dataBitLength = dataFieldBits->getSize();
     for (unsigned int i = 0; i < dataFieldBits->getSize(); i++)
         encodedBits->appendBit(dataFieldBits->getBit(i));
-    Ieee80211OFDMModulation signalModulation(channelSpacing); // correct for both compliant and non-compliant mode
+    Ieee80211OFDMModulation signalModulation(Hz(0)); // correct for both compliant and non-compliant mode
     bps signalBitrate = signalModulation.getBitrate();
     bps dataBitrate;
     if (modulator)
         dataBitrate = bitrate;
     else
     {
-        Ieee80211OFDMModulation dataModulation(rate, channelSpacing);
+        Ieee80211OFDMModulation dataModulation(rate, Hz(0));
         dataBitrate = dataModulation.getBitrate();
     }
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
@@ -249,7 +248,7 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
     }
     if (!interleaving) // non-compliant
     {
-        Ieee80211OFDMModulation ofdmModulation(rate, channelSpacing);
+        Ieee80211OFDMModulation ofdmModulation(rate, Hz(0));
         const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
         codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
     }
@@ -257,7 +256,7 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
         codedBitsPerOFDMSymbol = interleaving->getNumberOfCodedBitsPerSymbol();
     if (!fec) // non-compliant
     {
-        const APSKCode code(rate, channelSpacing);
+        const APSKCode code(rate);
         fec = code.getConvCode();
     }
     unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();

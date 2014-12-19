@@ -43,11 +43,10 @@ APSKDecoder::APSKDecoder(const APSKCode *code) :
         deinterleaver = new Ieee80211Interleaver(code->getInterleaving());
 }
 
-APSKDecoder::APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver, Hz channelSpacing) :
+APSKDecoder::APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver) :
         descrambler(descrambler),
         fecDecoder(fecDecoder),
-        deinterleaver(deinterleaver),
-        channelSpacing(channelSpacing)
+        deinterleaver(deinterleaver)
 {
     const ConvolutionalCode *fec = NULL;
     if (fecDecoder)
@@ -58,7 +57,7 @@ APSKDecoder::APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDeco
     const Ieee80211Scrambling *scrambling = NULL;
     if (descrambler)
         scrambling = dynamic_cast<const Ieee80211Scrambling *>(descrambler->getScrambling());
-    code = new APSKCode(fec, interleaving, scrambling, channelSpacing);
+    code = new APSKCode(fec, interleaving, scrambling);
 }
 
 const IReceptionPacketModel* APSKDecoder::decode(const IReceptionBitModel* bitModel) const

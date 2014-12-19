@@ -57,7 +57,6 @@ class INET_API APSKReceiver : public SNIRReceiverBase
         W sensitivity;
         Hz carrierFrequency;
         Hz bandwidth;
-        Hz channelSpacing;
         double snirThreshold;
 
     protected:

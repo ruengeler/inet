@@ -41,8 +41,6 @@ module APSKReceiver like IReceiver
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
         double snirThreshold @unit(dB);
-        double channelSpacing @unit(Hz);
-        **.channelSpacing = channelSpacing;
         @class(APSKReceiver);
 
     submodules:

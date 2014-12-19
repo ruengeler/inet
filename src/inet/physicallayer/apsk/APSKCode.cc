@@ -44,11 +44,10 @@ const Ieee80211Interleaving* APSKCode::computeInterleaving(const IModulation *mo
     return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
 }
 
-APSKCode::APSKCode(uint8_t signalFieldRate, Hz channelSpacing) :
-        channelSpacing(channelSpacing)
+APSKCode::APSKCode(uint8_t signalFieldRate)
 {
     convCode = computeFec(signalFieldRate);
-    Ieee80211OFDMModulation ofdmModulation(signalFieldRate, channelSpacing);
+    Ieee80211OFDMModulation ofdmModulation(signalFieldRate, Hz(0));
     interleaving = computeInterleaving(ofdmModulation.getModulationScheme());
     scrambling = computeScrambling();
 }
@@ -59,16 +58,14 @@ const Ieee80211Scrambling* APSKCode::computeScrambling() const
     return new Ieee80211Scrambling("1011101", "0001001");
 }
 
-APSKCode::APSKCode(Hz channelSpacing) :
-        channelSpacing(channelSpacing),
+APSKCode::APSKCode() :
         scrambling(NULL)
 {
     convCode = new Ieee80211ConvolutionalCode(1,2);
     interleaving = new Ieee80211Interleaving(OFDM_SYMBOL_SIZE, 1);
 }
 
-APSKCode::APSKCode(const ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling, Hz channelSpacing) :
-        channelSpacing(channelSpacing),
+APSKCode::APSKCode(const ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling) :
         convCode(convCode),
         interleaving(interleaving),
         scrambling(scrambling)

@@ -62,7 +62,6 @@ const ITransmissionBitModel* APSKEncoder::encode(const ITransmissionPacketModel*
 APSKEncoder::APSKEncoder(const APSKCode *code) :
         code(code)
 {
-    channelSpacing = code->getChannelSpacing();
     if (code->getScrambling())
         scrambler = new Ieee80211Scrambler(code->getScrambling());
     if (code->getInterleaving())
@@ -71,11 +70,10 @@ APSKEncoder::APSKEncoder(const APSKCode *code) :
         fecEncoder = new ConvolutionalCoder(code->getConvCode());
 }
 
-APSKEncoder::APSKEncoder(const IFECCoder* fecEncoder, const IInterleaver* interleaver, const IScrambler* scrambler, Hz channelSpacing) :
+APSKEncoder::APSKEncoder(const IFECCoder* fecEncoder, const IInterleaver* interleaver, const IScrambler* scrambler) :
         fecEncoder(fecEncoder),
         interleaver(interleaver),
-        scrambler(scrambler),
-        channelSpacing(channelSpacing)
+        scrambler(scrambler)
 {
     const ConvolutionalCode *fec = NULL;
     if (fecEncoder)
@@ -86,15 +84,14 @@ APSKEncoder::APSKEncoder(const IFECCoder* fecEncoder, const IInterleaver* interl
     const Ieee80211Scrambling *scrambling = NULL;
     if (scrambler)
         scrambling = dynamic_cast<const Ieee80211Scrambling *>(scrambler->getScrambling());
-    code = new APSKCode(fec, interleaving, scrambling, channelSpacing);
+    code = new APSKCode(fec, interleaving, scrambling);
 }
 
 APSKEncoder::APSKEncoder() :
         fecEncoder(NULL),
         interleaver(NULL),
         scrambler(NULL),
-        code(NULL),
-        channelSpacing(NaN)
+        code(NULL)
 {
 }
 

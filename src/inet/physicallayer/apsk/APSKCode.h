@@ -35,7 +35,6 @@ using namespace units::values;
 class INET_API APSKCode : public IIeee80211Code
 {
     protected:
-        Hz channelSpacing;
         const ConvolutionalCode *convCode;
         const Ieee80211Interleaving *interleaving;
         const Ieee80211Scrambling *scrambling;
@@ -49,11 +48,10 @@ class INET_API APSKCode : public IIeee80211Code
         const ConvolutionalCode *getConvCode() const { return convCode; }
         const Ieee80211Interleaving *getInterleaving() const { return interleaving; }
         const Ieee80211Scrambling *getScrambling() const { return scrambling; }
-        const Hz getChannelSpacing() const { return channelSpacing; }
 
-        APSKCode(Hz channelSpacing);
-        APSKCode(uint8_t signalFieldRate, Hz channelSpacing);
-        APSKCode(const ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling, Hz channelSpacing);
+        APSKCode();
+        APSKCode(uint8_t signalFieldRate);
+        APSKCode(const ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling);
         ~APSKCode();
 };
 

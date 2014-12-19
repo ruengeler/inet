@@ -40,7 +40,6 @@ class INET_API APSKDecoder : public IDecoder
         const IScrambler *descrambler;
         const IFECCoder *fecDecoder;
         const IInterleaver *deinterleaver;
-        Hz channelSpacing;
 
     protected:
         const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
@@ -53,7 +52,7 @@ class INET_API APSKDecoder : public IDecoder
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
         const APSKCode *getCode() const { return code; }
         APSKDecoder(const APSKCode *code);
-        APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver, Hz channelSpacing);
+        APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver);
         virtual ~APSKDecoder();
 };
 

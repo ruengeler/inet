@@ -51,7 +51,6 @@ class INET_API APSKTransmitter : public ITransmitter, public cSimpleModule
         bps bitrate;
         Hz bandwidth;
         Hz carrierFrequency;
-        Hz channelSpacing;
         W power;
 
     protected:

@@ -38,7 +38,6 @@ class INET_API APSKEncoder : public IEncoder
         const IInterleaver *interleaver;
         const IScrambler *scrambler;
         const APSKCode *code;
-        Hz channelSpacing;
 
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
@@ -46,7 +45,7 @@ class INET_API APSKEncoder : public IEncoder
         const APSKCode *getCode() const { return code; }
         APSKEncoder();
         APSKEncoder(const APSKCode *code);
-        APSKEncoder(const IFECCoder *fecEncoder, const IInterleaver *interleaver, const IScrambler *scrambler, Hz channelSpacing);
+        APSKEncoder(const IFECCoder *fecEncoder, const IInterleaver *interleaver, const IScrambler *scrambler);
         ~APSKEncoder();
 };
 

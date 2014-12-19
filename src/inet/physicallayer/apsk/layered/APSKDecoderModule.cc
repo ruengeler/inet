@@ -34,11 +34,10 @@ void APSKDecoderModule::initialize(int stage)
         descrambler = dynamic_cast<const IScrambler *>(getSubmodule("descrambler"));
         fecDecoder = dynamic_cast<const IFECCoder *>(getSubmodule("fecDecoder"));
         deinterleaver = dynamic_cast<const IInterleaver *>(getSubmodule("deinterleaver"));
-        channelSpacing = Hz(par("channelSpacing"));
     }
     else if (stage == INITSTAGE_PHYSICAL_LAYER)
     {
-        layeredDecoder = new APSKDecoder(descrambler , fecDecoder, deinterleaver, channelSpacing);
+        layeredDecoder = new APSKDecoder(descrambler , fecDecoder, deinterleaver);
     }
 }
 

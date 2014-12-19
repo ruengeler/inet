@@ -28,7 +28,6 @@ module APSKDecoder like IDecoder
         string fecType = default("");
         string deinterleaverType = default("");
         string descramblerType = default("");
-        double channelSpacing @unit(Hz);
         @class(APSKDecoderModule);
 
     submodules:

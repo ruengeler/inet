@@ -31,7 +31,6 @@ class INET_API APSKEncoderModule : public IEncoder, public cSimpleModule
         const IScrambler *scrambler;
         const IFECCoder *fecEncoder;
         const IInterleaver *interleaver;
-        Hz channelSpacing;
         bps headerBitrate;
 
     protected:
