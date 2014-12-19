@@ -23,7 +23,6 @@
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 
 namespace inet {
 
@@ -32,20 +31,13 @@ namespace physicallayer {
 class INET_API APSKModulator : public IModulator
 {
   protected:
-    const Ieee80211OFDMModulation *ofdmModulation;
     const APSKModulationBase *modulationScheme;
     static const int polarityVector[127];
-
-  protected:
-    int getSubcarrierIndex(int ofdmSymbolIndex) const;
-    void insertPilotSubcarriers(APSKSymbol *ofdmSymbol, int symbolID) const;
 
   public:
     virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const;
     const IModulation *getModulationScheme() const { return modulationScheme; }
-    const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmModulation; }
     void printToStream(std::ostream& stream) const { stream << "APSKModulator"; }
-    APSKModulator(const Ieee80211OFDMModulation *ofdmModulation);
     APSKModulator(const APSKModulationBase *modulationScheme);
     ~APSKModulator();
 };

@@ -24,7 +24,7 @@
 #include "inet/physicallayer/contract/layered/IAPSKModulation.h"
 #include "inet/physicallayer/common/DummySerializer.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDefs.h"
+#include "inet/physicallayer/apsk/layered/APSKDefs.h"
 
 namespace inet {
 namespace physicallayer {
@@ -107,9 +107,9 @@ unsigned int APSKDecoder::calculatePadding(unsigned int dataFieldLengthInBits, c
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
-    unsigned int codedBitsPerOFDMSymbol = dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
-    unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
-    return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
+    unsigned int codedBitsPerSymbol = dataModulationScheme->getCodeWordLength() * SYMBOL_SIZE;
+    unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
+    return dataBitsPerSymbol - dataFieldLengthInBits % dataBitsPerSymbol;
 }
 
 APSKDecoder::~APSKDecoder()

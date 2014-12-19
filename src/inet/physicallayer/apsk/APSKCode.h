@@ -20,7 +20,6 @@
 
 #include "inet/common/INETDefs.h"
 #include "inet/common/Units.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/contract/IModulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambling.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"

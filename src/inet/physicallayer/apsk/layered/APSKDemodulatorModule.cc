@@ -20,7 +20,6 @@
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 
 namespace inet {
 namespace physicallayer {
@@ -43,18 +42,18 @@ void APSKDemodulatorModule::initialize(int stage)
             demodulationScheme = &BPSKModulation::singleton;
         else
             throw cRuntimeError("Unknown modulation scheme = %s", modulationSchemeStr);
-        ofdmDemodulator = new APSKDemodulator(demodulationScheme);
+        demodulator = new APSKDemodulator(demodulationScheme);
     }
 }
 
 const IReceptionBitModel *APSKDemodulatorModule::demodulate(const IReceptionSymbolModel *symbolModel) const
 {
-    return ofdmDemodulator->demodulate(symbolModel);
+    return demodulator->demodulate(symbolModel);
 }
 
 APSKDemodulatorModule::~APSKDemodulatorModule()
 {
-    delete ofdmDemodulator;
+    delete demodulator;
 }
 
 } /* namespace physicallayer */

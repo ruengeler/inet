@@ -21,7 +21,7 @@
 namespace inet {
 namespace physicallayer {
 
-#define OFDM_SYMBOL_SIZE 48
+#define SYMBOL_SIZE 48
 #define ENCODED_SIGNAL_FIELD_LENGTH 48
 #define SIGNAL_LENGTH_FIELD_START 5
 #define SIGNAL_LENGTH_FIELD_END 16

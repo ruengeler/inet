@@ -22,7 +22,6 @@
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"

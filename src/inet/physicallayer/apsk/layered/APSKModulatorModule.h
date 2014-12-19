@@ -26,7 +26,7 @@ namespace physicallayer {
 class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
 {
     protected:
-        const APSKModulator *ofdmModulator;
+        const APSKModulator *modulator;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
@@ -35,8 +35,7 @@ class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
 
     public:
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKModulator"; }
-        const IModulation *getModulation() const { return ofdmModulator->getModulationScheme(); }
-        const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmModulator->getOFDMModulation(); }
+        const IModulation *getModulation() const { return modulator->getModulationScheme(); }
         const ITransmissionSymbolModel* modulate(const ITransmissionBitModel* bitModel) const;
         virtual ~APSKModulatorModule();
 };

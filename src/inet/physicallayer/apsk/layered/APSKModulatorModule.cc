@@ -42,18 +42,18 @@ void APSKModulatorModule::initialize(int stage)
             modulationScheme = &BPSKModulation::singleton;
         else
             throw cRuntimeError("Unknown modulation scheme = %s", modulationSchemeStr);
-        ofdmModulator = new APSKModulator(modulationScheme);
+        modulator = new APSKModulator(modulationScheme);
     }
 }
 
 const ITransmissionSymbolModel* APSKModulatorModule::modulate(const ITransmissionBitModel* bitModel) const
 {
-    return ofdmModulator->modulate(bitModel);
+    return modulator->modulate(bitModel);
 }
 
 APSKModulatorModule::~APSKModulatorModule()
 {
-    delete ofdmModulator;
+    delete modulator;
 }
 
 } /* namespace physicallayer */

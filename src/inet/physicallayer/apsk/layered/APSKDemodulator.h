@@ -15,15 +15,14 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_OFDMDEMODULATOR_H
-#define __INET_OFDMDEMODULATOR_H
+#ifndef __INET_APSKDEMODULATOR_H
+#define __INET_APSKDEMODULATOR_H
 
 #include "inet/physicallayer/contract/layered/ISignalBitModel.h"
 #include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
 #include "inet/physicallayer/contract/layered/IDemodulator.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 
@@ -33,7 +32,6 @@ namespace physicallayer {
 class INET_API APSKDemodulator : public IDemodulator
 {
     protected:
-        const Ieee80211OFDMModulation *ofdmModulation;
         const APSKModulationBase *demodulationScheme;
 
     protected:
@@ -43,14 +41,12 @@ class INET_API APSKDemodulator : public IDemodulator
 
     public:
         const APSKModulationBase *getDemodulationScheme() const { return demodulationScheme; }
-        const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmModulation; }
         virtual const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
         void printToStream(std::ostream& stream) const { stream << "TODO"; }
-        APSKDemodulator(const Ieee80211OFDMModulation *ofdmModulation);
         APSKDemodulator(const APSKModulationBase *demodulationScheme);
 };
 
 } // namespace physicallayer
 } // namespace inet
 
-#endif /* __INET_OFDMDEMODULATOR_H */
+#endif /* __INET_APSKDEMODULATOR_H */

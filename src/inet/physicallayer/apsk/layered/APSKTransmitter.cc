@@ -21,7 +21,6 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMPhyFrame_m.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/apsk/layered/APSKEncoder.h"
@@ -104,7 +103,6 @@ const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket
         currentBitrate = controlInfo->getBitrate();
     else
         currentBitrate = bitrate;
-    Ieee80211OFDMModulation ofdmModulation(currentBitrate, Hz(0));
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
@@ -168,12 +166,8 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
                 fieldSymbolModel = modulator->modulate(fieldBitModel);
             else // compliant mode
             {
-                const Ieee80211OFDMModulation *ofdmModulation;
-                if (isSignalField) // signal
-                    ofdmModulation = new Ieee80211OFDMModulation(Hz(0));
-                else // data
-                    ofdmModulation = new Ieee80211OFDMModulation(0, Hz(0));
-                APSKModulator modulator(ofdmModulation);
+                const APSKModulationBase *modulation = NULL; // TODO:
+                APSKModulator modulator(modulation);
                 fieldSymbolModel = modulator.modulate(fieldBitModel);
             }
         }
@@ -204,22 +198,22 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
     unsigned int dataBitLength = dataFieldBits->getSize();
     for (unsigned int i = 0; i < dataFieldBits->getSize(); i++)
         encodedBits->appendBit(dataFieldBits->getBit(i));
-    Ieee80211OFDMModulation signalModulation(Hz(0)); // correct for both compliant and non-compliant mode
-    bps signalBitrate = signalModulation.getBitrate();
+    APSKModulationBase *modulation; // correct for both compliant and non-compliant mode
+    bps signalBitrate = bps(0); // TODO: modulation->getBitrate();
     bps dataBitrate;
     if (modulator)
         dataBitrate = bitrate;
     else
     {
-        Ieee80211OFDMModulation dataModulation(0, Hz(0));
-        dataBitrate = dataModulation.getBitrate();
+        APSKModulationBase *modulation;
+        dataBitrate = bps(0); // TODO: modulation->getBitrate();
     }
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
 void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength) const
 {
-    unsigned int codedBitsPerOFDMSymbol;
+    unsigned int codedBitsPerSymbol;
     const Ieee80211Interleaving *interleaving = NULL;
     const ConvolutionalCode *fec = NULL;
     if (encoder)
@@ -232,19 +226,18 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
     }
     if (!interleaving) // non-compliant
     {
-        Ieee80211OFDMModulation ofdmModulation(0, Hz(0));
-        const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
-        codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
+        const APSKModulationBase *modulationScheme = NULL; // TODO: modulation->getModulationScheme();
+        codedBitsPerSymbol = modulationScheme->getCodeWordLength() * 48;
     }
     else
-        codedBitsPerOFDMSymbol = interleaving->getNumberOfCodedBitsPerSymbol();
+        codedBitsPerSymbol = interleaving->getNumberOfCodedBitsPerSymbol();
     if (!fec) // non-compliant
     {
         const APSKCode code;
         fec = code.getConvCode();
     }
-    unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
-    unsigned int appendedBitsLength = dataBitsPerOFDMSymbol - dataBitsLength % dataBitsPerOFDMSymbol;
+    unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
+    unsigned int appendedBitsLength = dataBitsPerSymbol - dataBitsLength % dataBitsPerSymbol;
     serializedPacket->appendBit(0, appendedBitsLength);
 }
 

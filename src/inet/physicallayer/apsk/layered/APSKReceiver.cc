@@ -30,7 +30,6 @@
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/base/NarrowbandNoiseBase.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
 #include "inet/physicallayer/analogmodel/ScalarAnalogModel.h"
@@ -38,7 +37,7 @@
 namespace inet {
 namespace physicallayer {
 
-#define OFDM_SYMBOL_SIZE 48
+#define SYMBOL_SIZE 48
 #define ENCODED_SIGNAL_FIELD_LENGTH 48
 // Table L-7—Bit assignment for SIGNAL field
 #define SIGNAL_LENGTH_FIELD_START 5
@@ -102,9 +101,9 @@ unsigned int APSKReceiver::getSignalFieldLength(const BitVector *signalField) co
 unsigned int APSKReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
 {
     ASSERT(modulationScheme != NULL);
-    unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
-    unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
-    return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
+    unsigned int codedBitsPerSymbol = modulationScheme->getCodeWordLength() * SYMBOL_SIZE;
+    unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
+    return dataBitsPerSymbol - dataFieldLengthInBits % dataBitsPerSymbol;
 }
 
 
@@ -204,21 +203,19 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     const IReceptionSymbolModel *dataFieldReceptionSymbolModel = NULL;
     const IReceptionPacketModel *dataFieldReceptionPacketModel = NULL;
     const BitVector *serializedSignalField = signalFieldReceptionPacketModel->getSerializedPacket();
-    const Ieee80211OFDMModulation ofdmModulation(0, Hz(0));
-    const APSKModulationBase *dataDemodulationScheme = ofdmModulation.getModulationScheme();
+    const APSKModulationBase *dataDemodulationScheme = NULL; // TODO: ofdmModulation.getModulationScheme();
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
         dataFieldReceptionSymbolModel = createDataFieldReceptionSymbolModel(receptionSymbolModel);
         if (demodulator) // non-compliant mode
         {
             dataFieldReceptionBitModel = demodulator->demodulate(dataFieldReceptionSymbolModel);
-            const APSKDemodulatorModule *ofdmDemodulator = check_and_cast<const APSKDemodulatorModule *>(demodulator);
-            dataDemodulationScheme = ofdmDemodulator->getDemodulationScheme();
+            dataDemodulationScheme = NULL; // TODO: demodulator->getDemodulationScheme();
         }
         else // compliant mode
         {
-            const APSKDemodulator ofdmDemodulator(dataDemodulationScheme);
-            dataFieldReceptionBitModel = ofdmDemodulator.demodulate(dataFieldReceptionSymbolModel);
+            const APSKDemodulator demodulator(dataDemodulationScheme);
+            dataFieldReceptionBitModel = demodulator.demodulate(dataFieldReceptionSymbolModel);
         }
     }
     if (levelOfDetail >= BIT_DOMAIN)

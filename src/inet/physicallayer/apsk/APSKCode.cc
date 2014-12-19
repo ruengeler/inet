@@ -21,7 +21,7 @@
 namespace inet {
 namespace physicallayer {
 
-#define OFDM_SYMBOL_SIZE 48
+#define SYMBOL_SIZE 48
 
 const Ieee80211ConvolutionalCode* APSKCode::computeFec() const
 {
@@ -32,7 +32,7 @@ const Ieee80211Interleaving* APSKCode::computeInterleaving(const IModulation *mo
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
-    return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
+    return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
 }
 
 const Ieee80211Scrambling* APSKCode::computeScrambling() const
@@ -45,7 +45,7 @@ APSKCode::APSKCode() :
     scrambling(NULL)
 {
     convCode = new Ieee80211ConvolutionalCode(1,2);
-    interleaving = new Ieee80211Interleaving(OFDM_SYMBOL_SIZE, 1);
+    interleaving = new Ieee80211Interleaving(SYMBOL_SIZE, 1);
 }
 
 APSKCode::APSKCode(const ConvolutionalCode* convCode, const Ieee80211Interleaving* interleaving, const Ieee80211Scrambling* scrambling) :

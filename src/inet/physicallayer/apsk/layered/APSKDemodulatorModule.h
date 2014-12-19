@@ -28,7 +28,7 @@ namespace physicallayer {
 class INET_API APSKDemodulatorModule : public IDemodulator, public cSimpleModule
 {
     protected:
-        const APSKDemodulator *ofdmDemodulator;
+        const APSKDemodulator *demodulator;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
@@ -37,8 +37,7 @@ class INET_API APSKDemodulatorModule : public IDemodulator, public cSimpleModule
 
     public:
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKDemodulator"; }
-        const APSKModulationBase *getDemodulationScheme() const { return ofdmDemodulator->getDemodulationScheme(); }
-        const Ieee80211OFDMModulation *getOFDMModulation() const { return ofdmDemodulator->getOFDMModulation(); }
+        const APSKModulationBase *getDemodulationScheme() const { return demodulator->getDemodulationScheme(); }
         const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
         virtual ~APSKDemodulatorModule();
 };
