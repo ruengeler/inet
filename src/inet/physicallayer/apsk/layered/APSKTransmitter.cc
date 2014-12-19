@@ -145,31 +145,13 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
 {
     if (levelOfDetail >= BIT_DOMAIN)
     {
-        if (encoder) // non-compliant mode
-            fieldBitModel = encoder->encode(fieldPacketModel);
-        else // compliant mode
-        {
-            const APSKCode *code = NULL;
-            if (isSignalField) // signal
-                code = new APSKCode();
-            else // data
-                code = new APSKCode();
-            const APSKEncoder encoder(code);
-            fieldBitModel = encoder.encode(fieldPacketModel);
-        }
+        fieldBitModel = encoder->encode(fieldPacketModel);
     }
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
         if (fieldBitModel)
         {
-            if (modulator) // non-compliant mode
-                fieldSymbolModel = modulator->modulate(fieldBitModel);
-            else // compliant mode
-            {
-                const APSKModulationBase *modulation = NULL; // TODO:
-                APSKModulator modulator(modulation);
-                fieldSymbolModel = modulator.modulate(fieldBitModel);
-            }
+            fieldSymbolModel = modulator->modulate(fieldBitModel);
         }
         else
             throw cRuntimeError("Modulator needs bit representation");
@@ -198,14 +180,12 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
     unsigned int dataBitLength = dataFieldBits->getSize();
     for (unsigned int i = 0; i < dataFieldBits->getSize(); i++)
         encodedBits->appendBit(dataFieldBits->getBit(i));
-    APSKModulationBase *modulation; // correct for both compliant and non-compliant mode
     bps signalBitrate = bps(0); // TODO: modulation->getBitrate();
     bps dataBitrate;
     if (modulator)
         dataBitrate = bitrate;
     else
     {
-        APSKModulationBase *modulation;
         dataBitrate = bps(0); // TODO: modulation->getBitrate();
     }
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
@@ -224,18 +204,10 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
         interleaving = code->getInterleaving();
         fec = code->getConvCode();
     }
-    if (!interleaving) // non-compliant
-    {
-        const APSKModulationBase *modulationScheme = NULL; // TODO: modulation->getModulationScheme();
-        codedBitsPerSymbol = modulationScheme->getCodeWordLength() * 48;
-    }
-    else
-        codedBitsPerSymbol = interleaving->getNumberOfCodedBitsPerSymbol();
-    if (!fec) // non-compliant
-    {
-        const APSKCode code;
-        fec = code.getConvCode();
-    }
+    const APSKModulationBase *modulationScheme = NULL; // TODO: modulation->getModulationScheme();
+    codedBitsPerSymbol = modulationScheme->getCodeWordLength() * 48;
+    const APSKCode code;
+    fec = code.getConvCode();
     unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     unsigned int appendedBitsLength = dataBitsPerSymbol - dataBitsLength % dataBitsPerSymbol;
     serializedPacket->appendBit(0, appendedBitsLength);
@@ -267,13 +239,7 @@ const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitt
     {
         if (symbolModel)
         {
-            if (pulseShaper) // non-compliant mode
-                sampleModel = pulseShaper->shape(symbolModel);
-            else // compliant mode
-            {
-                // TODO: implement
-                throw cRuntimeError("Compliant pulse shaper is unimplemented!");
-            }
+            sampleModel = pulseShaper->shape(symbolModel);
         }
         else
             throw cRuntimeError("Pulse shaper needs symbol representation");

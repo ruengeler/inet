@@ -167,14 +167,7 @@ const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const 
             receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
         signalFieldReceptionSymbolModel = createSignalFieldReceptionSymbolModel(receptionSymbolModel);
-        if (headerDemodulator) // non-compliant mode
-            signalFieldReceptionBitModel = headerDemodulator->demodulate(signalFieldReceptionSymbolModel);
-        else
-        {
-            // In compliant mode, the signal field modulation is always BPSK
-            const APSKDemodulator demodulator(&BPSKModulation::singleton);
-            signalFieldReceptionBitModel = demodulator.demodulate(signalFieldReceptionSymbolModel);
-        }
+        signalFieldReceptionBitModel = headerDemodulator->demodulate(signalFieldReceptionSymbolModel);
     }
     if (levelOfDetail >= BIT_DOMAIN)
     {
@@ -185,14 +178,7 @@ const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const 
             receptionBitModel = errorModel->computeBitModel(transmission, snir); // TODO:
             signalFieldReceptionBitModel = createSignalFieldReceptionBitModel(receptionBitModel);
         }
-        if (headerDecoder) // non-compliant mode
-            signalFieldReceptionPacketModel = decoder->decode(signalFieldReceptionBitModel);
-        else
-        {
-            const APSKCode *code = new APSKCode();
-            const APSKDecoder decoder(code);
-            signalFieldReceptionPacketModel = decoder.decode(signalFieldReceptionBitModel);
-        }
+        signalFieldReceptionPacketModel = decoder->decode(signalFieldReceptionBitModel);
     }
     return signalFieldReceptionPacketModel;
 }
@@ -207,16 +193,8 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
         dataFieldReceptionSymbolModel = createDataFieldReceptionSymbolModel(receptionSymbolModel);
-        if (demodulator) // non-compliant mode
-        {
-            dataFieldReceptionBitModel = demodulator->demodulate(dataFieldReceptionSymbolModel);
-            dataDemodulationScheme = NULL; // TODO: demodulator->getDemodulationScheme();
-        }
-        else // compliant mode
-        {
-            const APSKDemodulator demodulator(dataDemodulationScheme);
-            dataFieldReceptionBitModel = demodulator.demodulate(dataFieldReceptionSymbolModel);
-        }
+        dataFieldReceptionBitModel = demodulator->demodulate(dataFieldReceptionSymbolModel);
+        dataDemodulationScheme = NULL; // TODO: demodulator->getDemodulationScheme();
     }
     if (levelOfDetail >= BIT_DOMAIN)
     {
@@ -225,13 +203,7 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
             code = new APSKCode();
         if (!dataFieldReceptionBitModel)
             dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvCode(), receptionBitModel, signalFieldReceptionPacketModel);
-        if (decoder) // non-compliant mode
-            dataFieldReceptionPacketModel = decoder->decode(dataFieldReceptionBitModel);
-        else
-        {
-            const APSKDecoder decoder(code);
-            dataFieldReceptionPacketModel = decoder.decode(dataFieldReceptionBitModel);
-        }
+        dataFieldReceptionPacketModel = decoder->decode(dataFieldReceptionBitModel);
         delete code;
     }
     return dataFieldReceptionPacketModel;
