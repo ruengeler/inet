@@ -17,6 +17,12 @@
 
 namespace inet::physicallayer;
 
+cplusplus {{
+#include "inet/physicallayer/ieee80211/layered/Ieee80211PLCPFrame_m.h"
+}};
+
+class noncobject Ieee80211PLCPFrame;
+
 // The length field is a 12-bit integer indicates the number of
 // octets in the PSDU that the MAC is currently requesting the PHY to
 // transmit.
@@ -33,8 +39,11 @@ namespace inet::physicallayer;
 // IEEE 802.11 PHY. For detailed description, you may refer to 18.3.2 PLCP
 // frame format, Figure 18-1—PPDU frame format in IEEE Std. 802.11-2012.
 //
-packet Ieee80211OFDMPhyFrame
+
+// TODO: revise name
+packet Ieee80211OFDMPLCPFrame extends Ieee80211PLCPFrame
 {
+    type = OFDM;
     int rate;
     int length;
 }
