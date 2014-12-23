@@ -46,8 +46,9 @@ class INET_API BitVector
         void toggleBit(int pos);
         bool getBit(int pos) const;
         bool isUndef() const { return undef; }
-        bool getBitAllowOutOfRange(int pos) const;
         unsigned int getSize() const { return size; }
+        unsigned int getNumOfFields() const { return fields.size(); }
+        const std::vector<uint8>& getFields() const { return fields; }
         int computeHammingDistance(const BitVector& u) const;
         friend std::ostream& operator<<(std::ostream& out, const BitVector& bitVector);
         BitVector& operator=(const BitVector& rhs);
