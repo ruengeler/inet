@@ -34,6 +34,7 @@
 #include "inet/physicallayer/base/NarrowbandNoiseBase.h"
 #include "inet/physicallayer/common/ListeningDecision.h"
 #include "inet/physicallayer/analogmodel/ScalarAnalogModel.h"
+#include "inet/common/serializer/headerserializers/ieee80211/Ieee80211PhySerializer.h"
 
 namespace inet {
 namespace physicallayer {
@@ -48,6 +49,8 @@ namespace physicallayer {
 #define SIGNAL_PARITY_FIELD 17
 #define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
+
+using namespace serializer;
 
 Define_Module(Ieee80211OFDMReceiver);
 
@@ -117,7 +120,6 @@ unsigned int Ieee80211OFDMReceiver::calculatePadding(unsigned int dataFieldLengt
     unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
 }
-
 
 const IReceptionSymbolModel* Ieee80211OFDMReceiver::createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
 {
@@ -260,7 +262,9 @@ const IReceptionPacketModel* Ieee80211OFDMReceiver::createCompleteReceptionPacke
     for (unsigned int i = 0; i < dataBits->getSize(); i++)
         mergedBits->appendBit(dataBits->getBit(i));
     // TODO: deserializer
-    cPacket *deserializedPacket = NULL;
+    // NOTE: remove padding is not necessary
+    Ieee80211PhySerializer deserializer;
+    const cPacket *deserializedPacket = deserializer.deserialize(mergedBits);
     return new ReceptionPacketModel(deserializedPacket, mergedBits, NULL, NULL, NULL, 0, true);
 }
 
