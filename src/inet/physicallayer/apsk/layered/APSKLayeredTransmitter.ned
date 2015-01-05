@@ -23,7 +23,7 @@ import inet.physicallayer.contract.IModulator;
 import inet.physicallayer.contract.IPulseShaper;
 import inet.physicallayer.contract.ITransmitter;
 
-module APSKTransmitter like ITransmitter
+module APSKLayeredTransmitter like ITransmitter
 {
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
@@ -37,7 +37,7 @@ module APSKTransmitter like ITransmitter
         double power @unit(W);
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
-        @class(APSKTransmitter);
+        @class(APSKLayeredTransmitter);
 
     submodules:
         signalEncoder: <signalEncoderType> like IEncoder if signalEncoderType != "" {

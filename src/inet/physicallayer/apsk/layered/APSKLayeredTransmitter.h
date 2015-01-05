@@ -28,7 +28,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API APSKTransmitter : public ITransmitter, public cSimpleModule
+class INET_API APSKLayeredTransmitter : public ITransmitter, public cSimpleModule
 {
     // TODO: copy
     public:
@@ -68,7 +68,7 @@ class INET_API APSKTransmitter : public ITransmitter, public cSimpleModule
         void padding(BitVector *serializedPacket, unsigned int dataBitsLength) const;
 
     public:
-        APSKTransmitter();
+        APSKLayeredTransmitter();
 
         virtual void printToStream(std::ostream& stream) const { stream << "APSKTransmitter"; }
         virtual W getMaxPower() const { return power; }

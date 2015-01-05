@@ -24,7 +24,7 @@ import inet.physicallayer.contract.IErrorModel;
 import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
 
-module APSKReceiver like IReceiver
+module APSKLayeredReceiver like IReceiver
 {
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
@@ -40,7 +40,7 @@ module APSKReceiver like IReceiver
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
         double snirThreshold @unit(dB);
-        @class(APSKReceiver);
+        @class(APSKLayeredReceiver);
 
     submodules:
         errorModel: <errorModelType> like IErrorModel if errorModelType != "" {

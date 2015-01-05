@@ -16,7 +16,7 @@
 //
 
 #include "inet/mobility/contract/IMobility.h"
-#include "inet/physicallayer/apsk/layered/APSKTransmitter.h"
+#include "inet/physicallayer/apsk/layered/APSKLayeredTransmitter.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
@@ -29,9 +29,9 @@ namespace inet {
 
 namespace physicallayer {
 
-Define_Module(APSKTransmitter);
+Define_Module(APSKLayeredTransmitter);
 
-APSKTransmitter::APSKTransmitter() :
+APSKLayeredTransmitter::APSKLayeredTransmitter() :
     levelOfDetail((LevelOfDetail)-1),
     signalEncoder(nullptr),
     encoder(nullptr),
@@ -46,7 +46,7 @@ APSKTransmitter::APSKTransmitter() :
 {
 }
 
-void APSKTransmitter::initialize(int stage)
+void APSKLayeredTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -74,7 +74,7 @@ void APSKTransmitter::initialize(int stage)
 }
 
 // FIXME: Kludge
-BitVector *APSKTransmitter::serialize(const cPacket* packet) const
+BitVector *APSKLayeredTransmitter::serialize(const cPacket* packet) const
 {
     // HACK: Here we just compute the bit-correct PLCP header
     // and then we fill the remaining with random bits
@@ -106,7 +106,7 @@ BitVector *APSKTransmitter::serialize(const cPacket* packet) const
 }
 
 
-const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket* macFrame) const
+const ITransmissionPacketModel* APSKLayeredTransmitter::createPacketModel(const cPacket* macFrame) const
 {
     const RadioTransmissionRequest *controlInfo = dynamic_cast<const RadioTransmissionRequest *>(macFrame->getControlInfo());
     bps currentBitrate;
@@ -125,14 +125,14 @@ const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket
     return packetModel;
 }
 
-const ITransmissionAnalogModel* APSKTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
+const ITransmissionAnalogModel* APSKLayeredTransmitter::createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const
 {
     simtime_t duration = headerBitLength / headerBitRate + payloadBitLength / payloadBitRate; // TODO: preamble duration
     const ITransmissionAnalogModel *transmissionAnalogModel = new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
     return transmissionAnalogModel;
 }
 
-const ITransmissionPacketModel* APSKTransmitter::createSignalFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
+const ITransmissionPacketModel* APSKLayeredTransmitter::createSignalFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
 {
     // The SIGNAL field is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1), Tail (6),
     // fields, so the SIGNAL field is 24 bits long.
@@ -143,7 +143,7 @@ const ITransmissionPacketModel* APSKTransmitter::createSignalFieldPacketModel(co
     return new TransmissionPacketModel(nullptr, signalField);
 }
 
-const ITransmissionPacketModel* APSKTransmitter::createDataFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
+const ITransmissionPacketModel* APSKLayeredTransmitter::createDataFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
 {
     BitVector *dataField = new BitVector();
     const BitVector *serializedPacket = completePacketModel->getSerializedPacket();
@@ -152,7 +152,7 @@ const ITransmissionPacketModel* APSKTransmitter::createDataFieldPacketModel(cons
     return new TransmissionPacketModel(nullptr, dataField);
 }
 
-void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, bool isSignalField) const
+void APSKLayeredTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, bool isSignalField) const
 {
     if (levelOfDetail >= BIT_DOMAIN)
     {
@@ -169,7 +169,7 @@ void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPac
     }
 }
 
-const ITransmissionSymbolModel* APSKTransmitter::createSymbolModel(
+const ITransmissionSymbolModel* APSKLayeredTransmitter::createSymbolModel(
         const ITransmissionSymbolModel* signalFieldSymbolModel,
         const ITransmissionSymbolModel* dataFieldSymbolModel) const
 {
@@ -181,7 +181,7 @@ const ITransmissionSymbolModel* APSKTransmitter::createSymbolModel(
     return new TransmissionSymbolModel(0, 0, mergedSymbols, dataFieldSymbolModel->getModulation());
 }
 
-const ITransmissionBitModel* APSKTransmitter::createBitModel(
+const ITransmissionBitModel* APSKLayeredTransmitter::createBitModel(
         const ITransmissionBitModel* signalFieldBitModel,
         const ITransmissionBitModel* dataFieldBitModel) const
 {
@@ -202,7 +202,7 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
     return new TransmissionBitModel(signalBitLength, dataBitLength, signalBitrate.get(), dataBitrate.get(), encodedBits, dataFieldBitModel->getForwardErrorCorrection(), dataFieldBitModel->getScrambling(), dataFieldBitModel->getInterleaving());
 }
 
-void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength) const
+void APSKLayeredTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength) const
 {
     unsigned int codedBitsPerSymbol;
     const IInterleaving *interleaving = nullptr;
@@ -224,7 +224,7 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
     serializedPacket->appendBit(0, appendedBitsLength);
 }
 
-const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
+const ITransmission *APSKLayeredTransmitter::createTransmission(const IRadio *transmitter, const cPacket *macFrame, const simtime_t startTime) const
 {
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
     BitVector *serializedPacket = serialize(packetModel->getPacket());

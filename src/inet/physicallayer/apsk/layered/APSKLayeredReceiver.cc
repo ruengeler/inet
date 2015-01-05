@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/apsk/layered/APSKReceiver.h"
+#include "inet/physicallayer/apsk/layered/APSKLayeredReceiver.h"
 #include "inet/physicallayer/contract/layered/ISymbol.h"
 #include "inet/physicallayer/layered/LayeredReceptionDecision.h"
 #include "inet/physicallayer/layered/LayeredReception.h"
@@ -47,9 +47,9 @@ namespace physicallayer {
 #define PPDU_SERVICE_FIELD_BITS_LENGTH 16
 #define PPDU_TAIL_BITS_LENGTH 6
 
-Define_Module(APSKReceiver);
+Define_Module(APSKLayeredReceiver);
 
-APSKReceiver::APSKReceiver() :
+APSKLayeredReceiver::APSKLayeredReceiver() :
     levelOfDetail((LevelOfDetail)-1),
     errorModel(nullptr),
     decoder(nullptr),
@@ -66,7 +66,7 @@ APSKReceiver::APSKReceiver() :
 {
 }
 
-void APSKReceiver::initialize(int stage)
+void APSKLayeredReceiver::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -97,7 +97,7 @@ void APSKReceiver::initialize(int stage)
     }
 }
 
-unsigned int APSKReceiver::getSignalFieldLength(const BitVector *signalField) const
+unsigned int APSKLayeredReceiver::getSignalFieldLength(const BitVector *signalField) const
 {
     ShortBitVector length;
     for (int i = SIGNAL_LENGTH_FIELD_START; i <= SIGNAL_LENGTH_FIELD_END; i++)
@@ -105,7 +105,7 @@ unsigned int APSKReceiver::getSignalFieldLength(const BitVector *signalField) co
     return length.toDecimal();
 }
 
-unsigned int APSKReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
+unsigned int APSKLayeredReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
 {
     ASSERT(modulationScheme != nullptr);
     unsigned int codedBitsPerSymbol = modulationScheme->getCodeWordLength() * SYMBOL_SIZE;
@@ -114,7 +114,7 @@ unsigned int APSKReceiver::calculatePadding(unsigned int dataFieldLengthInBits, 
 }
 
 
-const IReceptionSymbolModel* APSKReceiver::createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
+const IReceptionSymbolModel* APSKLayeredReceiver::createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
 {
 //    return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
     const std::vector<const ISymbol *> *symbols = receptionSymbolModel->getSymbols();
@@ -124,7 +124,7 @@ const IReceptionSymbolModel* APSKReceiver::createSignalFieldReceptionSymbolModel
     return new ReceptionSymbolModel(1, receptionSymbolModel->getSymbolRate(), signalSymbols);
 }
 
-const IReceptionSymbolModel* APSKReceiver::createDataFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
+const IReceptionSymbolModel* APSKLayeredReceiver::createDataFieldReceptionSymbolModel(const IReceptionSymbolModel* receptionSymbolModel) const
 {
     const std::vector<const ISymbol *> *symbols = receptionSymbolModel->getSymbols();
     std::vector<const ISymbol *> *dataSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
@@ -135,7 +135,7 @@ const IReceptionSymbolModel* APSKReceiver::createDataFieldReceptionSymbolModel(c
 }
 
 
-const IReceptionBitModel* APSKReceiver::createSignalFieldReceptionBitModel(const IReceptionBitModel* receptionBitModel) const
+const IReceptionBitModel* APSKLayeredReceiver::createSignalFieldReceptionBitModel(const IReceptionBitModel* receptionBitModel) const
 {
     BitVector *headerBits = new BitVector();
     const BitVector *bits = receptionBitModel->getBits();
@@ -144,7 +144,7 @@ const IReceptionBitModel* APSKReceiver::createSignalFieldReceptionBitModel(const
     return new ReceptionBitModel(ENCODED_SIGNAL_FIELD_LENGTH, -1, receptionBitModel->getHeaderBitRate(), -1, headerBits, receptionBitModel->getModulation());
 }
 
-const IReceptionBitModel* APSKReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
+const IReceptionBitModel* APSKLayeredReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
 {
     unsigned int psduLengthInBits = getSignalFieldLength(signalFieldReceptionPacketModel->getSerializedPacket()) * 8;
     unsigned int dataFieldLengthInBits = psduLengthInBits + PPDU_SERVICE_FIELD_BITS_LENGTH + PPDU_TAIL_BITS_LENGTH;
@@ -160,7 +160,7 @@ const IReceptionBitModel* APSKReceiver::createDataFieldReceptionBitModel(const A
     return new ReceptionBitModel(-1, encodedDataFieldLengthInBits, -1, receptionBitModel->getPayloadBitRate(), dataBits, receptionBitModel->getModulation());
 }
 
-const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
+const IReceptionPacketModel *APSKLayeredReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
 {
     const IReceptionSymbolModel *signalFieldReceptionSymbolModel = nullptr;
     const IReceptionBitModel *signalFieldReceptionBitModel = nullptr;
@@ -190,7 +190,7 @@ const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const 
     return signalFieldReceptionPacketModel;
 }
 
-const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
+const IReceptionPacketModel* APSKLayeredReceiver::demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
 {
     const IReceptionBitModel *dataFieldReceptionBitModel = nullptr;
     const IReceptionSymbolModel *dataFieldReceptionSymbolModel = nullptr;
@@ -216,7 +216,7 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     return dataFieldReceptionPacketModel;
 }
 
-const IReceptionPacketModel* APSKReceiver::createCompleteReceptionPacketModel(const IReceptionPacketModel* signalFieldReceptionPacketModel, const IReceptionPacketModel* dataFieldReceptionPacketModel) const
+const IReceptionPacketModel* APSKLayeredReceiver::createCompleteReceptionPacketModel(const IReceptionPacketModel* signalFieldReceptionPacketModel, const IReceptionPacketModel* dataFieldReceptionPacketModel) const
 {
     const BitVector *headerBits = signalFieldReceptionPacketModel->getSerializedPacket();
     BitVector *mergedBits = new BitVector(*headerBits);
@@ -228,7 +228,7 @@ const IReceptionPacketModel* APSKReceiver::createCompleteReceptionPacketModel(co
     return new ReceptionPacketModel(deserializedPacket, mergedBits, nullptr, nullptr, nullptr, 0, true);
 }
 
-const IReceptionDecision *APSKReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
+const IReceptionDecision *APSKLayeredReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
 {
     const IRadio *receiver = reception->getReceiver();
     const IRadioMedium *medium = receiver->getMedium();
@@ -273,13 +273,13 @@ const IReceptionDecision *APSKReceiver::computeReceptionDecision(const IListenin
     return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, nullptr, nullptr, nullptr, nullptr, true, true, hackedPacketModel->isPacketErrorless());
 }
 
-const IListening* APSKReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
+const IListening* APSKLayeredReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
 {
     return new BandListening(radio, startTime, endTime, startPosition, endPosition, carrierFrequency, bandwidth);
 }
 
 // TODO: copy
-const IListeningDecision* APSKReceiver::computeListeningDecision(const IListening* listening, const IInterference* interference) const
+const IListeningDecision* APSKLayeredReceiver::computeListeningDecision(const IListening* listening, const IInterference* interference) const
 {
     const IRadio *receiver = listening->getReceiver();
     const IRadioMedium *radioMedium = receiver->getMedium();
@@ -295,7 +295,7 @@ const IListeningDecision* APSKReceiver::computeListeningDecision(const IListenin
 
 // TODO: this is not purely functional, see interface comment
 // TODO: copy
-bool APSKReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
+bool APSKLayeredReceiver::computeIsReceptionPossible(const IListening *listening, const IReception *reception) const
 {
     const BandListening *bandListening = check_and_cast<const BandListening *>(listening);
     const LayeredReception *scalarReception = check_and_cast<const LayeredReception *>(reception);

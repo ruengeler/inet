@@ -34,7 +34,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API APSKReceiver : public SNIRReceiverBase
+class INET_API APSKLayeredReceiver : public SNIRReceiverBase
 {
     public:
         enum LevelOfDetail
@@ -74,7 +74,7 @@ class INET_API APSKReceiver : public SNIRReceiverBase
         virtual const IReceptionPacketModel *demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
 
     public:
-        APSKReceiver();
+        APSKLayeredReceiver();
 
         virtual bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
         virtual const IListening* createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
