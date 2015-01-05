@@ -19,12 +19,8 @@
 #define __INET_APSKDECODER_H
 
 #include "inet/physicallayer/contract/layered/ISerializer.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
 #include "inet/physicallayer/apsk/APSKCode.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/contract/layered/ISignalPacketModel.h"
 #include "inet/physicallayer/contract/layered/ISignalBitModel.h"
@@ -44,7 +40,7 @@ class INET_API APSKDecoder : public IDecoder
     protected:
         const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
         unsigned int getSignalFieldLength(const BitVector& signalField) const;
-        unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const Ieee80211ConvolutionalCode *fec) const;
+        unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const IForwardErrorCorrection *fec) const;
 
     public:
         virtual void printToStream(std::ostream& stream) const { stream << "APSKDecoder"; }

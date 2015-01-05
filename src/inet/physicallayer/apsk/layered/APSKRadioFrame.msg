@@ -15,29 +15,6 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "APSKCode.h"
-
-namespace inet {
-
-namespace physicallayer {
-
-#define SYMBOL_SIZE 48
-
-APSKCode::APSKCode(const ConvolutionalCode *convCode, const IInterleaving *interleaving, const IScrambling *scrambling) :
-    convolutionalCode(convCode),
-    interleaving(interleaving),
-    scrambling(scrambling)
+packet APSKRadioFrame
 {
 }
-
-APSKCode::~APSKCode()
-{
-    delete convolutionalCode;
-    delete interleaving;
-    delete scrambling;
-}
-
-} /* namespace physicallayer */
-
-} /* namespace inet */
-

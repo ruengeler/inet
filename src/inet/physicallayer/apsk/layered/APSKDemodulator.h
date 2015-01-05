@@ -23,8 +23,6 @@
 #include "inet/physicallayer/contract/layered/IDemodulator.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 
 namespace inet {
 namespace physicallayer {

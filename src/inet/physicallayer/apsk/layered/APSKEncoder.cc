@@ -21,11 +21,7 @@
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDefs.h"
 
 namespace inet {
 namespace physicallayer {
@@ -62,11 +58,11 @@ APSKEncoder::APSKEncoder(const APSKCode *code) :
         code(code)
 {
     if (code->getScrambling())
-        scrambler = new Ieee80211Scrambler(code->getScrambling());
+        scrambler = NULL; // TODO: new Scrambler(code->getScrambling());
     if (code->getInterleaving())
-        interleaver = new Ieee80211Interleaver(code->getInterleaving());
-    if (code->getConvCode())
-        fecEncoder = new ConvolutionalCoder(code->getConvCode());
+        interleaver = NULL; // TODO: new Interleaver(code->getInterleaving());
+    if (code->getConvolutionalCode())
+        fecEncoder = new ConvolutionalCoder(code->getConvolutionalCode());
 }
 
 APSKEncoder::APSKEncoder(const IFECCoder* fecEncoder, const IInterleaver* interleaver, const IScrambler* scrambler) :
@@ -77,12 +73,12 @@ APSKEncoder::APSKEncoder(const IFECCoder* fecEncoder, const IInterleaver* interl
     const ConvolutionalCode *fec = NULL;
     if (fecEncoder)
         fec = dynamic_cast<const ConvolutionalCode *>(fecEncoder->getForwardErrorCorrection());
-    const Ieee80211Interleaving *interleaving = NULL;
+    const IInterleaving *interleaving = NULL;
     if (interleaver)
-        interleaving = dynamic_cast<const Ieee80211Interleaving *>(interleaver->getInterleaving());
-    const Ieee80211Scrambling *scrambling = NULL;
+        interleaving = dynamic_cast<const IInterleaving *>(interleaver->getInterleaving());
+    const IScrambling *scrambling = NULL;
     if (scrambler)
-        scrambling = dynamic_cast<const Ieee80211Scrambling *>(scrambler->getScrambling());
+        scrambling = dynamic_cast<const IScrambling *>(scrambler->getScrambling());
     code = new APSKCode(fec, interleaving, scrambling);
 }
 

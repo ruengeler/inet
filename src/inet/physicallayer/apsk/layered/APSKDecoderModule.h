@@ -21,9 +21,6 @@
 #include "inet/common/INETDefs.h"
 #include "inet/physicallayer/contract/layered/IDecoder.h"
 #include "inet/physicallayer/apsk/layered/APSKDecoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
 
 namespace inet {

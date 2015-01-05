@@ -18,42 +18,32 @@
 #ifndef __INET_APSKCODE_H
 #define __INET_APSKCODE_H
 
-#include "inet/common/INETDefs.h"
-#include "inet/common/Units.h"
-#include "inet/physicallayer/contract/IModulation.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambling.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
-#include "inet/physicallayer/contract/layered/IIeee80211Code.h"
+#include "inet/physicallayer/contract/layered/IScrambler.h"
+#include "inet/physicallayer/contract/layered/IInterleaver.h"
+#include "inet/physicallayer/common/ConvolutionalCode.h"
 
 namespace inet {
+
 namespace physicallayer {
 
-using namespace units::values;
-
-class INET_API APSKCode : public IIeee80211Code
+class INET_API APSKCode
 {
     protected:
-        const ConvolutionalCode *convCode;
-        const Ieee80211Interleaving *interleaving;
-        const Ieee80211Scrambling *scrambling;
-
-    protected:
-        const Ieee80211ConvolutionalCode *computeFec() const;
-        const Ieee80211Interleaving *computeInterleaving(const IModulation *modulationScheme) const;
-        const Ieee80211Scrambling *computeScrambling() const;
+        const ConvolutionalCode *convolutionalCode;
+        const IInterleaving *interleaving;
+        const IScrambling *scrambling;
 
     public:
-        const ConvolutionalCode *getConvCode() const { return convCode; }
-        const Ieee80211Interleaving *getInterleaving() const { return interleaving; }
-        const Ieee80211Scrambling *getScrambling() const { return scrambling; }
-
-        APSKCode();
-        APSKCode(const ConvolutionalCode *convCode, const Ieee80211Interleaving *interleaving, const Ieee80211Scrambling *scrambling);
+        APSKCode(const ConvolutionalCode *convCode, const IInterleaving *interleaving, const IScrambling *scrambling);
         ~APSKCode();
+
+        const ConvolutionalCode *getConvolutionalCode() const { return convolutionalCode; }
+        const IInterleaving *getInterleaving() const { return interleaving; }
+        const IScrambling *getScrambling() const { return scrambling; }
 };
 
 } /* namespace physicallayer */
+
 } /* namespace inet */
 
 #endif /* __INET_APSKCODE_H */

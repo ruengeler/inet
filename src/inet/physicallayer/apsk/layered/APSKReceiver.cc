@@ -200,9 +200,9 @@ const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IR
     {
         const APSKCode *code = NULL;
         if (!decoder || !dataFieldReceptionBitModel)
-            code = new APSKCode();
+            code = NULL; // new APSKCode();
         if (!dataFieldReceptionBitModel)
-            dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvCode(), receptionBitModel, signalFieldReceptionPacketModel);
+            dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvolutionalCode(), receptionBitModel, signalFieldReceptionPacketModel);
         dataFieldReceptionPacketModel = decoder->decode(dataFieldReceptionBitModel);
         delete code;
     }

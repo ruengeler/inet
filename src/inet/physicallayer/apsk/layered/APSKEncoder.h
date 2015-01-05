@@ -41,7 +41,7 @@ class INET_API APSKEncoder : public IEncoder
 
     public:
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
-        virtual void printToStream(std::ostream& stream) const { stream << "IEEE80211 Layered Encoder"; }
+        virtual void printToStream(std::ostream& stream) const { stream << "APSK Layered Encoder"; }
         const APSKCode *getCode() const { return code; }
         APSKEncoder();
         APSKEncoder(const APSKCode *code);

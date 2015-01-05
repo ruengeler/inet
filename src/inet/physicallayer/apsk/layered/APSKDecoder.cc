@@ -15,16 +15,17 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "inet/physicallayer/contract/layered/IFECCoder.h"
+#include "inet/physicallayer/contract/layered/IAPSKModulation.h"
+#include "inet/physicallayer/common/ConvolutionalCode.h"
+#include "inet/physicallayer/common/DummySerializer.h"
 #include "inet/physicallayer/apsk/layered/APSKDecoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
+#include "inet/physicallayer/apsk/layered/APSKDefs.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
-#include "inet/physicallayer/contract/layered/IAPSKModulation.h"
-#include "inet/physicallayer/common/DummySerializer.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/apsk/layered/APSKDefs.h"
 
 namespace inet {
 namespace physicallayer {
@@ -36,11 +37,11 @@ APSKDecoder::APSKDecoder(const APSKCode *code) :
 {
     this->code = code;
     if (code->getScrambling())
-        descrambler = new Ieee80211Scrambler(code->getScrambling());
-    if (code->getConvCode())
-        fecDecoder = new ConvolutionalCoder(code->getConvCode());
+        descrambler = NULL; // TODO: new Scrambler(code->getScrambling());
+    if (code->getConvolutionalCode())
+        fecDecoder = new ConvolutionalCoder(code->getConvolutionalCode());
     if (code->getInterleaving())
-        deinterleaver = new Ieee80211Interleaver(code->getInterleaving());
+        deinterleaver = NULL; // TODO: new Interleaver(code->getInterleaving());
 }
 
 APSKDecoder::APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDecoder, const IInterleaver *deinterleaver) :
@@ -51,12 +52,12 @@ APSKDecoder::APSKDecoder(const IScrambler *descrambler, const IFECCoder *fecDeco
     const ConvolutionalCode *fec = NULL;
     if (fecDecoder)
         fec = dynamic_cast<const ConvolutionalCode *>(fecDecoder->getForwardErrorCorrection());
-    const Ieee80211Interleaving *interleaving = NULL;
+    const IInterleaving *interleaving = NULL;
     if (deinterleaver)
-        interleaving = dynamic_cast<const Ieee80211Interleaving *>(deinterleaver->getInterleaving());
-    const Ieee80211Scrambling *scrambling = NULL;
+        interleaving = dynamic_cast<const IInterleaving *>(deinterleaver->getInterleaving());
+    const IScrambling *scrambling = NULL;
     if (descrambler)
-        scrambling = dynamic_cast<const Ieee80211Scrambling *>(descrambler->getScrambling());
+        scrambling = dynamic_cast<const IScrambling *>(descrambler->getScrambling());
     code = new APSKCode(fec, interleaving, scrambling);
 }
 
@@ -103,12 +104,12 @@ unsigned int APSKDecoder::getSignalFieldLength(const BitVector& signalField) con
     return length.toDecimal();
 }
 
-unsigned int APSKDecoder::calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const Ieee80211ConvolutionalCode *fec) const
+unsigned int APSKDecoder::calculatePadding(unsigned int dataFieldLengthInBits, const IModulation *modulationScheme, const IForwardErrorCorrection *fec) const
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
     unsigned int codedBitsPerSymbol = dataModulationScheme->getCodeWordLength() * SYMBOL_SIZE;
-    unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
+    unsigned int dataBitsPerSymbol = codedBitsPerSymbol; // TODO: * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     return dataBitsPerSymbol - dataFieldLengthInBits % dataBitsPerSymbol;
 }
 

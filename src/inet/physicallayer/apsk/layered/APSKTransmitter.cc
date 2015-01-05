@@ -18,15 +18,12 @@
 #include "inet/mobility/contract/IMobility.h"
 #include "inet/physicallayer/apsk/layered/APSKTransmitter.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMPLCPFrame_m.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/apsk/layered/APSKEncoder.h"
 #include "inet/physicallayer/apsk/layered/APSKEncoderModule.h"
 #include "inet/physicallayer/apsk/layered/APSKModulator.h"
-#include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
+#include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
 
 namespace inet {
@@ -67,12 +64,12 @@ BitVector *APSKTransmitter::serialize(const cPacket* packet) const
 {
     // HACK: Here we just compute the bit-correct PLCP header
     // and then we fill the remaining with random bits
-    const Ieee80211OFDMPLCPFrame *phyFrame = check_and_cast<const Ieee80211OFDMPLCPFrame*>(packet);
+    const APSKRadioFrame *phyFrame = check_and_cast<const APSKRadioFrame*>(packet);
     BitVector *serializedPacket = new BitVector();
     // Reserved, 1 bit
     serializedPacket->appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
     // Length, 12 bits
-    ShortBitVector byteLength(phyFrame->getLength(), 12); // == macFrame->getByteLength()
+    ShortBitVector byteLength(phyFrame->getByteLength(), 12); // == macFrame->getByteLength()
     for (unsigned int i = 0; i < byteLength.getSize(); i++)
         serializedPacket->appendBit(byteLength.getBit(i));
     // Parity, 1 bit
@@ -106,10 +103,10 @@ const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket
     // The PCLP header is composed of RATE (4), Reserved (1), LENGTH (12), Parity (1),
     // Tail (6) and SERVICE (16) fields.
     int plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16;
-    Ieee80211OFDMPLCPFrame * phyFrame = new Ieee80211OFDMPLCPFrame();
-    phyFrame->setLength(macFrame->getByteLength());
+    APSKRadioFrame * phyFrame = new APSKRadioFrame();
+    phyFrame->setByteLength(macFrame->getByteLength());
     phyFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
-    phyFrame->setBitLength(phyFrame->getLength() + plcpHeaderLength);
+    phyFrame->setBitLength(phyFrame->getBitLength() + plcpHeaderLength);
     const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame, NULL);
     return packetModel;
 }
@@ -194,7 +191,7 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
 void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength) const
 {
     unsigned int codedBitsPerSymbol;
-    const Ieee80211Interleaving *interleaving = NULL;
+    const IInterleaving *interleaving = NULL;
     const ConvolutionalCode *fec = NULL;
     if (encoder)
     {
@@ -202,12 +199,12 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
         const APSKCode *code = encoderModule->getCode();
         ASSERT(code != NULL);
         interleaving = code->getInterleaving();
-        fec = code->getConvCode();
+        fec = code->getConvolutionalCode();
     }
     const APSKModulationBase *modulationScheme = NULL; // TODO: modulation->getModulationScheme();
     codedBitsPerSymbol = modulationScheme->getCodeWordLength() * 48;
-    const APSKCode code;
-    fec = code.getConvCode();
+    const APSKCode code(NULL, NULL, NULL);
+    fec = code.getConvolutionalCode();
     unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     unsigned int appendedBitsLength = dataBitsPerSymbol - dataBitsLength % dataBitsPerSymbol;
     serializedPacket->appendBit(0, appendedBitsLength);
