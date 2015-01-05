@@ -32,21 +32,21 @@ namespace physicallayer {
 class INET_API APSKDemodulator : public IDemodulator, public cSimpleModule
 {
     protected:
-        const APSKModulationBase *demodulationScheme;
+        const APSKModulationBase *modulation;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
 
         BitVector demodulateSymbol(const APSKSymbol *signalSymbol) const;
-        const IReceptionBitModel *createBitModel(const BitVector *bitRepresentation, int signalFieldBitLength, double signalFieldBitRate, int dataFieldBitLength, double dataFieldBitRate) const;
         bool isPilotOrDcSubcarrier(int i) const;
 
     public:
-        virtual void printToStream(std::ostream& stream) const  { stream << "APSKDemodulator"; }
-        const APSKModulationBase *getDemodulationScheme() const { return demodulationScheme; }
-        const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
-        virtual ~APSKDemodulator();
+        APSKDemodulator();
+
+        virtual void printToStream(std::ostream& stream) const { stream << "APSKDemodulator"; }
+        virtual const APSKModulationBase *getModulation() const { return modulation; }
+        virtual const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
 };
 
 } // namespace physicallayer

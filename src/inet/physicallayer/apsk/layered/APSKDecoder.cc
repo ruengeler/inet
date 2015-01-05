@@ -25,11 +25,11 @@ namespace physicallayer {
 Define_Module(APSKDecoder);
 
 APSKDecoder::APSKDecoder() :
-    descrambler(NULL),
-    fecDecoder(NULL),
-    deinterleaver(NULL)
+    code(nullptr),
+    descrambler(nullptr),
+    fecDecoder(nullptr),
+    deinterleaver(nullptr)
 {
-
 }
 
 void APSKDecoder::initialize(int stage)
@@ -45,13 +45,13 @@ void APSKDecoder::initialize(int stage)
 const IReceptionPacketModel* APSKDecoder::decode(const IReceptionBitModel* bitModel) const
 {
     BitVector *decodedBits = new BitVector(*bitModel->getBits());
-    const IInterleaving *interleaving = NULL;
+    const IInterleaving *interleaving = nullptr;
     if (deinterleaver)
     {
         *decodedBits = deinterleaver->deinterleave(*decodedBits);
         interleaving = deinterleaver->getInterleaving();
     }
-    const IForwardErrorCorrection *forwardErrorCorrection = NULL;
+    const IForwardErrorCorrection *forwardErrorCorrection = nullptr;
     if (fecDecoder)
     {
         std::pair<BitVector, bool> fecDecodedDataField = fecDecoder->decode(*decodedBits);
@@ -61,23 +61,18 @@ const IReceptionPacketModel* APSKDecoder::decode(const IReceptionBitModel* bitMo
         *decodedBits = fecDecodedDataField.first;
         forwardErrorCorrection = fecDecoder->getForwardErrorCorrection();
     }
-    const IScrambling *scrambling = NULL;
+    const IScrambling *scrambling = nullptr;
     if (descrambler)
     {
         scrambling = descrambler->getScrambling();
         *decodedBits = descrambler->descramble(*decodedBits);
     }
-    return createPacketModel(decodedBits, scrambling, forwardErrorCorrection, interleaving);
-}
-
-const IReceptionPacketModel* APSKDecoder::createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const
-{
     double per = -1;
     bool packetErrorless = true; // TODO: compute packet error rate, packetErrorLess
-    return new ReceptionPacketModel(NULL, decodedBits, fec, scrambling, interleaving, per, packetErrorless); // FIXME: memory leak
+    return new ReceptionPacketModel(nullptr, decodedBits, forwardErrorCorrection, scrambling, interleaving, per, packetErrorless); // FIXME: memory leak
 }
 
-} /* namespace physicallayer */
+} // namespace physicallayer
 
-} /* namespace inet */
+} // namespace inet
 

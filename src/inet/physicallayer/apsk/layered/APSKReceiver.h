@@ -31,6 +31,7 @@
 #include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKReceiver : public SNIRReceiverBase
@@ -64,23 +65,26 @@ class INET_API APSKReceiver : public SNIRReceiverBase
         unsigned int getSignalFieldLength(const BitVector *signalField) const;
         unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const;
 
-        const IReceptionPacketModel *createCompleteReceptionPacketModel(const IReceptionPacketModel *signalFieldReceptionPacketModel, const IReceptionPacketModel *dataFieldReceptionPacketModel) const;
-        const IReceptionSymbolModel *createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
-        const IReceptionSymbolModel *createDataFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
-        const IReceptionBitModel *createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel *receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
-        const IReceptionBitModel *createSignalFieldReceptionBitModel(const IReceptionBitModel *receptionBitModel) const;
-        const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel,  const IReceptionBitModel *&receptionBitModel) const;
-        const IReceptionPacketModel *demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
+        virtual const IReceptionPacketModel *createCompleteReceptionPacketModel(const IReceptionPacketModel *signalFieldReceptionPacketModel, const IReceptionPacketModel *dataFieldReceptionPacketModel) const;
+        virtual const IReceptionSymbolModel *createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
+        virtual const IReceptionSymbolModel *createDataFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
+        virtual const IReceptionBitModel *createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel *receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
+        virtual const IReceptionBitModel *createSignalFieldReceptionBitModel(const IReceptionBitModel *receptionBitModel) const;
+        virtual const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel,  const IReceptionBitModel *&receptionBitModel) const;
+        virtual const IReceptionPacketModel *demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
 
     public:
-        bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
-        const IListeningDecision* computeListeningDecision(const IListening* listening, const IInterference* interference) const;
-        const IListening* createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
-        virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
         APSKReceiver();
+
+        virtual bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
+        virtual const IListening* createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
+        virtual const IListeningDecision* computeListeningDecision(const IListening* listening, const IInterference* interference) const;
+        virtual const IReceptionDecision *computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const;
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_APSKRECEIVER_H */
+} // namespace inet
+
+#endif // ifndef __INET_APSKRECEIVER_H
+

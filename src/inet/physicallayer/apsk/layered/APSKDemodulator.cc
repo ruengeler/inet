@@ -24,26 +24,31 @@
 #include "inet/physicallayer/layered/SignalBitModel.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 Define_Module(APSKDemodulator);
+
+APSKDemodulator::APSKDemodulator() :
+    modulation(nullptr)
+{
+}
 
 void APSKDemodulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
-        const APSKModulationBase *demodulationScheme = NULL;
-        const char *modulationSchemeStr = par("demodulationScheme");
-        if (!strcmp("QAM-16", modulationSchemeStr))
-            demodulationScheme = &QAM16Modulation::singleton;
-        else if (!strcmp("QAM-64", modulationSchemeStr))
-            demodulationScheme = &QAM64Modulation::singleton;
-        else if (!strcmp("QPSK", modulationSchemeStr))
-            demodulationScheme = &QPSKModulation::singleton;
-        else if (!strcmp("BPSK", modulationSchemeStr))
-            demodulationScheme = &BPSKModulation::singleton;
+        const char *modulationString = par("modulation");
+        if (!strcmp("QAM-16", modulationString))
+            modulation = &QAM16Modulation::singleton;
+        else if (!strcmp("QAM-64", modulationString))
+            modulation = &QAM64Modulation::singleton;
+        else if (!strcmp("QPSK", modulationString))
+            modulation = &QPSKModulation::singleton;
+        else if (!strcmp("BPSK", modulationString))
+            modulation = &BPSKModulation::singleton;
         else
-            throw cRuntimeError("Unknown modulation scheme = %s", modulationSchemeStr);
+            throw cRuntimeError("Unknown modulation = %s", modulationString);
     }
 }
 
@@ -56,18 +61,13 @@ BitVector APSKDemodulator::demodulateSymbol(const APSKSymbol *signalSymbol) cons
         if (!isPilotOrDcSubcarrier(i))
         {
             const APSKSymbol *apskSymbol = apskSymbols.at(i);
-            ShortBitVector bits = demodulationScheme->demapToBitRepresentation(apskSymbol);
+            ShortBitVector bits = modulation->demapToBitRepresentation(apskSymbol);
             for (unsigned int j = 0; j < bits.getSize(); j++)
                 field.appendBit(bits.getBit(j));
         }
     }
     EV_DEBUG << "The field symbols has been demodulated into the following bit stream: " << field << endl;
     return field;
-}
-
-const IReceptionBitModel* APSKDemodulator::createBitModel(const BitVector *bitRepresentation, int signalFieldLength, double signalFieldBitRate, int dataFieldLength, double dataFieldBitRate) const
-{
-    return new ReceptionBitModel(signalFieldLength, signalFieldBitRate, dataFieldLength, dataFieldBitRate, bitRepresentation, demodulationScheme);
 }
 
 bool APSKDemodulator::isPilotOrDcSubcarrier(int i) const
@@ -87,11 +87,10 @@ const IReceptionBitModel* APSKDemodulator::demodulate(const IReceptionSymbolMode
         for (unsigned int j = 0; j < bits.getSize(); j++)
             bitRepresentation->appendBit(bits.getBit(j));
     }
-    double dataFieldBitRate = 0;
-    double signalFieldBitRate = 0;
-    return createBitModel(bitRepresentation, 0, 0, 0, 0); // TODO:
+    return new ReceptionBitModel(0, 0, 0, 0, bitRepresentation, modulation);
 }
 
 } // namespace physicallayer
 
 } // namespace inet
+

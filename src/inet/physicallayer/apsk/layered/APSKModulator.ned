@@ -22,5 +22,5 @@ import inet.physicallayer.contract.IModulator;
 simple APSKModulator like IModulator
 {
     parameters:
-        string modulationScheme; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
+        string modulation; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
 }

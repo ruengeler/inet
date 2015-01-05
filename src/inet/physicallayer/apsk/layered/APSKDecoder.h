@@ -19,7 +19,6 @@
 #define __INET_APSKDECODER_H
 
 #include "inet/physicallayer/contract/layered/IDecoder.h"
-#include "inet/physicallayer/common/ConvolutionalCoder.h"
 #include "inet/physicallayer/apsk/APSKCode.h"
 
 namespace inet {
@@ -29,6 +28,7 @@ namespace physicallayer {
 class INET_API APSKDecoder : public cSimpleModule, public IDecoder
 {
     protected:
+        const APSKCode *code;
         const IScrambler *descrambler;
         const IFECCoder *fecDecoder;
         const IInterleaver *deinterleaver;
@@ -37,19 +37,16 @@ class INET_API APSKDecoder : public cSimpleModule, public IDecoder
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
 
-        const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
-
     public:
         APSKDecoder();
-        virtual ~APSKDecoder();
 
         virtual void printToStream(std::ostream& stream) const { stream << "APSKDecoder"; }
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
 };
 
-} /* namespace physicallayer */
+} // namespace physicallayer
 
-} /* namespace inet */
+} // namespace inet
 
-#endif /* __INET_APSKDECODER_H */
+#endif // ifndef __INET_APSKDECODER_H
 

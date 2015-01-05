@@ -24,7 +24,12 @@ namespace physicallayer {
 Define_Module (APSKEncoder);
 
 APSKEncoder::APSKEncoder() :
-        code(NULL), serializer(NULL), scrambler(NULL), fecEncoder(NULL), interleaver(NULL), headerBitrate(bps(NaN))
+    code(nullptr),
+    serializer(nullptr),
+    scrambler(nullptr),
+    fecEncoder(nullptr),
+    interleaver(nullptr),
+    headerBitrate(bps(NaN))
 {
 }
 
@@ -43,21 +48,21 @@ const ITransmissionBitModel* APSKEncoder::encode(const ITransmissionPacketModel*
 {
     const BitVector *serializedPacket = packetModel->getSerializedPacket();
     BitVector *encodedBits = new BitVector(*serializedPacket);
-    const IScrambling *scrambling = NULL;
+    const IScrambling *scrambling = nullptr;
     if (scrambler)
     {
         *encodedBits = scrambler->scramble(*encodedBits);
         scrambling = scrambler->getScrambling();
         EV_DEBUG << "Scrambled bits are: " << *encodedBits << endl;
     }
-    const IForwardErrorCorrection *forwardErrorCorrection = NULL;
+    const IForwardErrorCorrection *forwardErrorCorrection = nullptr;
     if (fecEncoder)
     {
         *encodedBits = fecEncoder->encode(*encodedBits);
         forwardErrorCorrection = fecEncoder->getForwardErrorCorrection();
         EV_DEBUG << "FEC encoded bits are: " << *encodedBits << endl;
     }
-    const IInterleaving *interleaving = NULL;
+    const IInterleaving *interleaving = nullptr;
     if (interleaver)
     {
         *encodedBits = interleaver->interleave(*encodedBits);
@@ -67,7 +72,7 @@ const ITransmissionBitModel* APSKEncoder::encode(const ITransmissionPacketModel*
     return new TransmissionBitModel(encodedBits, forwardErrorCorrection, scrambling, interleaving);
 }
 
-} /* namespace physicallayer */
+} // namespace physicallayer
 
-} /* namespace inet */
+} // namespace inet
 

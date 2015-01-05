@@ -22,26 +22,31 @@
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 Define_Module(APSKModulator);
+
+APSKModulator::APSKModulator() :
+    modulation(nullptr)
+{
+}
 
 void APSKModulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
-        const APSKModulationBase *modulationScheme = NULL;
-        const char *modulationSchemeStr = par("modulationScheme");
-        if (!strcmp("QAM-16", modulationSchemeStr))
-            modulationScheme = &QAM16Modulation::singleton;
-        else if (!strcmp("QAM-64", modulationSchemeStr))
-            modulationScheme = &QAM64Modulation::singleton;
-        else if (!strcmp("QPSK", modulationSchemeStr))
-            modulationScheme = &QPSKModulation::singleton;
-        else if (!strcmp("BPSK", modulationSchemeStr))
-            modulationScheme = &BPSKModulation::singleton;
+        const char *modulationString = par("modulation");
+        if (!strcmp("QAM-16", modulationString))
+            modulation = &QAM16Modulation::singleton;
+        else if (!strcmp("QAM-64", modulationString))
+            modulation = &QAM64Modulation::singleton;
+        else if (!strcmp("QPSK", modulationString))
+            modulation = &QPSKModulation::singleton;
+        else if (!strcmp("BPSK", modulationString))
+            modulation = &BPSKModulation::singleton;
         else
-            throw cRuntimeError("Unknown modulation scheme = %s", modulationSchemeStr);
+            throw cRuntimeError("Unknown modulation = %s", modulationString);
     }
 }
 
@@ -50,7 +55,7 @@ const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitMo
     std::vector<const ISymbol*> *symbols = new std::vector<const ISymbol*>(); // FIXME: Sample model should delete it
     const BitVector *bits = bitModel->getBits();
     // Divide the resulting coded and interleaved data string into groups of N_BPSC bits.
-    unsigned int nBPSC = modulationScheme->getCodeWordLength();
+    unsigned int nBPSC = modulation->getCodeWordLength();
 // TODO:    const int symbolLength = preambleSymbolLength + (bitModel->getBitLength() + nBPSC - 1) / nBPSC;
 //    const double symbolRate = bitModel->getBitRate() / nBPSC;
     ShortBitVector bitGroup;
@@ -62,7 +67,7 @@ const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitMo
         bitGroup.setBit(i % nBPSC, bits->getBit(i));
         if (i % nBPSC == nBPSC - 1)
         {
-            const APSKSymbol *apskSymbol = modulationScheme->mapToConstellationDiagram(bitGroup);
+            const APSKSymbol *apskSymbol = modulation->mapToConstellationDiagram(bitGroup);
             apskSymbols.push_back(apskSymbol);
         }
     }
@@ -86,10 +91,10 @@ const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitMo
 //            symbolID++;
 //        }
 //    }
-    return new TransmissionSymbolModel(0, 0, symbols, modulationScheme); // FIXME: symbol length, symbol rate
+    return new TransmissionSymbolModel(0, 0, symbols, modulation); // FIXME: symbol length, symbol rate
 }
 
-} /* namespace physicallayer */
+} // namespace physicallayer
 
-} /* namespace inet */
+} // namespace inet
 

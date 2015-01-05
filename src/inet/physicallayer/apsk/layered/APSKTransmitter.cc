@@ -31,6 +31,21 @@ namespace physicallayer {
 
 Define_Module(APSKTransmitter);
 
+APSKTransmitter::APSKTransmitter() :
+    levelOfDetail((LevelOfDetail)-1),
+    signalEncoder(nullptr),
+    encoder(nullptr),
+    signalModulator(nullptr),
+    modulator(nullptr),
+    pulseShaper(nullptr),
+    digitalAnalogConverter(nullptr),
+    bitrate(bps(NaN)),
+    bandwidth(Hz(NaN)),
+    carrierFrequency(Hz(NaN)),
+    power(W(NaN))
+{
+}
+
 void APSKTransmitter::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
@@ -106,7 +121,7 @@ const ITransmissionPacketModel* APSKTransmitter::createPacketModel(const cPacket
     phyFrame->setByteLength(macFrame->getByteLength());
     phyFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
     phyFrame->setBitLength(phyFrame->getBitLength() + plcpHeaderLength);
-    const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame, NULL);
+    const ITransmissionPacketModel *packetModel = new TransmissionPacketModel(phyFrame, nullptr);
     return packetModel;
 }
 
@@ -125,7 +140,7 @@ const ITransmissionPacketModel* APSKTransmitter::createSignalFieldPacketModel(co
     const BitVector *serializedPacket = completePacketModel->getSerializedPacket();
     for (unsigned int i = 0; i < 24; i++)
         signalField->appendBit(serializedPacket->getBit(i));
-    return new TransmissionPacketModel(NULL, signalField);
+    return new TransmissionPacketModel(nullptr, signalField);
 }
 
 const ITransmissionPacketModel* APSKTransmitter::createDataFieldPacketModel(const ITransmissionPacketModel* completePacketModel) const
@@ -134,7 +149,7 @@ const ITransmissionPacketModel* APSKTransmitter::createDataFieldPacketModel(cons
     const BitVector *serializedPacket = completePacketModel->getSerializedPacket();
     for (unsigned int i = 24; i < serializedPacket->getSize(); i++)
         dataField->appendBit(serializedPacket->getBit(i));
-    return new TransmissionPacketModel(NULL, dataField);
+    return new TransmissionPacketModel(nullptr, dataField);
 }
 
 void APSKTransmitter::encodeAndModulate(const ITransmissionPacketModel* fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, bool isSignalField) const
@@ -190,19 +205,19 @@ const ITransmissionBitModel* APSKTransmitter::createBitModel(
 void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBitsLength) const
 {
     unsigned int codedBitsPerSymbol;
-    const IInterleaving *interleaving = NULL;
-    const ConvolutionalCode *fec = NULL;
+    const IInterleaving *interleaving = nullptr;
+    const ConvolutionalCode *fec = nullptr;
     if (encoder)
     {
         const APSKEncoder *encoderModule = check_and_cast<const APSKEncoder *>(encoder);
         const APSKCode *code = encoderModule->getCode();
-        ASSERT(code != NULL);
+        ASSERT(code != nullptr);
         interleaving = code->getInterleaving();
         fec = code->getConvolutionalCode();
     }
-    const APSKModulationBase *modulationScheme = NULL; // TODO: modulation->getModulationScheme();
+    const APSKModulationBase *modulationScheme = nullptr; // TODO: modulation->getModulationScheme();
     codedBitsPerSymbol = modulationScheme->getCodeWordLength() * 48;
-    const APSKCode code(NULL, NULL, NULL);
+    const APSKCode code(nullptr, nullptr, nullptr);
     fec = code.getConvolutionalCode();
     unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     unsigned int appendedBitsLength = dataBitsPerSymbol - dataBitsLength % dataBitsPerSymbol;
@@ -215,20 +230,20 @@ const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitt
     BitVector *serializedPacket = serialize(packetModel->getPacket());
     const ITransmissionPacketModel *completePacketModel = new TransmissionPacketModel(packetModel->getPacket(), serializedPacket);
     delete packetModel;
-    ASSERT(packetModel != NULL);
-    const ITransmissionBitModel *signalFieldBitModel = NULL;
-    const ITransmissionBitModel *dataFieldBitModel = NULL;
-    const ITransmissionSampleModel *sampleModel = NULL;
-    const ITransmissionSymbolModel *signalFieldSymbolModel = NULL;
-    const ITransmissionSymbolModel *dataFieldSymbolModel = NULL;
+    ASSERT(packetModel != nullptr);
+    const ITransmissionBitModel *signalFieldBitModel = nullptr;
+    const ITransmissionBitModel *dataFieldBitModel = nullptr;
+    const ITransmissionSampleModel *sampleModel = nullptr;
+    const ITransmissionSymbolModel *signalFieldSymbolModel = nullptr;
+    const ITransmissionSymbolModel *dataFieldSymbolModel = nullptr;
     const ITransmissionPacketModel *signalFieldPacketModel = createSignalFieldPacketModel(completePacketModel);
     const ITransmissionPacketModel *dataFieldPacketModel = createDataFieldPacketModel(completePacketModel);
     encodeAndModulate(signalFieldPacketModel, signalFieldBitModel, signalFieldSymbolModel, signalEncoder, signalModulator, true);
     encodeAndModulate(dataFieldPacketModel, dataFieldBitModel, dataFieldSymbolModel, encoder, modulator, false);
-    const ITransmissionBitModel *bitModel = NULL;
+    const ITransmissionBitModel *bitModel = nullptr;
     if (levelOfDetail >= BIT_DOMAIN)
         bitModel = createBitModel(signalFieldBitModel, dataFieldBitModel);
-    const ITransmissionSymbolModel *symbolModel = NULL;
+    const ITransmissionSymbolModel *symbolModel = nullptr;
     if (levelOfDetail >= SYMBOL_DOMAIN)
         symbolModel = createSymbolModel(signalFieldSymbolModel, dataFieldSymbolModel);
     if (levelOfDetail >= SAMPLE_DOMAIN)
@@ -240,7 +255,7 @@ const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitt
         else
             throw cRuntimeError("Pulse shaper needs symbol representation");
     }
-    const ITransmissionAnalogModel *analogModel = NULL;
+    const ITransmissionAnalogModel *analogModel = nullptr;
     if (digitalAnalogConverter)
     {
         if (!sampleModel)
@@ -250,7 +265,7 @@ const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitt
     }
     else // Analog model is obligatory
     {
-        ASSERT(bitModel != NULL);
+        ASSERT(bitModel != nullptr);
         analogModel = createAnalogModel(bitModel->getHeaderBitLength(), bitModel->getHeaderBitRate(), bitModel->getPayloadBitLength(), bitModel->getPayloadBitRate());; // FIXME
     }
 
@@ -267,3 +282,4 @@ const ITransmission *APSKTransmitter::createTransmission(const IRadio *transmitt
 } // namespace physicallayer
 
 } // namespace inet
+

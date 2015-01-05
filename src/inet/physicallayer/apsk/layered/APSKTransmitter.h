@@ -68,18 +68,22 @@ class INET_API APSKTransmitter : public ITransmitter, public cSimpleModule
         void padding(BitVector *serializedPacket, unsigned int dataBitsLength) const;
 
     public:
-        virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;
+        APSKTransmitter();
+
+        virtual void printToStream(std::ostream& stream) const { stream << "APSKTransmitter"; }
+        virtual W getMaxPower() const { return power; }
+        virtual const Hz getBandwidth() const { return bandwidth; }
+        virtual const Hz getCarrierFrequency() const { return carrierFrequency; }
         virtual const IEncoder *getEncoder() const { return encoder; }
         virtual const IModulator *getModulator() const { return modulator; }
         virtual const IPulseShaper *getPulseShaper() const{ return pulseShaper; }
         virtual const IDigitalAnalogConverter *getDigitalAnalogConverter() const { return digitalAnalogConverter; }
-        virtual W getMaxPower() const { return power; }
-        const Hz getBandwidth() const { return bandwidth; }
-        const Hz getCarrierFrequency() const { return carrierFrequency; }
-        virtual void printToStream(std::ostream& stream) const { stream << "APSKTransmitter"; }
+        virtual const ITransmission *createTransmission(const IRadio *radio, const cPacket *packet, const simtime_t startTime) const;
 };
 
 } // namespace physicallayer
+
 } // namespace inet
 
-#endif /* __INET_APSKTRANSMITTER_H */
+#endif // ifndef __INET_APSKTRANSMITTER_H
+

@@ -17,10 +17,17 @@
 
 package inet.physicallayer.apsk.layered;
 
-import inet.physicallayer.contract.IDemodulator;
+import inet.physicallayer.common.RadioMedium;
 
-simple APSKDemodulator like IDemodulator
+module APSKLayeredScalarRadioMedium extends RadioMedium
 {
     parameters:
-        string modulation; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
+        propagationType = default("ConstantSpeedPropagation");
+        pathLossType = default("FreeSpacePathLoss");
+        analogModelType = default("LayeredScalarAnalogModel");
+        backgroundNoiseType = default("IsotropicScalarBackgroundNoise");
+        carrierFrequency = default(2.4GHz);
+        minReceptionPower = default(-85dBm);
+        minInterferencePower = default(-110dBm);
+        backgroundNoise.power = default(-110dBm);
 }

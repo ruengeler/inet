@@ -31,18 +31,18 @@ namespace physicallayer {
 class INET_API APSKModulator : public IModulator, public cSimpleModule
 {
     protected:
-        const APSKModulationBase *modulationScheme;
+        const APSKModulationBase *modulation;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
 
     public:
         APSKModulator();
+
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKModulator"; }
-        const IModulation *getModulation() const { return modulationScheme; }
-        const ITransmissionSymbolModel* modulate(const ITransmissionBitModel* bitModel) const;
+        virtual const IModulation *getModulation() const { return modulation; }
+        virtual const ITransmissionSymbolModel* modulate(const ITransmissionBitModel* bitModel) const;
 };
 
 } // namespace physicallayer

@@ -35,6 +35,7 @@
 #include "inet/physicallayer/analogmodel/ScalarAnalogModel.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 #define SYMBOL_SIZE 48
@@ -49,13 +50,19 @@ namespace physicallayer {
 Define_Module(APSKReceiver);
 
 APSKReceiver::APSKReceiver() :
-    errorModel(NULL),
-    decoder(NULL),
-    headerDecoder(NULL),
-    demodulator(NULL),
-    headerDemodulator(NULL),
-    pulseFilter(NULL),
-    analogDigitalConverter(NULL)
+    levelOfDetail((LevelOfDetail)-1),
+    errorModel(nullptr),
+    decoder(nullptr),
+    headerDecoder(nullptr),
+    demodulator(nullptr),
+    headerDemodulator(nullptr),
+    pulseFilter(nullptr),
+    analogDigitalConverter(nullptr),
+    energyDetection(W(NaN)),
+    sensitivity(W(NaN)),
+    carrierFrequency(Hz(NaN)),
+    bandwidth(Hz(NaN)),
+    snirThreshold(NaN)
 {
 }
 
@@ -100,7 +107,7 @@ unsigned int APSKReceiver::getSignalFieldLength(const BitVector *signalField) co
 
 unsigned int APSKReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
 {
-    ASSERT(modulationScheme != NULL);
+    ASSERT(modulationScheme != nullptr);
     unsigned int codedBitsPerSymbol = modulationScheme->getCodeWordLength() * SYMBOL_SIZE;
     unsigned int dataBitsPerSymbol = codedBitsPerSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     return dataBitsPerSymbol - dataFieldLengthInBits % dataBitsPerSymbol;
@@ -155,15 +162,15 @@ const IReceptionBitModel* APSKReceiver::createDataFieldReceptionBitModel(const A
 
 const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const
 {
-    const IReceptionSymbolModel *signalFieldReceptionSymbolModel = NULL;
-    const IReceptionBitModel *signalFieldReceptionBitModel = NULL;
-    const IReceptionPacketModel *signalFieldReceptionPacketModel = NULL;
+    const IReceptionSymbolModel *signalFieldReceptionSymbolModel = nullptr;
+    const IReceptionBitModel *signalFieldReceptionBitModel = nullptr;
+    const IReceptionPacketModel *signalFieldReceptionPacketModel = nullptr;
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
         if (!receptionSymbolModel)
         {
             const ISNIR *snir = medium->getSNIR(receiver, transmission);
-            ASSERT(transmission->getSymbolModel() != NULL);
+            ASSERT(transmission->getSymbolModel() != nullptr);
             receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
         signalFieldReceptionSymbolModel = createSignalFieldReceptionSymbolModel(receptionSymbolModel);
@@ -174,7 +181,7 @@ const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const 
         if (!signalFieldReceptionBitModel)
         {
             const ISNIR *snir = medium->getSNIR(receiver, transmission);
-            ASSERT(transmission->getBitModel() != NULL);
+            ASSERT(transmission->getBitModel() != nullptr);
             receptionBitModel = errorModel->computeBitModel(transmission, snir); // TODO:
             signalFieldReceptionBitModel = createSignalFieldReceptionBitModel(receptionBitModel);
         }
@@ -185,22 +192,22 @@ const IReceptionPacketModel *APSKReceiver::demodulateAndDecodeSignalField(const 
 
 const IReceptionPacketModel* APSKReceiver::demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
 {
-    const IReceptionBitModel *dataFieldReceptionBitModel = NULL;
-    const IReceptionSymbolModel *dataFieldReceptionSymbolModel = NULL;
-    const IReceptionPacketModel *dataFieldReceptionPacketModel = NULL;
+    const IReceptionBitModel *dataFieldReceptionBitModel = nullptr;
+    const IReceptionSymbolModel *dataFieldReceptionSymbolModel = nullptr;
+    const IReceptionPacketModel *dataFieldReceptionPacketModel = nullptr;
     const BitVector *serializedSignalField = signalFieldReceptionPacketModel->getSerializedPacket();
-    const APSKModulationBase *dataDemodulationScheme = NULL; // TODO: ofdmModulation.getModulationScheme();
+    const APSKModulationBase *dataDemodulationScheme = nullptr; // TODO: ofdmModulation.getModulationScheme();
     if (levelOfDetail >= SYMBOL_DOMAIN)
     {
         dataFieldReceptionSymbolModel = createDataFieldReceptionSymbolModel(receptionSymbolModel);
         dataFieldReceptionBitModel = demodulator->demodulate(dataFieldReceptionSymbolModel);
-        dataDemodulationScheme = NULL; // TODO: demodulator->getDemodulationScheme();
+        dataDemodulationScheme = nullptr; // TODO: demodulator->getDemodulationScheme();
     }
     if (levelOfDetail >= BIT_DOMAIN)
     {
-        const APSKCode *code = NULL;
+        const APSKCode *code = nullptr;
         if (!decoder || !dataFieldReceptionBitModel)
-            code = NULL; // new APSKCode();
+            code = nullptr; // new APSKCode();
         if (!dataFieldReceptionBitModel)
             dataFieldReceptionBitModel = createDataFieldReceptionBitModel(dataDemodulationScheme, code->getConvolutionalCode(), receptionBitModel, signalFieldReceptionPacketModel);
         dataFieldReceptionPacketModel = decoder->decode(dataFieldReceptionBitModel);
@@ -217,8 +224,8 @@ const IReceptionPacketModel* APSKReceiver::createCompleteReceptionPacketModel(co
     for (unsigned int i = 0; i < dataBits->getSize(); i++)
         mergedBits->appendBit(dataBits->getBit(i));
     // TODO: deserializer
-    cPacket *deserializedPacket = NULL;
-    return new ReceptionPacketModel(deserializedPacket, mergedBits, NULL, NULL, NULL, 0, true);
+    cPacket *deserializedPacket = nullptr;
+    return new ReceptionPacketModel(deserializedPacket, mergedBits, nullptr, nullptr, nullptr, 0, true);
 }
 
 const IReceptionDecision *APSKReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
@@ -230,14 +237,14 @@ const IReceptionDecision *APSKReceiver::computeReceptionDecision(const IListenin
     const IReceptionAnalogModel *receptionAnalogModel = layeredReception->getAnalogModel();
     if (!receptionAnalogModel)
         throw cRuntimeError("Reception analog model is obligatory");
-    const IReceptionSampleModel *receptionSampleModel = NULL;
-    const IReceptionSymbolModel *receptionSymbolModel = NULL;
-    const IReceptionBitModel *receptionBitModel = NULL;
-    const IReceptionPacketModel *receptionPacketModel = NULL;
+    const IReceptionSampleModel *receptionSampleModel = nullptr;
+    const IReceptionSymbolModel *receptionSymbolModel = nullptr;
+    const IReceptionBitModel *receptionBitModel = nullptr;
+    const IReceptionPacketModel *receptionPacketModel = nullptr;
     RadioReceptionIndication *receptionIndication = new RadioReceptionIndication();
     if (analogDigitalConverter)
     {
-//        const IReceptionAnalogModel *totalAnalogModel = NULL; // TODO: interference + receptionAnalogModel;
+//        const IReceptionAnalogModel *totalAnalogModel = nullptr; // TODO: interference + receptionAnalogModel;
 //        receptionSampleModel = analogDigitalConverter->convertAnalogToDigital(receptionAnalogModel, snir);
     }
     if (pulseFilter)
@@ -246,7 +253,7 @@ const IReceptionDecision *APSKReceiver::computeReceptionDecision(const IListenin
         {
             const ISNIR *snir = medium->getSNIR(receiver, transmission);
             receptionIndication->setMinSNIR(snir->getMin());
-            ASSERT(transmission->getSampleModel() != NULL);
+            ASSERT(transmission->getSampleModel() != nullptr);
             receptionSampleModel = errorModel->computeSampleModel(transmission, snir);
         }
         receptionIndication->setMinRSSI(receptionSampleModel->getRSSI());
@@ -263,7 +270,7 @@ const IReceptionDecision *APSKReceiver::computeReceptionDecision(const IListenin
     const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getSerializedPacket(), receptionPacketModel->getForwardErrorCorrection(),
                                                                               receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
                                                                               receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
-    return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, NULL, NULL, NULL, NULL, true, true, hackedPacketModel->isPacketErrorless());
+    return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, nullptr, nullptr, nullptr, nullptr, true, true, hackedPacketModel->isPacketErrorless());
 }
 
 const IListening* APSKReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const
@@ -306,5 +313,7 @@ bool APSKReceiver::computeIsReceptionPossible(const IListening *listening, const
     }
 }
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+
+} // namespace inet
+

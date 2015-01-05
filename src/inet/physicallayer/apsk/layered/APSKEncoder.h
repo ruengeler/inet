@@ -48,16 +48,15 @@ class INET_API APSKEncoder : public IEncoder, public cSimpleModule
 
     public:
         APSKEncoder();
-        virtual ~APSKEncoder();
 
         virtual void printToStream(std::ostream& stream) const { stream << "APSKEncoder"; }
-        const APSKCode *getCode() const { return code; }
+        virtual const APSKCode *getCode() const { return code; }
         virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
 };
 
-} /* namespace physicallayer */
+} // namespace physicallayer
 
-} /* namespace inet */
+} // namespace inet
 
 #endif // ifndef __INET_APSKENCODER_H
 
