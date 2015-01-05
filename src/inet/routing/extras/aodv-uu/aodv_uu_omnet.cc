@@ -241,7 +241,7 @@ void NS_CLASS initialize(int stage)
         }
 
         propagateProactive = par("propagateProactive");
-        strcpy(nodeName,getParentModule()->getParentModule()->getFullName());
+        strcpy(nodeName,getContainingNode(this)->getFullName());
         aodv_socket_init();
         rt_table_init();
         packet_queue_init();
