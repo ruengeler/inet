@@ -27,9 +27,7 @@ module APSKLayeredTransmitter like ITransmitter
 {
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
-        string signalEncoderType = default("");
         string encoderType = default("");
-        string signalModulatorType = default("");
         string modulatorType = default("");
         string pulseShaperType = default("");
         string digitalAnalogConverterType = default("");
@@ -40,17 +38,11 @@ module APSKLayeredTransmitter like ITransmitter
         @class(APSKLayeredTransmitter);
 
     submodules:
-        signalEncoder: <signalEncoderType> like IEncoder if signalEncoderType != "" {
-            @display("p=100,50");
-        }
         encoder: <encoderType> like IEncoder if encoderType != "" {
-            @display("p=250,50");
+            @display("p=100,50");
         }
         modulator: <modulatorType> like IModulator if modulatorType != "" {
             @display("p=100,150");
-        }
-        signalModulator: <signalModulatorType> like IModulator if signalModulatorType != "" {
-            @display("p=250,150");
         }
         pulseShaper: <pulseShaperType> like IPulseShaper if pulseShaperType != "" {
             @display("p=100,250");

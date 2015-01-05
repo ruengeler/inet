@@ -41,9 +41,7 @@ class INET_API APSKLayeredTransmitter : public ITransmitter, public cSimpleModul
 
     protected:
         LevelOfDetail levelOfDetail;
-        const IEncoder *signalEncoder;
         const IEncoder *encoder;
-        const IModulator *signalModulator;
         const IModulator *modulator;
         const IPulseShaper *pulseShaper;
         const IDigitalAnalogConverter *digitalAnalogConverter;

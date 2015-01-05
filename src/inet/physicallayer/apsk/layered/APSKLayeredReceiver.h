@@ -48,9 +48,7 @@ class INET_API APSKLayeredReceiver : public SNIRReceiverBase
         LevelOfDetail levelOfDetail;
         const ILayeredErrorModel *errorModel;
         const IDecoder *decoder;
-        const IDecoder *headerDecoder;
         const IDemodulator *demodulator;
-        const IDemodulator *headerDemodulator;
         const IPulseFilter *pulseFilter;
         const IAnalogDigitalConverter *analogDigitalConverter;
 

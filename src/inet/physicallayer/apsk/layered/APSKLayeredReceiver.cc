@@ -53,9 +53,7 @@ APSKLayeredReceiver::APSKLayeredReceiver() :
     levelOfDetail((LevelOfDetail)-1),
     errorModel(nullptr),
     decoder(nullptr),
-    headerDecoder(nullptr),
     demodulator(nullptr),
-    headerDemodulator(nullptr),
     pulseFilter(nullptr),
     analogDigitalConverter(nullptr),
     energyDetection(W(NaN)),
@@ -72,12 +70,9 @@ void APSKLayeredReceiver::initialize(int stage)
     {
         errorModel = dynamic_cast<ILayeredErrorModel *>(getSubmodule("errorModel"));
         decoder = dynamic_cast<IDecoder *>(getSubmodule("decoder"));
-        headerDecoder = dynamic_cast<IDecoder *>(getSubmodule("headerDecoder"));
         demodulator = dynamic_cast<IDemodulator *>(getSubmodule("demodulator"));
-        headerDemodulator = dynamic_cast<IDemodulator *>(getSubmodule("headerDemodulator"));
         pulseFilter = dynamic_cast<IPulseFilter *>(getSubmodule("pulseFilter"));
         analogDigitalConverter = dynamic_cast<IAnalogDigitalConverter *>(getSubmodule("analogDigitalConverter"));
-
         energyDetection = mW(math::dBm2mW(par("energyDetection")));
         // TODO: temporary parameters
         sensitivity = mW(math::dBm2mW(par("sensitivity")));
@@ -174,7 +169,7 @@ const IReceptionPacketModel *APSKLayeredReceiver::demodulateAndDecodeSignalField
             receptionSymbolModel = errorModel->computeSymbolModel(transmission, snir);
         }
         signalFieldReceptionSymbolModel = createSignalFieldReceptionSymbolModel(receptionSymbolModel);
-        signalFieldReceptionBitModel = headerDemodulator->demodulate(signalFieldReceptionSymbolModel);
+        signalFieldReceptionBitModel = demodulator->demodulate(signalFieldReceptionSymbolModel);
     }
     if (levelOfDetail >= BIT_DOMAIN)
     {

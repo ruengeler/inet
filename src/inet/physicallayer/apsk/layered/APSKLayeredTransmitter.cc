@@ -33,9 +33,7 @@ Define_Module(APSKLayeredTransmitter);
 
 APSKLayeredTransmitter::APSKLayeredTransmitter() :
     levelOfDetail((LevelOfDetail)-1),
-    signalEncoder(nullptr),
     encoder(nullptr),
-    signalModulator(nullptr),
     modulator(nullptr),
     pulseShaper(nullptr),
     digitalAnalogConverter(nullptr),
@@ -51,9 +49,7 @@ void APSKLayeredTransmitter::initialize(int stage)
     if (stage == INITSTAGE_LOCAL)
     {
         encoder = dynamic_cast<const IEncoder *>(getSubmodule("encoder"));
-        signalEncoder = dynamic_cast<const IEncoder *>(getSubmodule("signalEncoder"));
         modulator = dynamic_cast<const IModulator *>(getSubmodule("modulator"));
-        signalModulator = dynamic_cast<const IModulator *>(getSubmodule("signalModulator"));
         pulseShaper = dynamic_cast<const IPulseShaper *>(getSubmodule("pulseShaper"));
         digitalAnalogConverter = dynamic_cast<const IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
         power = W(par("power"));
@@ -238,7 +234,7 @@ const ITransmission *APSKLayeredTransmitter::createTransmission(const IRadio *tr
     const ITransmissionSymbolModel *dataFieldSymbolModel = nullptr;
     const ITransmissionPacketModel *signalFieldPacketModel = createSignalFieldPacketModel(completePacketModel);
     const ITransmissionPacketModel *dataFieldPacketModel = createDataFieldPacketModel(completePacketModel);
-    encodeAndModulate(signalFieldPacketModel, signalFieldBitModel, signalFieldSymbolModel, signalEncoder, signalModulator, true);
+    encodeAndModulate(signalFieldPacketModel, signalFieldBitModel, signalFieldSymbolModel, encoder, modulator, true);
     encodeAndModulate(dataFieldPacketModel, dataFieldBitModel, dataFieldSymbolModel, encoder, modulator, false);
     const ITransmissionBitModel *bitModel = nullptr;
     if (levelOfDetail >= BIT_DOMAIN)

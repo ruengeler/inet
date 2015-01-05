@@ -29,9 +29,7 @@ module APSKLayeredReceiver like IReceiver
     parameters:
         string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
         string errorModelType = default("");
-        string signalDecoderType = default("");
         string decoderType = default("");
-        string signalDemodulatorType = default("");
         string demodulatorType = default("");
         string shaperFilterType = default("");
         string analogDigitalConverterType;
@@ -43,17 +41,8 @@ module APSKLayeredReceiver like IReceiver
         @class(APSKLayeredReceiver);
 
     submodules:
-        errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
-            @display("p=250,350");
-        }
         decoder: <decoderType> like IDecoder if decoderType != "" {
             @display("p=100,50");
-        }
-        signalDecoder: <signalDecoderType> like IDecoder if signalDecoderType != "" {
-            @display("p=250,50");
-        }
-        signalDemodulator: <signalDemodulatorType> like IDemodulator if signalDemodulatorType != "" {
-            @display("p=250,150");
         }
         demodulator: <demodulatorType> like IDemodulator if demodulatorType != "" {
             @display("p=100,150");
@@ -63,5 +52,8 @@ module APSKLayeredReceiver like IReceiver
         }
         analogDigitalConverter: <analogDigitalConverterType> like IAnalogDigitalConverter if analogDigitalConverterType != "" {
             @display("p=100,350");
+        }
+        errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
+            @display("p=100,450");
         }
 }
