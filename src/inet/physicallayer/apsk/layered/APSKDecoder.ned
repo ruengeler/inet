@@ -28,7 +28,7 @@ module APSKDecoder like IDecoder
         string deinterleaverType = default("");
         string fecType = default("");
         string descramblerType = default("");
-        @class(APSKDecoderModule);
+        @class(APSKDecoder);
 
     submodules:
         deinterleaver: <deinterleaverType> like IInterleaver if deinterleaverType != "" {

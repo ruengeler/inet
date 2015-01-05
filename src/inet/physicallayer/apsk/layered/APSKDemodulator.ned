@@ -23,5 +23,4 @@ simple APSKDemodulator like IDemodulator
 {
     parameters:
         string modulationScheme; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
-        @class(APSKDemodulatorModule);
 }

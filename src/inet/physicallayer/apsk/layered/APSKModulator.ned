@@ -23,5 +23,4 @@ simple APSKModulator like IModulator
 {
     parameters:
         string modulationScheme; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
-        @class(APSKModulatorModule);
 }

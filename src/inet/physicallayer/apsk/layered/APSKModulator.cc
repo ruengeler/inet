@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "APSKModulatorModule.h"
+#include "inet/physicallayer/apsk/layered/APSKModulator.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
@@ -24,9 +24,9 @@
 namespace inet {
 namespace physicallayer {
 
-Define_Module(APSKModulatorModule);
+Define_Module(APSKModulator);
 
-void APSKModulatorModule::initialize(int stage)
+void APSKModulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -45,7 +45,7 @@ void APSKModulatorModule::initialize(int stage)
     }
 }
 
-const ITransmissionSymbolModel *APSKModulatorModule::modulate(const ITransmissionBitModel *bitModel) const
+const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitModel *bitModel) const
 {
     std::vector<const ISymbol*> *symbols = new std::vector<const ISymbol*>(); // FIXME: Sample model should delete it
     const BitVector *bits = bitModel->getBits();

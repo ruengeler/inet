@@ -24,7 +24,6 @@ import inet.physicallayer.contract.IErrorModel;
 import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
 
-
 module APSKReceiver like IReceiver
 {
     parameters:

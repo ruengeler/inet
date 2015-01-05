@@ -15,16 +15,16 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "APSKDecoderModule.h"
+#include "inet/physicallayer/apsk/layered/APSKDecoder.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-Define_Module(APSKDecoderModule);
+Define_Module(APSKDecoder);
 
-APSKDecoderModule::APSKDecoderModule() :
+APSKDecoder::APSKDecoder() :
     descrambler(NULL),
     fecDecoder(NULL),
     deinterleaver(NULL)
@@ -32,7 +32,7 @@ APSKDecoderModule::APSKDecoderModule() :
 
 }
 
-void APSKDecoderModule::initialize(int stage)
+void APSKDecoder::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -42,7 +42,7 @@ void APSKDecoderModule::initialize(int stage)
     }
 }
 
-const IReceptionPacketModel* APSKDecoderModule::decode(const IReceptionBitModel* bitModel) const
+const IReceptionPacketModel* APSKDecoder::decode(const IReceptionBitModel* bitModel) const
 {
     BitVector *decodedBits = new BitVector(*bitModel->getBits());
     const IInterleaving *interleaving = NULL;
@@ -70,7 +70,7 @@ const IReceptionPacketModel* APSKDecoderModule::decode(const IReceptionBitModel*
     return createPacketModel(decodedBits, scrambling, forwardErrorCorrection, interleaving);
 }
 
-const IReceptionPacketModel* APSKDecoderModule::createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const
+const IReceptionPacketModel* APSKDecoder::createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const
 {
     double per = -1;
     bool packetErrorless = true; // TODO: compute packet error rate, packetErrorLess

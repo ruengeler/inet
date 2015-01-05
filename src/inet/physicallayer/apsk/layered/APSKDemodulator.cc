@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "APSKDemodulatorModule.h"
+#include "inet/physicallayer/apsk/layered/APSKDemodulator.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
@@ -26,9 +26,9 @@
 namespace inet {
 namespace physicallayer {
 
-Define_Module(APSKDemodulatorModule);
+Define_Module(APSKDemodulator);
 
-void APSKDemodulatorModule::initialize(int stage)
+void APSKDemodulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -47,7 +47,7 @@ void APSKDemodulatorModule::initialize(int stage)
     }
 }
 
-BitVector APSKDemodulatorModule::demodulateSymbol(const APSKSymbol *signalSymbol) const
+BitVector APSKDemodulator::demodulateSymbol(const APSKSymbol *signalSymbol) const
 {
     std::vector<const APSKSymbol*> apskSymbols; // TODO: signalSymbol->getSubCarrierSymbols();
     BitVector field;
@@ -65,18 +65,18 @@ BitVector APSKDemodulatorModule::demodulateSymbol(const APSKSymbol *signalSymbol
     return field;
 }
 
-const IReceptionBitModel* APSKDemodulatorModule::createBitModel(const BitVector *bitRepresentation, int signalFieldLength, double signalFieldBitRate, int dataFieldLength, double dataFieldBitRate) const
+const IReceptionBitModel* APSKDemodulator::createBitModel(const BitVector *bitRepresentation, int signalFieldLength, double signalFieldBitRate, int dataFieldLength, double dataFieldBitRate) const
 {
     return new ReceptionBitModel(signalFieldLength, signalFieldBitRate, dataFieldLength, dataFieldBitRate, bitRepresentation, demodulationScheme);
 }
 
-bool APSKDemodulatorModule::isPilotOrDcSubcarrier(int i) const
+bool APSKDemodulator::isPilotOrDcSubcarrier(int i) const
 {
    return i == 5 || i == 19 || i == 33 || i == 47 || i == 26; // pilots are: 5,19,33,47, 26 (0+26) is a dc subcarrier
 }
 
 
-const IReceptionBitModel* APSKDemodulatorModule::demodulate(const IReceptionSymbolModel* symbolModel) const
+const IReceptionBitModel* APSKDemodulator::demodulate(const IReceptionSymbolModel* symbolModel) const
 {
     const std::vector<const ISymbol*> *symbols = symbolModel->getSymbols();
     BitVector *bitRepresentation = new BitVector();

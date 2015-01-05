@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKENCODERMODULE_H
-#define __INET_APSKENCODERMODULE_H
+#ifndef __INET_APSKENCODER_H
+#define __INET_APSKENCODER_H
 
 #include "inet/physicallayer/contract/layered/IEncoder.h"
 #include "inet/physicallayer/contract/layered/ISerializer.h"
@@ -32,7 +32,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API APSKEncoderModule : public IEncoder, public cSimpleModule
+class INET_API APSKEncoder : public IEncoder, public cSimpleModule
 {
     protected:
         const APSKCode *code;
@@ -47,8 +47,8 @@ class INET_API APSKEncoderModule : public IEncoder, public cSimpleModule
         virtual void initialize(int stage);
 
     public:
-        APSKEncoderModule();
-        virtual ~APSKEncoderModule();
+        APSKEncoder();
+        virtual ~APSKEncoder();
 
         virtual void printToStream(std::ostream& stream) const { stream << "APSKEncoder"; }
         const APSKCode *getCode() const { return code; }
@@ -59,5 +59,5 @@ class INET_API APSKEncoderModule : public IEncoder, public cSimpleModule
 
 } /* namespace inet */
 
-#endif // ifndef __INET_APSKENCODERMODULE_H
+#endif // ifndef __INET_APSKENCODER_H
 

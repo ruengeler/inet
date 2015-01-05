@@ -23,7 +23,6 @@ import inet.physicallayer.contract.IModulator;
 import inet.physicallayer.contract.IPulseShaper;
 import inet.physicallayer.contract.ITransmitter;
 
-
 module APSKTransmitter like ITransmitter
 {
     parameters:

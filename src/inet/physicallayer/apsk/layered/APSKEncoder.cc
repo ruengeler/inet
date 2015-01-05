@@ -15,20 +15,20 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "APSKEncoderModule.h"
+#include "inet/physicallayer/apsk/layered/APSKEncoder.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-Define_Module (APSKEncoderModule);
+Define_Module (APSKEncoder);
 
-APSKEncoderModule::APSKEncoderModule() :
+APSKEncoder::APSKEncoder() :
         code(NULL), serializer(NULL), scrambler(NULL), fecEncoder(NULL), interleaver(NULL), headerBitrate(bps(NaN))
 {
 }
 
-void APSKEncoderModule::initialize(int stage)
+void APSKEncoder::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
@@ -39,7 +39,7 @@ void APSKEncoderModule::initialize(int stage)
     }
 }
 
-const ITransmissionBitModel* APSKEncoderModule::encode(const ITransmissionPacketModel* packetModel) const
+const ITransmissionBitModel* APSKEncoder::encode(const ITransmissionPacketModel* packetModel) const
 {
     const BitVector *serializedPacket = packetModel->getSerializedPacket();
     BitVector *encodedBits = new BitVector(*serializedPacket);

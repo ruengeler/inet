@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKMODULATORMODULE_H
-#define __INET_APSKMODULATORMODULE_H
+#ifndef __INET_APSKMODULATOR_H
+#define __INET_APSKMODULATOR_H
 
 #include "inet/physicallayer/contract/layered/IModulator.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
@@ -28,7 +28,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
+class INET_API APSKModulator : public IModulator, public cSimpleModule
 {
     protected:
         const APSKModulationBase *modulationScheme;
@@ -39,7 +39,7 @@ class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
 
     public:
-        APSKModulatorModule();
+        APSKModulator();
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKModulator"; }
         const IModulation *getModulation() const { return modulationScheme; }
         const ITransmissionSymbolModel* modulate(const ITransmissionBitModel* bitModel) const;
@@ -49,5 +49,5 @@ class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
 
 } // namespace inet
 
-#endif // ifndef __INET_APSKMODULATORMODULE_H
+#endif // ifndef __INET_APSKMODULATOR_H
 

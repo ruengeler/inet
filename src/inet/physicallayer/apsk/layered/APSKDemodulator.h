@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKDEMODULATORMODULE_H
-#define __INET_APSKDEMODULATORMODULE_H
+#ifndef __INET_APSKDEMODULATOR_H
+#define __INET_APSKDEMODULATOR_H
 
 #include "inet/physicallayer/contract/layered/IDemodulator.h"
 #include "inet/physicallayer/contract/layered/ISignalBitModel.h"
@@ -29,7 +29,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API APSKDemodulatorModule : public IDemodulator, public cSimpleModule
+class INET_API APSKDemodulator : public IDemodulator, public cSimpleModule
 {
     protected:
         const APSKModulationBase *demodulationScheme;
@@ -46,12 +46,12 @@ class INET_API APSKDemodulatorModule : public IDemodulator, public cSimpleModule
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKDemodulator"; }
         const APSKModulationBase *getDemodulationScheme() const { return demodulationScheme; }
         const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
-        virtual ~APSKDemodulatorModule();
+        virtual ~APSKDemodulator();
 };
 
 } // namespace physicallayer
 
 } // namespace inet
 
-#endif // ifndef __INET_APSKDEMODULATORMODULE_H
+#endif // ifndef __INET_APSKDEMODULATOR_H
 

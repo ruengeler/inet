@@ -28,7 +28,7 @@ module APSKEncoder like IEncoder
         string scramblerType = default("");
         string fecType = default("");
         string interleaverType = default("");
-        @class(APSKEncoderModule);
+        @class(APSKEncoder);
 
     submodules:
         scrambler: <scramblerType> like IScrambler if scramblerType != "" {

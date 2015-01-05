@@ -20,7 +20,7 @@
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/apsk/layered/APSKEncoderModule.h"
+#include "inet/physicallayer/apsk/layered/APSKEncoder.h"
 #include "inet/physicallayer/apsk/layered/APSKModulator.h"
 #include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
 #include "inet/physicallayer/layered/LayeredTransmission.h"
@@ -194,7 +194,7 @@ void APSKTransmitter::padding(BitVector* serializedPacket, unsigned int dataBits
     const ConvolutionalCode *fec = NULL;
     if (encoder)
     {
-        const APSKEncoderModule *encoderModule = check_and_cast<const APSKEncoderModule *>(encoder);
+        const APSKEncoder *encoderModule = check_and_cast<const APSKEncoder *>(encoder);
         const APSKCode *code = encoderModule->getCode();
         ASSERT(code != NULL);
         interleaving = code->getInterleaving();

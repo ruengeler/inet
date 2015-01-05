@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKDECODERMODULE_H
-#define __INET_APSKDECODERMODULE_H
+#ifndef __INET_APSKDECODER_H
+#define __INET_APSKDECODER_H
 
 #include "inet/physicallayer/contract/layered/IDecoder.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
@@ -26,7 +26,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API APSKDecoderModule : public cSimpleModule, public IDecoder
+class INET_API APSKDecoder : public cSimpleModule, public IDecoder
 {
     protected:
         const IScrambler *descrambler;
@@ -40,8 +40,8 @@ class INET_API APSKDecoderModule : public cSimpleModule, public IDecoder
         const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
 
     public:
-        APSKDecoderModule();
-        virtual ~APSKDecoderModule();
+        APSKDecoder();
+        virtual ~APSKDecoder();
 
         virtual void printToStream(std::ostream& stream) const { stream << "APSKDecoder"; }
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
@@ -51,5 +51,5 @@ class INET_API APSKDecoderModule : public cSimpleModule, public IDecoder
 
 } /* namespace inet */
 
-#endif /* __INET_APSKDECODERMODULE_H */
+#endif /* __INET_APSKDECODER_H */
 
