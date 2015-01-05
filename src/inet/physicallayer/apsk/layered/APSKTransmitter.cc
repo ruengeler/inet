@@ -20,7 +20,6 @@
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/apsk/layered/APSKEncoder.h"
 #include "inet/physicallayer/apsk/layered/APSKEncoderModule.h"
 #include "inet/physicallayer/apsk/layered/APSKModulator.h"
 #include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"

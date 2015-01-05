@@ -18,22 +18,25 @@
 #ifndef __INET_APSKSYMBOL_H
 #define __INET_APSKSYMBOL_H
 
-#include "inet/physicallayer/contract/layered/ISymbol.h"
 #include "inet/common/Complex.h"
+#include "inet/physicallayer/contract/layered/ISymbol.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKSymbol : public Complex, public ISymbol
 {
     public:
-        APSKSymbol(const double& q, const double& i) : Complex(q, i) {}
-        APSKSymbol(const double& r) : Complex(r) {}
-        APSKSymbol(const Complex& w) : Complex(w) {}
         APSKSymbol() : Complex() {}
+        APSKSymbol(const double& r) : Complex(r) {}
+        APSKSymbol(const double& q, const double& i) : Complex(q, i) {}
+        APSKSymbol(const Complex& w) : Complex(w) {}
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_APSKSYMBOL_H */
+} // namespace inet
+
+#endif // ifndef __INET_APSKSYMBOL_H
+

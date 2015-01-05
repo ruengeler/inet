@@ -18,31 +18,40 @@
 #ifndef __INET_APSKDEMODULATORMODULE_H
 #define __INET_APSKDEMODULATORMODULE_H
 
-#include "inet/common/INETDefs.h"
 #include "inet/physicallayer/contract/layered/IDemodulator.h"
-#include "inet/physicallayer/apsk/layered/APSKDemodulator.h"
+#include "inet/physicallayer/contract/layered/ISignalBitModel.h"
+#include "inet/physicallayer/contract/layered/ISignalSymbolModel.h"
+#include "inet/physicallayer/contract/layered/IDemodulator.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKDemodulatorModule : public IDemodulator, public cSimpleModule
 {
     protected:
-        const APSKDemodulator *demodulator;
+        const APSKModulationBase *demodulationScheme;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
+
+        BitVector demodulateSymbol(const APSKSymbol *signalSymbol) const;
+        const IReceptionBitModel *createBitModel(const BitVector *bitRepresentation, int signalFieldBitLength, double signalFieldBitRate, int dataFieldBitLength, double dataFieldBitRate) const;
+        bool isPilotOrDcSubcarrier(int i) const;
 
     public:
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKDemodulator"; }
-        const APSKModulationBase *getDemodulationScheme() const { return demodulator->getDemodulationScheme(); }
+        const APSKModulationBase *getDemodulationScheme() const { return demodulationScheme; }
         const IReceptionBitModel *demodulate(const IReceptionSymbolModel *symbolModel) const;
         virtual ~APSKDemodulatorModule();
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_APSKDEMODULATORMODULE_H */
+} // namespace inet
+
+#endif // ifndef __INET_APSKDEMODULATORMODULE_H
+

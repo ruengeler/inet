@@ -18,15 +18,20 @@
 #ifndef __INET_APSKMODULATORMODULE_H
 #define __INET_APSKMODULATORMODULE_H
 
-#include "inet/physicallayer/apsk/layered/APSKModulator.h"
+#include "inet/physicallayer/contract/layered/IModulator.h"
+#include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
 {
     protected:
-        const APSKModulator *modulator;
+        const APSKModulationBase *modulationScheme;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
@@ -34,13 +39,15 @@ class INET_API APSKModulatorModule : public IModulator, public cSimpleModule
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
 
     public:
+        APSKModulatorModule();
         virtual void printToStream(std::ostream& stream) const  { stream << "APSKModulator"; }
-        const IModulation *getModulation() const { return modulator->getModulationScheme(); }
+        const IModulation *getModulation() const { return modulationScheme; }
         const ITransmissionSymbolModel* modulate(const ITransmissionBitModel* bitModel) const;
-        virtual ~APSKModulatorModule();
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_APSKMODULATORMODULE_H */
+} // namespace inet
+
+#endif // ifndef __INET_APSKMODULATORMODULE_H
+

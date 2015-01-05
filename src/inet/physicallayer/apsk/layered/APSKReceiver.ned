@@ -45,16 +45,16 @@ module APSKReceiver like IReceiver
 
     submodules:
         errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
-            @display("p=240,350");
+            @display("p=250,350");
         }
         decoder: <decoderType> like IDecoder if decoderType != "" {
             @display("p=100,50");
         }
         signalDecoder: <signalDecoderType> like IDecoder if signalDecoderType != "" {
-            @display("p=229,50");
+            @display("p=250,50");
         }
         signalDemodulator: <signalDemodulatorType> like IDemodulator if signalDemodulatorType != "" {
-            @display("p=229,150");
+            @display("p=250,150");
         }
         demodulator: <demodulatorType> like IDemodulator if demodulatorType != "" {
             @display("p=100,150");

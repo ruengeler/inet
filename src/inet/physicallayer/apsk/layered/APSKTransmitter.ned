@@ -45,13 +45,13 @@ module APSKTransmitter like ITransmitter
             @display("p=100,50");
         }
         encoder: <encoderType> like IEncoder if encoderType != "" {
-            @display("p=207,50");
+            @display("p=250,50");
         }
         modulator: <modulatorType> like IModulator if modulatorType != "" {
             @display("p=100,150");
         }
         signalModulator: <signalModulatorType> like IModulator if signalModulatorType != "" {
-            @display("p=207,150");
+            @display("p=250,150");
         }
         pulseShaper: <pulseShaperType> like IPulseShaper if pulseShaperType != "" {
             @display("p=100,250");

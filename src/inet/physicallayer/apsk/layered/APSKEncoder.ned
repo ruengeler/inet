@@ -25,20 +25,19 @@ import inet.physicallayer.contract.IScrambler;
 module APSKEncoder like IEncoder
 {
     parameters:
-        string fecType = default("");
         string scramblerType = default("");
+        string fecType = default("");
         string interleaverType = default("");
-        @display("bgb=140,313");
         @class(APSKEncoderModule);
 
     submodules:
-        fecEncoder: <fecType> like IFECCoder if fecType != "" {
-            @display("p=66,156");
-        }
         scrambler: <scramblerType> like IScrambler if scramblerType != "" {
-            @display("p=66,73");
+            @display("p=100,50");
+        }
+        fecEncoder: <fecType> like IFECCoder if fecType != "" {
+            @display("p=100,150");
         }
         interleaver: <interleaverType> like IInterleaver if interleaverType != "" {
-            @display("p=66,238");
+            @display("p=100,250");
         }
 }

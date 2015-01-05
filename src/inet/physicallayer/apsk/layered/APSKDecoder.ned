@@ -25,19 +25,19 @@ import inet.physicallayer.contract.IScrambler;
 module APSKDecoder like IDecoder
 {
     parameters:
-        string fecType = default("");
         string deinterleaverType = default("");
+        string fecType = default("");
         string descramblerType = default("");
         @class(APSKDecoderModule);
 
     submodules:
-        descrambler: <descramblerType> like IScrambler if descramblerType != "" {
-            @display("p=72,196");
+        deinterleaver: <deinterleaverType> like IInterleaver if deinterleaverType != "" {
+            @display("p=100,50");
         }
         fecDecoder: <fecType> like IFECCoder if fecType != "" {
-            @display("p=72,106");
+            @display("p=100,150");
         }
-        deinterleaver: <deinterleaverType> like IInterleaver if deinterleaverType != "" {
-            @display("p=72,29");
+        descrambler: <descramblerType> like IScrambler if descramblerType != "" {
+            @display("p=100,250");
         }
 }

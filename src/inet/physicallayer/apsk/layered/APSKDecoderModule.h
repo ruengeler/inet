@@ -18,18 +18,17 @@
 #ifndef __INET_APSKDECODERMODULE_H
 #define __INET_APSKDECODERMODULE_H
 
-#include "inet/common/INETDefs.h"
 #include "inet/physicallayer/contract/layered/IDecoder.h"
-#include "inet/physicallayer/apsk/layered/APSKDecoder.h"
 #include "inet/physicallayer/common/ConvolutionalCoder.h"
+#include "inet/physicallayer/apsk/APSKCode.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKDecoderModule : public cSimpleModule, public IDecoder
 {
     protected:
-        const APSKDecoder *layeredDecoder;
         const IScrambler *descrambler;
         const IFECCoder *fecDecoder;
         const IInterleaver *deinterleaver;
@@ -37,16 +36,20 @@ class INET_API APSKDecoderModule : public cSimpleModule, public IDecoder
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
+
+        const IReceptionPacketModel *createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const;
 
     public:
-        virtual void printToStream(std::ostream& stream) const { stream << "APSKDecoder"; }
-        const APSKCode *getCode() const { return layeredDecoder->getCode(); }
-        const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
+        APSKDecoderModule();
         virtual ~APSKDecoderModule();
+
+        virtual void printToStream(std::ostream& stream) const { stream << "APSKDecoder"; }
+        const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
 };
 
 } /* namespace physicallayer */
+
 } /* namespace inet */
 
 #endif /* __INET_APSKDECODERMODULE_H */
+

@@ -18,9 +18,15 @@
 #include "APSKEncoderModule.h"
 
 namespace inet {
+
 namespace physicallayer {
 
-Define_Module(APSKEncoderModule);
+Define_Module (APSKEncoderModule);
+
+APSKEncoderModule::APSKEncoderModule() :
+        code(NULL), serializer(NULL), scrambler(NULL), fecEncoder(NULL), interleaver(NULL), headerBitrate(bps(NaN))
+{
+}
 
 void APSKEncoderModule::initialize(int stage)
 {
@@ -31,21 +37,37 @@ void APSKEncoderModule::initialize(int stage)
         fecEncoder = dynamic_cast<IFECCoder *>(getSubmodule("fecEncoder"));
         interleaver = dynamic_cast<IInterleaver *>(getSubmodule("interleaver"));
     }
-    else if (stage == INITSTAGE_PHYSICAL_LAYER)
-    {
-        encoder = new APSKEncoder(fecEncoder, interleaver, scrambler);
-    }
 }
 
 const ITransmissionBitModel* APSKEncoderModule::encode(const ITransmissionPacketModel* packetModel) const
 {
-    return encoder->encode(packetModel);
-}
-
-APSKEncoderModule::~APSKEncoderModule()
-{
-    delete encoder;
+    const BitVector *serializedPacket = packetModel->getSerializedPacket();
+    BitVector *encodedBits = new BitVector(*serializedPacket);
+    const IScrambling *scrambling = NULL;
+    if (scrambler)
+    {
+        *encodedBits = scrambler->scramble(*encodedBits);
+        scrambling = scrambler->getScrambling();
+        EV_DEBUG << "Scrambled bits are: " << *encodedBits << endl;
+    }
+    const IForwardErrorCorrection *forwardErrorCorrection = NULL;
+    if (fecEncoder)
+    {
+        *encodedBits = fecEncoder->encode(*encodedBits);
+        forwardErrorCorrection = fecEncoder->getForwardErrorCorrection();
+        EV_DEBUG << "FEC encoded bits are: " << *encodedBits << endl;
+    }
+    const IInterleaving *interleaving = NULL;
+    if (interleaver)
+    {
+        *encodedBits = interleaver->interleave(*encodedBits);
+        interleaving = interleaver->getInterleaving();
+        EV_DEBUG << "Interleaved bits are: " << *encodedBits << endl;
+    }
+    return new TransmissionBitModel(encodedBits, forwardErrorCorrection, scrambling, interleaving);
 }
 
 } /* namespace physicallayer */
+
 } /* namespace inet */
+

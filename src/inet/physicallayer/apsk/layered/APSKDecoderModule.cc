@@ -16,16 +16,21 @@
 //
 
 #include "APSKDecoderModule.h"
-#include "inet/physicallayer/common/DummySerializer.h"
-#include "inet/physicallayer/modulation/BPSKModulation.h"
-#include "inet/physicallayer/modulation/QPSKModulation.h"
-#include "inet/physicallayer/modulation/QAM16Modulation.h"
-#include "inet/physicallayer/modulation/QAM64Modulation.h"
+#include "inet/physicallayer/layered/SignalPacketModel.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 Define_Module(APSKDecoderModule);
+
+APSKDecoderModule::APSKDecoderModule() :
+    descrambler(NULL),
+    fecDecoder(NULL),
+    deinterleaver(NULL)
+{
+
+}
 
 void APSKDecoderModule::initialize(int stage)
 {
@@ -35,21 +40,44 @@ void APSKDecoderModule::initialize(int stage)
         fecDecoder = dynamic_cast<const IFECCoder *>(getSubmodule("fecDecoder"));
         deinterleaver = dynamic_cast<const IInterleaver *>(getSubmodule("deinterleaver"));
     }
-    else if (stage == INITSTAGE_PHYSICAL_LAYER)
-    {
-        layeredDecoder = new APSKDecoder(descrambler , fecDecoder, deinterleaver);
-    }
 }
 
 const IReceptionPacketModel* APSKDecoderModule::decode(const IReceptionBitModel* bitModel) const
 {
-    return layeredDecoder->decode(bitModel);
+    BitVector *decodedBits = new BitVector(*bitModel->getBits());
+    const IInterleaving *interleaving = NULL;
+    if (deinterleaver)
+    {
+        *decodedBits = deinterleaver->deinterleave(*decodedBits);
+        interleaving = deinterleaver->getInterleaving();
+    }
+    const IForwardErrorCorrection *forwardErrorCorrection = NULL;
+    if (fecDecoder)
+    {
+        std::pair<BitVector, bool> fecDecodedDataField = fecDecoder->decode(*decodedBits);
+        bool isDecodedSuccessfully = fecDecodedDataField.second;
+        if (!isDecodedSuccessfully)
+            throw cRuntimeError("FEC error"); // TODO: implement correct error handling
+        *decodedBits = fecDecodedDataField.first;
+        forwardErrorCorrection = fecDecoder->getForwardErrorCorrection();
+    }
+    const IScrambling *scrambling = NULL;
+    if (descrambler)
+    {
+        scrambling = descrambler->getScrambling();
+        *decodedBits = descrambler->descramble(*decodedBits);
+    }
+    return createPacketModel(decodedBits, scrambling, forwardErrorCorrection, interleaving);
 }
 
-APSKDecoderModule::~APSKDecoderModule()
+const IReceptionPacketModel* APSKDecoderModule::createPacketModel(const BitVector *decodedBits, const IScrambling *scrambling, const IForwardErrorCorrection *fec, const IInterleaving *interleaving) const
 {
-    delete layeredDecoder;
+    double per = -1;
+    bool packetErrorless = true; // TODO: compute packet error rate, packetErrorLess
+    return new ReceptionPacketModel(NULL, decodedBits, fec, scrambling, interleaving, per, packetErrorless); // FIXME: memory leak
 }
 
 } /* namespace physicallayer */
+
 } /* namespace inet */
+

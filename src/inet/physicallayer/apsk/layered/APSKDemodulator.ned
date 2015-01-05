@@ -22,6 +22,6 @@ import inet.physicallayer.contract.IDemodulator;
 simple APSKDemodulator like IDemodulator
 {
     parameters:
-        string demodulationScheme; // QAM-16, QAM-64, BPSK, QPSK
+        string modulationScheme; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
         @class(APSKDemodulatorModule);
 }

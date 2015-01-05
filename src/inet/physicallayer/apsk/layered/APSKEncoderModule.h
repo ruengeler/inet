@@ -18,15 +18,24 @@
 #ifndef __INET_APSKENCODERMODULE_H
 #define __INET_APSKENCODERMODULE_H
 
-#include "inet/physicallayer/apsk/layered/APSKEncoder.h"
+#include "inet/physicallayer/contract/layered/IEncoder.h"
+#include "inet/physicallayer/contract/layered/ISerializer.h"
+#include "inet/physicallayer/contract/layered/IFECCoder.h"
+#include "inet/physicallayer/contract/layered/IScrambler.h"
+#include "inet/physicallayer/contract/layered/IInterleaver.h"
+#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/apsk/APSKCode.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKEncoderModule : public IEncoder, public cSimpleModule
 {
     protected:
-        const APSKEncoder *encoder;
+        const APSKCode *code;
         const ISerializer *serializer;
         const IScrambler *scrambler;
         const IFECCoder *fecEncoder;
@@ -36,16 +45,19 @@ class INET_API APSKEncoderModule : public IEncoder, public cSimpleModule
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
 
     public:
-        virtual void printToStream(std::ostream& stream) const { stream << "APSKEncoder"; }
-        const APSKCode *getCode() const { return encoder->getCode(); }
-        virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
+        APSKEncoderModule();
         virtual ~APSKEncoderModule();
+
+        virtual void printToStream(std::ostream& stream) const { stream << "APSKEncoder"; }
+        const APSKCode *getCode() const { return code; }
+        virtual const ITransmissionBitModel *encode(const ITransmissionPacketModel *packetModel) const;
 };
 
 } /* namespace physicallayer */
+
 } /* namespace inet */
 
-#endif /* __INET_APSKENCODERMODULE_H */
+#endif // ifndef __INET_APSKENCODERMODULE_H
+
