@@ -68,6 +68,7 @@ void ARPSerializer::parse(const unsigned char *buf, unsigned int bufsize, ARPPac
     pkt->setDestMACAddress(temp);
     pkt->setSrcIPAddress(IPv4Address(ntohl(arphdr->ar_spa)));
     pkt->setDestIPAddress(IPv4Address(ntohl(arphdr->ar_tpa)));
+    pkt->setByteLength(28);
 }
 
 } // namespace serializer
