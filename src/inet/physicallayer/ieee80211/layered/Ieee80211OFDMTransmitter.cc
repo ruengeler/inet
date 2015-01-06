@@ -67,11 +67,8 @@ void Ieee80211OFDMTransmitter::initialize(int stage)
     }
 }
 
-// FIXME: Kludge
 BitVector *Ieee80211OFDMTransmitter::serialize(const cPacket* packet) const
 {
-    // HACK: Here we just compute the bit-correct PLCP header
-    // and then we fill the remaining with random bits
     Ieee80211PhySerializer phySerializer;
     BitVector *serializedPacket = new BitVector();
     const Ieee80211OFDMPLCPFrame *phyFrame = check_and_cast<const Ieee80211OFDMPLCPFrame*>(packet);
