@@ -372,9 +372,7 @@ void ManetRoutingBase::registerPosition()
     if (!isRegistered)
         throw cRuntimeError("Manet routing protocol is not register");
     regPosition = true;
-    cModule *mod = findContainingNode(getParentModule());
-    if (!mod)
-        mod = getParentModule();
+    cModule *mod = getContainingNode(this);
     mod->subscribe(mobilityStateChangedSignal, this);
 }
 
