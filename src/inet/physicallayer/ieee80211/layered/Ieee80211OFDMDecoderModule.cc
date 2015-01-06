@@ -38,18 +38,18 @@ void Ieee80211OFDMDecoderModule::initialize(int stage)
     }
     else if (stage == INITSTAGE_PHYSICAL_LAYER)
     {
-        layeredDecoder = new Ieee80211OFDMDecoder(descrambler , fecDecoder, deinterleaver, channelSpacing);
+        ofdmDecoder = new Ieee80211OFDMDecoder(descrambler , fecDecoder, deinterleaver, channelSpacing);
     }
 }
 
 const IReceptionPacketModel* Ieee80211OFDMDecoderModule::decode(const IReceptionBitModel* bitModel) const
 {
-    return layeredDecoder->decode(bitModel);
+    return ofdmDecoder->decode(bitModel);
 }
 
 Ieee80211OFDMDecoderModule::~Ieee80211OFDMDecoderModule()
 {
-    delete layeredDecoder;
+    delete ofdmDecoder;
 }
 
 } /* namespace physicallayer */

@@ -32,7 +32,7 @@ namespace physicallayer {
 class INET_API Ieee80211OFDMDecoderModule : public cSimpleModule, public IDecoder
 {
     protected:
-        const Ieee80211OFDMDecoder *layeredDecoder;
+        const Ieee80211OFDMDecoder *ofdmDecoder;
         const IScrambler *descrambler;
         const IFECCoder *fecDecoder;
         const IInterleaver *deinterleaver;
@@ -45,7 +45,7 @@ class INET_API Ieee80211OFDMDecoderModule : public cSimpleModule, public IDecode
 
     public:
         virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMDecoder"; }
-        const Ieee80211OFDMCode *getCode() const { return layeredDecoder->getCode(); }
+        const Ieee80211OFDMCode *getCode() const { return ofdmDecoder->getCode(); }
         const IReceptionPacketModel *decode(const IReceptionBitModel *bitModel) const;
         virtual ~Ieee80211OFDMDecoderModule();
 };
