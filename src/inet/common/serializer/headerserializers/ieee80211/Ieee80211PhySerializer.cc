@@ -50,19 +50,17 @@ bool Ieee80211PhySerializer::serialize(const Ieee80211PLCPFrame* plcpHeader, Bit
         writeToBitVector(buf, numOfWrittenBytes, serializedPacket);
         // KLUDGE: if numOfWrittenBytes != byteLength it causes runtime error at the physical layer
         int pad = byteLength - numOfWrittenBytes;
-        serializedPacket->appendBit(false, pad*8);
+        if (pad > 0)
+            serializedPacket->appendBit(false, pad * 8);
+        serializedPacket->appendBit(0, 6); // tail bits
         delete[] buf;
         return true;
     }
     return false;
 }
 
-const Ieee80211PLCPFrame* Ieee80211PhySerializer::deserialize(BitVector* serializedPacket) const
+Ieee80211PLCPFrame* Ieee80211PhySerializer::deserialize(BitVector* serializedPacket) const
 {
-//    unsigned int bitLength = serializedPacket->getSize(); cheat!
-//    if you don't use this value, you don't have to remove padding,
-//    but it would be a cheat anyway!!
-//    unsigned int byteLength = ceil(bitLength / 8);
     // TODO: Revise this code snippet and optimize
     // FIXME: We only have OFDM deserializer
     unsigned char *hdrBuf = new unsigned char[OFDM_PLCP_HEADER_LENGTH];
@@ -75,13 +73,14 @@ const Ieee80211PLCPFrame* Ieee80211PhySerializer::deserialize(BitVector* seriali
     plcpFrame->setLength(hdr->length);
     plcpFrame->setType(OFDM);
     unsigned char *buf = new unsigned char[hdr->length + OFDM_PLCP_HEADER_LENGTH];
-    for (unsigned int i = 0; i < bitFields.size(); i++)
+    for (unsigned int i = 0; i < hdr->length + OFDM_PLCP_HEADER_LENGTH; i++)
         buf[i] = bitFields[i];
     Ieee80211Serializer deserializer;
     cPacket *payload = deserializer.parse(buf + OFDM_PLCP_HEADER_LENGTH, hdr->length);
     Ieee80211Frame *ieee80211Frame = check_and_cast<Ieee80211Frame *>(payload);
+    plcpFrame->setBitLength(OFDM_PLCP_HEADER_LENGTH);
     plcpFrame->encapsulate(ieee80211Frame);
-    plcpFrame->setBitLength(OFDM_PLCP_HEADER_LENGTH + hdr->length * 8);
+//    ASSERT(plcpFrame->getBitLength() == OFDM_PLCP_HEADER_LENGTH + 8 * hdr->length);
     delete[] buf;
     return plcpFrame;
 }

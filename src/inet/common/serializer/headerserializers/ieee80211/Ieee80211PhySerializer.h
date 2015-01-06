@@ -31,7 +31,7 @@ class INET_API Ieee80211PhySerializer
 
     public:
         bool serialize(const Ieee80211PLCPFrame *plcpHeader, BitVector *serializedPacket) const;
-        const Ieee80211PLCPFrame *deserialize(BitVector *serializedPacket) const;
+        Ieee80211PLCPFrame *deserialize(BitVector *serializedPacket) const;
 };
 
 } /* namespace serializer */
