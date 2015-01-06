@@ -261,11 +261,11 @@ const IReceptionPacketModel* Ieee80211OFDMReceiver::createCompleteReceptionPacke
     const BitVector *dataBits = dataFieldReceptionPacketModel->getSerializedPacket();
     for (unsigned int i = 0; i < dataBits->getSize(); i++)
         mergedBits->appendBit(dataBits->getBit(i));
-    // TODO: deserializer
     // NOTE: remove padding is not necessary
     Ieee80211PhySerializer deserializer;
-    const cPacket *deserializedPacket = deserializer.deserialize(mergedBits);
-    return new ReceptionPacketModel(deserializedPacket, mergedBits, NULL, NULL, NULL, 0, true);
+    cPacket *deserializedPacket = deserializer.deserialize(mergedBits);
+    cPacket *macFrame = deserializedPacket->decapsulate();
+    return new ReceptionPacketModel(macFrame, mergedBits, NULL, NULL, NULL, 0, true); // TODO: fill the constructor with correct values or remove these fields from the reception packet model.
 }
 
 const IReceptionDecision *Ieee80211OFDMReceiver::computeReceptionDecision(const IListening *listening, const IReception *reception, const IInterference *interference) const
@@ -305,12 +305,7 @@ const IReceptionDecision *Ieee80211OFDMReceiver::computeReceptionDecision(const 
     if (!receptionPacketModel)
         throw cRuntimeError("Packet model is obligatory");
     receptionIndication->setPacketErrorRate(receptionPacketModel->getPER());
-    // FIXME: Kludge: we have no serializer yet
-    const cPacket *macFrame = transmission->getMacFrame();
-    const ReceptionPacketModel *hackedPacketModel = new ReceptionPacketModel(macFrame, receptionPacketModel->getSerializedPacket(), receptionPacketModel->getForwardErrorCorrection(),
-                                                                              receptionPacketModel->getScrambling(), receptionPacketModel->getInterleaving(),
-                                                                              receptionPacketModel->getPER(), receptionPacketModel->isPacketErrorless());
-    return new LayeredReceptionDecision(reception, receptionIndication, hackedPacketModel, NULL, NULL, NULL, NULL, true, true, hackedPacketModel->isPacketErrorless());
+    return new LayeredReceptionDecision(reception, receptionIndication, receptionPacketModel, receptionBitModel, receptionSymbolModel, receptionSampleModel, receptionAnalogModel, true, true, receptionPacketModel->isPacketErrorless());
 }
 
 const IListening* Ieee80211OFDMReceiver::createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const

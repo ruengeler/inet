@@ -76,31 +76,6 @@ BitVector *Ieee80211OFDMTransmitter::serialize(const cPacket* packet) const
     BitVector *serializedPacket = new BitVector();
     const Ieee80211OFDMPLCPFrame *phyFrame = check_and_cast<const Ieee80211OFDMPLCPFrame*>(packet);
     phySerializer.serialize(phyFrame, serializedPacket);
-//    BitVector *serializedPacket = new BitVector();
-//    // RATE, 4 bits
-//    ShortBitVector rate(phyFrame->getRate(), 4);
-//    for (unsigned int i = 0; i < rate.getSize(); i++)
-//        serializedPacket->appendBit(rate.getBit(i));
-//    // Reserved, 1 bit
-//    serializedPacket->appendBit(0); // Bit 4 is reserved. It shall be set to 0 on transmit and ignored on receive.
-//    // Length, 12 bits
-//    ShortBitVector byteLength(phyFrame->getLength(), 12); // == macFrame->getByteLength()
-//    for (unsigned int i = 0; i < byteLength.getSize(); i++)
-//        serializedPacket->appendBit(byteLength.getBit(i));
-//    // Parity, 1 bit
-//    serializedPacket->appendBit(0); // whatever (at least for now)
-//    // Tail, 6 bit
-//    serializedPacket->appendBit(0, 6); // The bits 18–23 constitute the SIGNAL TAIL field, and all 6 bits shall be set to 0
-//    // Service, 16 bit
-//    // The bits from 0–6 of the SERVICE field, which are transmitted first, are set to 0s
-//    // and are used to synchronize the descrambler in the receiver. The remaining 9 bits
-//    // (7–15) of the SERVICE field shall be reserved for future use. All reserved bits shall
-//    // be set to 0.
-//    serializedPacket->appendBit(0, 16);
-//    ASSERT(serializedPacket->getSize() == 40);
-//    for (unsigned int i = 0; i < byteLength.toDecimal() * 8; i++)
-//        serializedPacket->appendBit(intuniform(0,1));
-    serializedPacket->appendBit(0, 6); // tail bits
     unsigned int byteLength = phyFrame->getLength();
     unsigned int rate = phyFrame->getRate();
     int dataBitsLength = 6 + byteLength * 8 + 16;
