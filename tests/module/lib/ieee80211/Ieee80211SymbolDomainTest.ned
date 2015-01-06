@@ -19,9 +19,12 @@ simple Ieee80211SymbolDomainTest
 {
     parameters:
         string testFile;
-        string serializerModule;
-        string ieee80211LayeredDecoderModule;
-        string ieee80211LayeredEncoderModule;
-        string ieee80211OFDMModulatorModule;
-        string ieee80211OFDMDemodulatorModule;
+        string ieee80211OFDMDataDecoderModule;
+        string ieee80211OFDMSignalDecoderModule;
+        string ieee80211OFDMDataEncoderModule;
+        string ieee80211OFDMSignalEncoderModule;
+        string ieee80211OFDMDataModulatorModule;
+        string ieee80211OFDMSignalModulatorModule;
+        string ieee80211OFDMSignalDemodulatorModule;
+        string ieee80211OFDMDataDemodulatorModule;
 }

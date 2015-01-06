@@ -15,15 +15,14 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IEEE80211SYMBOLMODELTEST_H_
-#define __INET_IEEE80211SYMBOLMODELTEST_H_
+#ifndef __INET_IEEE80211SYMBOLMODELTEST_H
+#define __INET_IEEE80211SYMBOLMODELTEST_H
 
 #include "inet/common/INETDefs.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredEncoder.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulator.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDemodulator.h"
-#include "inet/physicallayer/ieee80211/layered/Ieee80211LayeredDecoder.h"
-#include "inet/physicallayer/common/DummySerializer.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoderModule.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulatorModule.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDemodulatorModule.h"
+#include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDecoderModule.h"
 
 using namespace inet::physicallayer;
 
@@ -32,11 +31,14 @@ namespace inet {
 class INET_API Ieee80211SymbolDomainTest : public cSimpleModule
 {
     protected:
-        Ieee80211LayeredEncoder *ieee80211LayeredEncoder;
-        Ieee80211OFDMModulator *ieee80211OFDMModulator;
-        Ieee80211OFDMDemodulator *ieee80211OFDMDemodulator;
-        Ieee80211LayeredDecoder *ieee80211LayeredDecoder;
-        DummySerializer *serializer;
+        Ieee80211OFDMEncoderModule *ieee80211OFDMSignalEncoder;
+        Ieee80211OFDMEncoderModule *ieee80211OFDMDataEncoder;
+        Ieee80211OFDMModulatorModule *ieee80211OFDMSignalModulator;
+        Ieee80211OFDMModulatorModule *ieee80211OFDMDataModulator;
+        Ieee80211OFDMDemodulatorModule *ieee80211OFDMSignalDemodulator;
+        Ieee80211OFDMDemodulatorModule *ieee80211OFDMDataDemodulator;
+        Ieee80211OFDMDecoderModule *ieee80211OFDMSignalDecoder;
+        Ieee80211OFDMDecoderModule *ieee80211OFDMDataDecoder;
         BitVector input;
 
     protected:
@@ -51,4 +53,4 @@ class INET_API Ieee80211SymbolDomainTest : public cSimpleModule
 
 } /* namespace inet */
 
-#endif /* __INET_IEEE80211SYMBOLMODELTEST_H_ */
+#endif /* __INET_IEEE80211SYMBOLMODELTEST_H */

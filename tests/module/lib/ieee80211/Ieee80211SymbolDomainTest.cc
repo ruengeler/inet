@@ -27,11 +27,14 @@ void Ieee80211SymbolDomainTest::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
     {
-        ieee80211LayeredEncoder = getModuleFromPar<Ieee80211LayeredEncoder>(par("ieee80211LayeredEncoderModule"), this);
-        ieee80211OFDMModulator = getModuleFromPar<Ieee80211OFDMModulator>(par("ieee80211OFDMModulatorModule"), this);
-        ieee80211OFDMDemodulator = getModuleFromPar<Ieee80211OFDMDemodulator>(par("ieee80211OFDMDemodulatorModule"), this);
-        ieee80211LayeredDecoder = getModuleFromPar<Ieee80211LayeredDecoder>(par("ieee80211LayeredDecoderModule"), this);
-        serializer = getModuleFromPar<DummySerializer>(par("serializerModule"), this);
+        ieee80211OFDMSignalEncoder = getModuleFromPar<Ieee80211OFDMEncoderModule>(par("ieee80211OFDMSignalEncoderModule"), this);
+        ieee80211OFDMDataEncoder = getModuleFromPar<Ieee80211OFDMEncoderModule>(par("ieee80211OFDMDataEncoderModule"), this);
+        ieee80211OFDMSignalModulator = getModuleFromPar<Ieee80211OFDMModulatorModule>(par("ieee80211OFDMSignalModulatorModule"), this);
+        ieee80211OFDMDataModulator = getModuleFromPar<Ieee80211OFDMModulatorModule>(par("ieee80211OFDMDataModulatorModule"), this);
+        ieee80211OFDMSignalDemodulator = getModuleFromPar<Ieee80211OFDMDemodulatorModule>(par("ieee80211OFDMSignalDemodulatorModule"), this);
+        ieee80211OFDMDataDemodulator = getModuleFromPar<Ieee80211OFDMDemodulatorModule>(par("ieee80211OFDMDataDemodulatorModule"), this);
+        ieee80211OFDMSignalDecoder = getModuleFromPar<Ieee80211OFDMDecoderModule>(par("ieee80211OFDMSignalDecoderModule"), this);
+        ieee80211OFDMDataDecoder = getModuleFromPar<Ieee80211OFDMDecoderModule>(par("ieee80211OFDMDataDecoderModule"), this);
         parseInput(par("testFile").stringValue());
     }
     else if (stage == INITSTAGE_LAST)
@@ -60,17 +63,31 @@ void Ieee80211SymbolDomainTest::parseInput(const char* fileName)
 
 void Ieee80211SymbolDomainTest::test() const
 {
-    TransmissionPacketModel packetModel;
-    serializer->setDummyOutputBits(input);
-    const ITransmissionBitModel *bitModel = ieee80211LayeredEncoder->encode(&packetModel);
-    const ITransmissionSymbolModel *transmissionSymbolModel = ieee80211OFDMModulator->modulate(bitModel);
-    ReceptionSymbolModel receptionSymbolModel(0, 0, transmissionSymbolModel->getSymbols());
-    const IReceptionBitModel *receptionBitModel = ieee80211OFDMDemodulator->demodulate(&receptionSymbolModel);
-    const IReceptionPacketModel *receptionPacketModel = ieee80211LayeredDecoder->decode(receptionBitModel);
-    delete bitModel;
-    delete transmissionSymbolModel;
-    delete receptionBitModel;
-    delete receptionPacketModel;
+    BitVector signalField, dataField;
+    for (unsigned int i = 0; i < 24; i++)
+        signalField.appendBit(input.getBit(i));
+    for (unsigned int i = 24; i < input.getSize(); i++)
+        dataField.appendBit(input.getBit(i));
+    TransmissionPacketModel signalPacketModel(NULL, &signalField);
+    TransmissionPacketModel dataPacketModel(NULL, &dataField);
+    const ITransmissionBitModel *signalBitModel = ieee80211OFDMSignalEncoder->encode(&signalPacketModel);
+    const ITransmissionBitModel *dataBitModel = ieee80211OFDMDataEncoder->encode(&dataPacketModel);
+    const ITransmissionSymbolModel *transmissionSignalSymbolModel = ieee80211OFDMSignalModulator->modulate(signalBitModel);
+    const ITransmissionSymbolModel *transmissionDataSymbolModel = ieee80211OFDMDataModulator->modulate(dataBitModel);
+    ReceptionSymbolModel receptionSignalSymbolModel(0, 0, transmissionSignalSymbolModel->getSymbols());
+    const IReceptionBitModel *receptionSignalBitModel = ieee80211OFDMSignalDemodulator->demodulate(&receptionSignalSymbolModel);
+    ReceptionSymbolModel receptionDataSymbolModel(0, 0, transmissionDataSymbolModel->getSymbols());
+    const IReceptionBitModel *receptionDataBitModel = ieee80211OFDMDataDemodulator->demodulate(&receptionDataSymbolModel);
+    const IReceptionPacketModel *receptionSignalPacketModel = ieee80211OFDMSignalDecoder->decode(receptionSignalBitModel);
+    const IReceptionPacketModel *receptionDataPacketModel = ieee80211OFDMDataDecoder->decode(receptionDataBitModel);
+    delete dataBitModel;
+    delete signalBitModel;
+    delete transmissionDataSymbolModel;
+    delete transmissionSignalSymbolModel;
+    delete receptionDataBitModel;
+    delete receptionSignalBitModel;
+    delete receptionDataPacketModel;
+    delete receptionSignalPacketModel;
 }
 
 } /* namespace inet */
