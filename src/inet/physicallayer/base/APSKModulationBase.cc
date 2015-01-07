@@ -16,16 +16,46 @@
 //
 
 #include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/modulation/BPSKModulation.h"
+#include "inet/physicallayer/modulation/QPSKModulation.h"
+#include "inet/physicallayer/modulation/QAM16Modulation.h"
+#include "inet/physicallayer/modulation/QAM64Modulation.h"
+#include "inet/physicallayer/modulation/QAM256Modulation.h"
 #include "inet/common/Complex.h"
 
 namespace inet {
+
 namespace physicallayer {
+
+APSKModulationBase::APSKModulationBase(const APSKSymbol *encodingTable, int codeWordLength, int constellationSize, double normalizationFactor) :
+    encodingTable(encodingTable),
+    codeWordLength(codeWordLength),
+    constellationSize(constellationSize),
+    normalizationFactor(normalizationFactor)
+{
+}
 
 void APSKModulationBase::printToStream(std::ostream &stream) const
 {
     stream << "APSK modulation with";
     stream << " constellation size = " << constellationSize << " codeword length = " << codeWordLength;
     stream << " normalization factor = " << normalizationFactor << endl;
+}
+
+const APSKModulationBase *APSKModulationBase::findModulation(const char *modulation)
+{
+    if (!strcmp("BPSK", modulation))
+        return &BPSKModulation::singleton;
+    else if (!strcmp("QPSK", modulation))
+        return &QPSKModulation::singleton;
+    else if (!strcmp("QAM-16", modulation))
+        return &QAM16Modulation::singleton;
+    else if (!strcmp("QAM-64", modulation))
+        return &QAM64Modulation::singleton;
+    else if (!strcmp("QAM-256", modulation))
+        return &QAM256Modulation::singleton;
+    else
+        throw cRuntimeError("Unknown modulation = %s", modulation);
 }
 
 const APSKSymbol *APSKModulationBase::mapToConstellationDiagram(const ShortBitVector& symbol) const
@@ -59,5 +89,7 @@ ShortBitVector APSKModulationBase::demapToBitRepresentation(const APSKSymbol* sy
     return ShortBitVector(nearestNeighborIndex, codeWordLength);
 }
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+
+} // namespace inet
+

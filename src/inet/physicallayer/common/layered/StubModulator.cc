@@ -28,19 +28,7 @@ namespace physicallayer {
 void StubModulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
-    {
-        const char *modulationSchemeStr = par("modulationScheme");
-        if (!strcmp("QAM-16", modulationSchemeStr))
-            modulationScheme = &QAM16Modulation::singleton;
-        else if (!strcmp("QAM-64", modulationSchemeStr))
-            modulationScheme = &QAM64Modulation::singleton;
-        else if (!strcmp("QPSK", modulationSchemeStr))
-            modulationScheme = &QPSKModulation::singleton;
-        else if (!strcmp("BPSK", modulationSchemeStr))
-            modulationScheme = &BPSKModulation::singleton;
-        else
-            throw cRuntimeError("Unknown modulation scheme = %s", modulationSchemeStr);
-    }
+        modulationScheme = APSKModulationBase::findModulation(par("modulationScheme"));
 }
 
 double StubModulator::calculateBER(double snir, double bandwidth, double bitrate) const

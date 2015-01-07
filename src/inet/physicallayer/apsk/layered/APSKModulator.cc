@@ -35,19 +35,7 @@ APSKModulator::APSKModulator() :
 void APSKModulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
-    {
-        const char *modulationString = par("modulation");
-        if (!strcmp("QAM-16", modulationString))
-            modulation = &QAM16Modulation::singleton;
-        else if (!strcmp("QAM-64", modulationString))
-            modulation = &QAM64Modulation::singleton;
-        else if (!strcmp("QPSK", modulationString))
-            modulation = &QPSKModulation::singleton;
-        else if (!strcmp("BPSK", modulationString))
-            modulation = &BPSKModulation::singleton;
-        else
-            throw cRuntimeError("Unknown modulation = %s", modulationString);
-    }
+        modulation = APSKModulationBase::findModulation(par("modulation"));
 }
 
 const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitModel *bitModel) const

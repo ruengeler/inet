@@ -23,6 +23,7 @@
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API APSKModulationBase : public IAPSKModulation
@@ -34,22 +35,22 @@ class INET_API APSKModulationBase : public IAPSKModulation
         double normalizationFactor;
 
     public:
-        APSKModulationBase(const APSKSymbol *encodingTable, int codeWordLength, int constellationSize, double normalizationFactor) :
-          encodingTable(encodingTable),
-          codeWordLength(codeWordLength),
-          constellationSize(constellationSize),
-          normalizationFactor(normalizationFactor)
-      {}
-      virtual void printToStream(std::ostream &stream) const;
-      virtual const APSKSymbol *getEncodingTable() const { return encodingTable; }
-      virtual int getCodeWordLength() const { return codeWordLength; }
-      virtual int getConstellationSize() const { return constellationSize; }
-      virtual double getNormalizationFactor() const { return normalizationFactor; }
-      virtual const APSKSymbol *mapToConstellationDiagram(const ShortBitVector& symbol) const;
-      virtual ShortBitVector demapToBitRepresentation(const APSKSymbol *symbol) const;
+        APSKModulationBase(const APSKSymbol *encodingTable, int codeWordLength, int constellationSize, double normalizationFactor);
+
+        virtual void printToStream(std::ostream &stream) const;
+        const static APSKModulationBase *findModulation(const char *name);
+
+        virtual const APSKSymbol *getEncodingTable() const { return encodingTable; }
+        virtual int getCodeWordLength() const { return codeWordLength; }
+        virtual int getConstellationSize() const { return constellationSize; }
+        virtual double getNormalizationFactor() const { return normalizationFactor; }
+        virtual const APSKSymbol *mapToConstellationDiagram(const ShortBitVector& symbol) const;
+        virtual ShortBitVector demapToBitRepresentation(const APSKSymbol *symbol) const;
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_APSKMODULATIONBASE_H */
+} // namespace inet
+
+#endif // ifndef __INET_APSKMODULATIONBASE_H
+

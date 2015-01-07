@@ -30,21 +30,7 @@ Define_Module(Ieee80211OFDMDemodulatorModule);
 void Ieee80211OFDMDemodulatorModule::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
-    {
-        const APSKModulationBase *demodulationScheme = NULL;
-        const char *modulationSchemeStr = par("demodulationScheme");
-        if (!strcmp("QAM-16", modulationSchemeStr))
-            demodulationScheme = &QAM16Modulation::singleton;
-        else if (!strcmp("QAM-64", modulationSchemeStr))
-            demodulationScheme = &QAM64Modulation::singleton;
-        else if (!strcmp("QPSK", modulationSchemeStr))
-            demodulationScheme = &QPSKModulation::singleton;
-        else if (!strcmp("BPSK", modulationSchemeStr))
-            demodulationScheme = &BPSKModulation::singleton;
-        else
-            throw cRuntimeError("Unknown modulation scheme = %s", modulationSchemeStr);
-        ofdmDemodulator = new Ieee80211OFDMDemodulator(demodulationScheme);
-    }
+        ofdmDemodulator = new Ieee80211OFDMDemodulator(APSKModulationBase::findModulation(par("demodulationScheme")));
 }
 
 const IReceptionBitModel *Ieee80211OFDMDemodulatorModule::demodulate(const IReceptionSymbolModel *symbolModel) const

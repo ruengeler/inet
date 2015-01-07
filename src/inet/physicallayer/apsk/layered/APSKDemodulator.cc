@@ -37,19 +37,7 @@ APSKDemodulator::APSKDemodulator() :
 void APSKDemodulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)
-    {
-        const char *modulationString = par("modulation");
-        if (!strcmp("QAM-16", modulationString))
-            modulation = &QAM16Modulation::singleton;
-        else if (!strcmp("QAM-64", modulationString))
-            modulation = &QAM64Modulation::singleton;
-        else if (!strcmp("QPSK", modulationString))
-            modulation = &QPSKModulation::singleton;
-        else if (!strcmp("BPSK", modulationString))
-            modulation = &BPSKModulation::singleton;
-        else
-            throw cRuntimeError("Unknown modulation = %s", modulationString);
-    }
+        modulation = APSKModulationBase::findModulation(par("modulation"));
 }
 
 const IReceptionBitModel* APSKDemodulator::demodulate(const IReceptionSymbolModel* symbolModel) const
@@ -57,7 +45,7 @@ const IReceptionBitModel* APSKDemodulator::demodulate(const IReceptionSymbolMode
     const std::vector<const ISymbol*> *symbols = symbolModel->getSymbols();
     BitVector *bits = new BitVector();
     for (unsigned int i = 0; i < symbols->size(); i++)
-    {
+{
         const APSKSymbol *symbol = dynamic_cast<const APSKSymbol *>(symbols->at(i));
         ShortBitVector symbolBits = modulation->demapToBitRepresentation(symbol);
         for (unsigned int j = 0; j < symbolBits.getSize(); j++)
