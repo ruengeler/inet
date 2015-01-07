@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_LAYEREDCONSTANTERRORMODEL_H
-#define __INET_LAYEREDCONSTANTERRORMODEL_H
+#ifndef __INET_LAYEREDSTOCHASTICERRORMODEL_H
+#define __INET_LAYEREDSTOCHASTICERRORMODEL_H
 
 #include "inet/physicallayer/base/layered/LayeredErrorModelBase.h"
 
@@ -24,7 +24,7 @@ namespace inet {
 
 namespace physicallayer {
 
-class INET_API LayeredConstantErrorModel : public LayeredErrorModelBase
+class INET_API LayeredStochasticErrorModel : public LayeredErrorModelBase
 {
   protected:
     double packetErrorRate;
@@ -35,7 +35,7 @@ class INET_API LayeredConstantErrorModel : public LayeredErrorModelBase
     virtual void initialize(int stage);
 
   public:
-    LayeredConstantErrorModel();
+    LayeredStochasticErrorModel();
 
     virtual void printToStream(std::ostream& stream) const;
 
@@ -49,5 +49,5 @@ class INET_API LayeredConstantErrorModel : public LayeredErrorModelBase
 
 } // namespace inet
 
-#endif // ifndef __INET_LAYEREDCONSTANTERRORMODEL_H
+#endif // ifndef __INET_LAYEREDSTOCHASTICERRORMODEL_H
 

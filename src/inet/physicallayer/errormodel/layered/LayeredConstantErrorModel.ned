@@ -19,12 +19,12 @@ package inet.physicallayer.errormodel.layered;
 
 import inet.physicallayer.base.ErrorModelBase;
 
-module LayeredConstantErrorModel extends ErrorModelBase
+module LayeredStochasticErrorModel extends ErrorModelBase
 {
     parameters:
         double packetErrorRate = default(0/0);
         double bitErrorRate = default(0/0);
         double symbolErrorRate = default(0/0);
         @display("i=block/cogwheel");
-        @class(LayeredConstantErrorModel);
+        @class(LayeredStochasticErrorModel);
 }

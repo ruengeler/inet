@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/errormodel/layered/LayeredConstantErrorModel.h"
+#include "inet/physicallayer/errormodel/layered/LayeredStochasticErrorModel.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/layered/SignalSymbolModel.h"
@@ -27,16 +27,16 @@ namespace inet {
 
 namespace physicallayer {
 
-Define_Module(LayeredConstantErrorModel);
+Define_Module(LayeredStochasticErrorModel);
 
-LayeredConstantErrorModel::LayeredConstantErrorModel() :
+LayeredStochasticErrorModel::LayeredStochasticErrorModel() :
     packetErrorRate(NaN),
     bitErrorRate(NaN),
     symbolErrorRate(NaN)
 {
 }
 
-void LayeredConstantErrorModel::initialize(int stage)
+void LayeredStochasticErrorModel::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL) {
         packetErrorRate = par("packetErrorRate");
@@ -45,30 +45,30 @@ void LayeredConstantErrorModel::initialize(int stage)
     }
 }
 
-void LayeredConstantErrorModel::printToStream(std::ostream& stream) const
+void LayeredStochasticErrorModel::printToStream(std::ostream& stream) const
 {
-    stream << "LayeredConstantErrorModel, "
+    stream << "LayeredStochasticErrorModel, "
            << "packetErrorRate = " << packetErrorRate << ", "
            << "bitErrorRate = " << bitErrorRate << ", "
            << "symbolErrorRate = " << symbolErrorRate;
 }
 
-const IReceptionPacketModel *LayeredConstantErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const
+const IReceptionPacketModel *LayeredStochasticErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
     throw cRuntimeError("Not yet implemented");
 }
 
-const IReceptionBitModel *LayeredConstantErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const
+const IReceptionBitModel *LayeredStochasticErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
     return LayeredErrorModelBase::computeBitModel(transmission, bitErrorRate);
 }
 
-const IReceptionSymbolModel *LayeredConstantErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const
+const IReceptionSymbolModel *LayeredStochasticErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
     return LayeredErrorModelBase::computeSymbolModel(transmission, symbolErrorRate);
 }
 
-const IReceptionSampleModel *LayeredConstantErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const
+const IReceptionSampleModel *LayeredStochasticErrorModel::computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
     throw cRuntimeError("Not yet implemented");
 }
