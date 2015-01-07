@@ -17,11 +17,10 @@
 
 package inet.physicallayer.errormodel.layered;
 
-import inet.physicallayer.base.ErrorModelBase;
+import inet.physicallayer.base.layered.LayeredErrorModelBase;
 
-module LayeredAPSKErrorModel extends ErrorModelBase
+module LayeredAPSKErrorModel extends LayeredErrorModelBase
 {
     parameters:
-        @display("i=block/cogwheel");
         @class(LayeredAPSKErrorModel);
 }

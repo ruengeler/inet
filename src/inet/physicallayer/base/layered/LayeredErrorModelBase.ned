@@ -15,11 +15,11 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-package inet.physicallayer.base;
+package inet.physicallayer.base.layered;
 
-import inet.physicallayer.contract.IErrorModel;
+import inet.physicallayer.contract.layered.ILayeredErrorModel;
 
-module ErrorModelBase like IErrorModel
+module LayeredErrorModelBase like ILayeredErrorModel
 {
     parameters:
         @display("i=block/cogwheel");

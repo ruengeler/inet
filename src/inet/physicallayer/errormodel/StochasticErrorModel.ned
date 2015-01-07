@@ -25,6 +25,5 @@ module StochasticErrorModel extends ErrorModelBase
         double packetErrorRate = default(0/0);
         double bitErrorRate = default(0/0);
         double symbolErrorRate = default(0/0);
-        @display("i=block/cogwheel");
         @class(StochasticErrorModel);
 }
