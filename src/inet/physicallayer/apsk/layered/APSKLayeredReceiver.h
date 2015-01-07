@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKRECEIVER_H
-#define __INET_APSKRECEIVER_H
+#ifndef __INET_APSKLAYEREDRECEIVER_H
+#define __INET_APSKLAYEREDRECEIVER_H
 
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/IRadioMedium.h"
@@ -29,6 +29,7 @@
 #include "inet/physicallayer/contract/layered/IAnalogDigitalConverter.h"
 #include "inet/physicallayer/contract/IErrorModel.h"
 #include "inet/physicallayer/contract/layered/ILayeredErrorModel.h"
+#include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
 
 namespace inet {
 
@@ -60,20 +61,12 @@ class INET_API APSKLayeredReceiver : public SNIRReceiverBase
 
     protected:
         virtual void initialize(int stage);
-        unsigned int getSignalFieldLength(const BitVector *signalField) const;
-        unsigned int calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const;
-
-        virtual const IReceptionPacketModel *createCompleteReceptionPacketModel(const IReceptionPacketModel *signalFieldReceptionPacketModel, const IReceptionPacketModel *dataFieldReceptionPacketModel) const;
-        virtual const IReceptionSymbolModel *createSignalFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
-        virtual const IReceptionSymbolModel *createDataFieldReceptionSymbolModel(const IReceptionSymbolModel *receptionSymbolModel) const;
-        virtual const IReceptionBitModel *createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel *receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
-        virtual const IReceptionBitModel *createSignalFieldReceptionBitModel(const IReceptionBitModel *receptionBitModel) const;
-        virtual const IReceptionPacketModel *demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel,  const IReceptionBitModel *&receptionBitModel) const;
-        virtual const IReceptionPacketModel *demodulateAndDecodeDataField(const IReceptionSymbolModel* receptionSymbolModel, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const;
+        virtual APSKRadioFrame *deserialize(const BitVector *bits) const;
 
     public:
         APSKLayeredReceiver();
 
+        virtual void printToStream(std::ostream& stream) const { stream << "APSKLayeredReceiver"; }
         virtual bool computeIsReceptionPossible(const IListening *listening, const IReception *reception) const;
         virtual const IListening* createListening(const IRadio* radio, const simtime_t startTime, const simtime_t endTime, const Coord startPosition, const Coord endPosition) const;
         virtual const IListeningDecision* computeListeningDecision(const IListening* listening, const IInterference* interference) const;
@@ -84,5 +77,5 @@ class INET_API APSKLayeredReceiver : public SNIRReceiverBase
 
 } // namespace inet
 
-#endif // ifndef __INET_APSKRECEIVER_H
+#endif // ifndef __INET_APSKLAYEREDRECEIVER_H
 

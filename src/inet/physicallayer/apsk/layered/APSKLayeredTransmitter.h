@@ -15,14 +15,15 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_APSKTRANSMITTER_H
-#define __INET_APSKTRANSMITTER_H
+#ifndef __INET_APSKLAYEREDTRANSMITTER_H
+#define __INET_APSKLAYEREDTRANSMITTER_H
 
 #include "inet/physicallayer/contract/layered/IEncoder.h"
 #include "inet/physicallayer/contract/layered/IModulator.h"
 #include "inet/physicallayer/contract/layered/IPulseShaper.h"
 #include "inet/physicallayer/contract/layered/IDigitalAnalogConverter.h"
 #include "inet/physicallayer/contract/ITransmitter.h"
+#include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
 
 namespace inet {
 
@@ -46,29 +47,23 @@ class INET_API APSKLayeredTransmitter : public ITransmitter, public cSimpleModul
         const IPulseShaper *pulseShaper;
         const IDigitalAnalogConverter *digitalAnalogConverter;
 
+        W power;
         bps bitrate;
         Hz bandwidth;
         Hz carrierFrequency;
-        W power;
 
     protected:
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
-        virtual void handleMessage(cMessage *msg) { throw cRuntimeError("This module doesn't handle self messages"); }
+
         virtual const ITransmissionPacketModel *createPacketModel(const cPacket *macFrame) const;
-        const ITransmissionAnalogModel* createAnalogModel(int headerBitLength, double headerBitRate, int payloadBitLength, double payloadBitRate) const;
-        BitVector *serialize(const cPacket* packet) const; // FIXME: kludge
-        const ITransmissionPacketModel *createSignalFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
-        const ITransmissionPacketModel *createDataFieldPacketModel(const ITransmissionPacketModel *completePacketModel) const;
-        void encodeAndModulate(const ITransmissionPacketModel *fieldPacketModel, const ITransmissionBitModel *&fieldBitModel, const ITransmissionSymbolModel *&fieldSymbolModel, const IEncoder *encoder, const IModulator *modulator, bool isSignalField) const;
-        const ITransmissionSymbolModel *createSymbolModel(const ITransmissionSymbolModel *signalFieldSymbolModel, const ITransmissionSymbolModel *dataFieldSymbolModel) const;
-        const ITransmissionBitModel *createBitModel(const ITransmissionBitModel *signalFieldBitModel, const ITransmissionBitModel *dataFieldBitModel) const;
-        void padding(BitVector *serializedPacket, unsigned int dataBitsLength) const;
+        virtual const ITransmissionAnalogModel* createAnalogModel(const ITransmissionBitModel *bitModel) const;
+        virtual BitVector *serialize(const APSKRadioFrame *radioFrame) const;
 
     public:
         APSKLayeredTransmitter();
 
-        virtual void printToStream(std::ostream& stream) const { stream << "APSKTransmitter"; }
+        virtual void printToStream(std::ostream& stream) const { stream << "APSKLayeredTransmitter"; }
         virtual W getMaxPower() const { return power; }
         virtual const Hz getBandwidth() const { return bandwidth; }
         virtual const Hz getCarrierFrequency() const { return carrierFrequency; }
@@ -83,5 +78,5 @@ class INET_API APSKLayeredTransmitter : public ITransmitter, public cSimpleModul
 
 } // namespace inet
 
-#endif // ifndef __INET_APSKTRANSMITTER_H
+#endif // ifndef __INET_APSKLAYEREDTRANSMITTER_H
 

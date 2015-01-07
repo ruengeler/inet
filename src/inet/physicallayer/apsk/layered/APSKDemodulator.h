@@ -38,9 +38,6 @@ class INET_API APSKDemodulator : public IDemodulator, public cSimpleModule
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
 
-        BitVector demodulateSymbol(const APSKSymbol *signalSymbol) const;
-        bool isPilotOrDcSubcarrier(int i) const;
-
     public:
         APSKDemodulator();
 

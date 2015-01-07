@@ -52,42 +52,18 @@ void APSKDemodulator::initialize(int stage)
     }
 }
 
-BitVector APSKDemodulator::demodulateSymbol(const APSKSymbol *signalSymbol) const
-{
-    std::vector<const APSKSymbol*> apskSymbols; // TODO: signalSymbol->getSubCarrierSymbols();
-    BitVector field;
-    for (unsigned int i = 0; i < apskSymbols.size(); i++)
-    {
-        if (!isPilotOrDcSubcarrier(i))
-        {
-            const APSKSymbol *apskSymbol = apskSymbols.at(i);
-            ShortBitVector bits = modulation->demapToBitRepresentation(apskSymbol);
-            for (unsigned int j = 0; j < bits.getSize(); j++)
-                field.appendBit(bits.getBit(j));
-        }
-    }
-    EV_DEBUG << "The field symbols has been demodulated into the following bit stream: " << field << endl;
-    return field;
-}
-
-bool APSKDemodulator::isPilotOrDcSubcarrier(int i) const
-{
-   return i == 5 || i == 19 || i == 33 || i == 47 || i == 26; // pilots are: 5,19,33,47, 26 (0+26) is a dc subcarrier
-}
-
-
 const IReceptionBitModel* APSKDemodulator::demodulate(const IReceptionSymbolModel* symbolModel) const
 {
     const std::vector<const ISymbol*> *symbols = symbolModel->getSymbols();
-    BitVector *bitRepresentation = new BitVector();
+    BitVector *bits = new BitVector();
     for (unsigned int i = 0; i < symbols->size(); i++)
     {
         const APSKSymbol *symbol = dynamic_cast<const APSKSymbol *>(symbols->at(i));
-        BitVector bits = demodulateSymbol(symbol);
-        for (unsigned int j = 0; j < bits.getSize(); j++)
-            bitRepresentation->appendBit(bits.getBit(j));
+        ShortBitVector symbolBits = modulation->demapToBitRepresentation(symbol);
+        for (unsigned int j = 0; j < symbolBits.getSize(); j++)
+            bits->appendBit(symbolBits.getBit(j));
     }
-    return new ReceptionBitModel(0, 0, 0, 0, bitRepresentation, modulation);
+    return new ReceptionBitModel(0, 0, 0, 0, bits, modulation);
 }
 
 } // namespace physicallayer

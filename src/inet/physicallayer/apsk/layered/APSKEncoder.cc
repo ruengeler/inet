@@ -46,8 +46,8 @@ void APSKEncoder::initialize(int stage)
 
 const ITransmissionBitModel* APSKEncoder::encode(const ITransmissionPacketModel* packetModel) const
 {
-    const BitVector *serializedPacket = packetModel->getSerializedPacket();
-    BitVector *encodedBits = new BitVector(*serializedPacket);
+    const BitVector *serializedBits = packetModel->getSerializedPacket();
+    BitVector *encodedBits = new BitVector(*serializedBits);
     const IScrambling *scrambling = nullptr;
     if (scrambler)
     {
