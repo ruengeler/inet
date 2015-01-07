@@ -17,12 +17,12 @@
 
 #include "inet/mobility/contract/IMobility.h"
 #include "inet/physicallayer/apsk/layered/APSKLayeredTransmitter.h"
-#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/apsk/layered/APSKEncoder.h"
 #include "inet/physicallayer/apsk/layered/APSKModulator.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/common/layered/LayeredTransmission.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
 
 namespace inet {

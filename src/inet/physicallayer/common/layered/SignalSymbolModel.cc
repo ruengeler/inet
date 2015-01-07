@@ -15,11 +15,16 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/LayeredReception.h"
+#include "inet/physicallayer/common/layered/SignalSymbolModel.h"
 
 namespace inet {
 
 namespace physicallayer {
+
+void SignalSymbolModel::printToStream(std::ostream &stream) const
+{
+//    stream << modulation;
+}
 
 } // namespace physicallayer
 

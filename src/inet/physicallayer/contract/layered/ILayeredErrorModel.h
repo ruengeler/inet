@@ -19,7 +19,7 @@
 #define __INET_ILAYEREDERRORMODEL_H
 
 #include "inet/common/INETDefs.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/common/layered/LayeredTransmission.h"
 #include "inet/physicallayer/contract/ISNIR.h"
 
 namespace inet {

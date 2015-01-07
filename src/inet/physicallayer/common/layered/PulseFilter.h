@@ -15,25 +15,30 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/DigitalAnalogConverter.h"
+#ifndef __INET_PULSEFILTER_H
+#define __INET_PULSEFILTER_H
+
+#include "inet/physicallayer/contract/layered/IPulseFilter.h"
+#include "inet/physicallayer/common/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/layered/SignalSampleModel.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-ScalarDigitalAnalogConverter::ScalarDigitalAnalogConverter() :
-    power(W(sNaN)),
-    carrierFrequency(Hz(sNaN)),
-    bandwidth(Hz(sNaN)),
-    sampleRate(sNaN)
-{}
-
-const ITransmissionAnalogModel *ScalarDigitalAnalogConverter::convertDigitalToAnalog(const ITransmissionSampleModel *sampleModel) const
+class INET_API PulseFilter : public IPulseFilter
 {
-    const simtime_t duration = sampleModel->getSampleLength() / sampleModel->getSampleRate();
-    return new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
-}
+  protected:
+    const int samplePerSymbol;
+
+  public:
+    PulseFilter();
+
+    virtual const IReceptionSymbolModel *filter(const IReceptionSampleModel *sampleModel) const;
+};
 
 } // namespace physicallayer
 
 } // namespace inet
+
+#endif // ifndef __INET_PULSEFILTER_H

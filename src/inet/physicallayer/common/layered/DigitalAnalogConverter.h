@@ -15,17 +15,35 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/SignalBitModel.h"
+#ifndef __INET_DIGITALANALOGCONVERTER_H
+#define __INET_DIGITALANALOGCONVERTER_H
+
+#include "inet/physicallayer/contract/layered/IDigitalAnalogConverter.h"
+#include "inet/physicallayer/base/PhysicalLayerDefs.h"
+#include "inet/physicallayer/common/layered/SignalSampleModel.h"
+#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-void SignalBitModel::printToStream(std::ostream &stream) const
+class INET_API ScalarDigitalAnalogConverter : public IDigitalAnalogConverter
 {
-    stream << ", bit length = " << headerBitLength; // TODO
-}
+  protected:
+    W power;
+    // TODO: why carrierFrequency and bandwidth here? why not in the shaper
+    Hz carrierFrequency;
+    Hz bandwidth;
+    double sampleRate;
+
+  public:
+    ScalarDigitalAnalogConverter();
+
+    virtual const ITransmissionAnalogModel *convertDigitalToAnalog(const ITransmissionSampleModel *sampleModel) const;
+};
 
 } // namespace physicallayer
 
 } // namespace inet
+
+#endif // ifndef __INET_DIGITALANALOGCONVERTER_H

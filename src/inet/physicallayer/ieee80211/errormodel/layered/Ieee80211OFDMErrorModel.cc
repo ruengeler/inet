@@ -18,10 +18,10 @@
 #include "inet/physicallayer/ieee80211/errormodel/layered/Ieee80211OFDMErrorModel.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
-#include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
-#include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
+#include "inet/physicallayer/common/layered/SignalBitModel.h"
+#include "inet/physicallayer/common/layered/SignalSampleModel.h"
+#include "inet/physicallayer/common/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 
 namespace inet {

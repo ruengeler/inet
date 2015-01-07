@@ -21,7 +21,7 @@
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/common/layered/SignalBitModel.h"
 
 namespace inet {
 namespace physicallayer {

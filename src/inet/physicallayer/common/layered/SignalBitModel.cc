@@ -15,30 +15,17 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_PULSESHAPER_H
-#define __INET_PULSESHAPER_H
-
-#include "inet/physicallayer/contract/layered/IPulseShaper.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
-#include "inet/physicallayer/layered/SignalSampleModel.h"
+#include "inet/physicallayer/common/layered/SignalBitModel.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API PulseShaper : public IPulseShaper
+void SignalBitModel::printToStream(std::ostream &stream) const
 {
-  protected:
-    const int samplePerSymbol;
-
-  public:
-    PulseShaper();
-
-    virtual const ITransmissionSampleModel *shape(const ITransmissionSymbolModel *symbolModel) const;
-};
+    stream << ", bit length = " << headerBitLength; // TODO
+}
 
 } // namespace physicallayer
 
 } // namespace inet
-
-#endif // ifndef __INET_PULSESHAPER_H

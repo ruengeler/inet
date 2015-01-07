@@ -19,7 +19,7 @@
 #define __INET_LAYEREDSNIR_H
 
 #include "inet/physicallayer/base/SNIRBase.h"
-#include "inet/physicallayer/layered/LayeredReception.h"
+#include "inet/physicallayer/common/layered/LayeredReception.h"
 #include "inet/physicallayer/analogmodel/ScalarNoise.h"
 
 namespace inet {

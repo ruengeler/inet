@@ -15,8 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/StubModulator.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/layered/StubModulator.h"
+#include "inet/physicallayer/common/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"

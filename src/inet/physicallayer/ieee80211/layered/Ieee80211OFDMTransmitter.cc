@@ -17,7 +17,7 @@
 
 #include "inet/mobility/contract/IMobility.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMTransmitter.h"
-#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMPLCPFrame_m.h"
 #include "inet/physicallayer/contract/layered/ISignalAnalogModel.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
@@ -28,7 +28,7 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMEncoderModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMModulator.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/common/layered/LayeredTransmission.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211PhySerializer.h"
 
 namespace inet {

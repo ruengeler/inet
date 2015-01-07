@@ -15,35 +15,23 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_DIGITALANALOGCONVERTER_H
-#define __INET_DIGITALANALOGCONVERTER_H
-
-#include "inet/physicallayer/contract/layered/IDigitalAnalogConverter.h"
-#include "inet/physicallayer/base/PhysicalLayerDefs.h"
-#include "inet/physicallayer/layered/SignalSampleModel.h"
-#include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/common/layered/PulseShaper.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API ScalarDigitalAnalogConverter : public IDigitalAnalogConverter
+PulseShaper::PulseShaper() :
+    samplePerSymbol(-1)
+{}
+
+const ITransmissionSampleModel *PulseShaper::shape(const ITransmissionSymbolModel *symbolModel) const
 {
-  protected:
-    W power;
-    // TODO: why carrierFrequency and bandwidth here? why not in the shaper
-    Hz carrierFrequency;
-    Hz bandwidth;
-    double sampleRate;
-
-  public:
-    ScalarDigitalAnalogConverter();
-
-    virtual const ITransmissionAnalogModel *convertDigitalToAnalog(const ITransmissionSampleModel *sampleModel) const;
-};
+    const int sampleLength = symbolModel->getSymbolLength() * samplePerSymbol;
+    const double sampleRate = symbolModel->getSymbolRate() * samplePerSymbol;
+    return new TransmissionSampleModel(sampleLength, sampleRate, NULL);
+}
 
 } // namespace physicallayer
 
 } // namespace inet
-
-#endif // ifndef __INET_DIGITALANALOGCONVERTER_H

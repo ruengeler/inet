@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/LayeredReceptionDecision.h"
+#include "inet/physicallayer/common/layered/LayeredReceptionDecision.h"
 
 namespace inet {
 namespace physicallayer {

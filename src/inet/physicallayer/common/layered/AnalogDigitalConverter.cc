@@ -15,21 +15,24 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/PulseShaper.h"
+#include "inet/physicallayer/common/layered/AnalogDigitalConverter.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-PulseShaper::PulseShaper() :
-    samplePerSymbol(-1)
+ScalarAnalogDigitalConverter::ScalarAnalogDigitalConverter() :
+    power(W(sNaN)),
+    carrierFrequency(Hz(sNaN)),
+    bandwidth(Hz(sNaN)),
+    sampleRate(sNaN)
 {}
 
-const ITransmissionSampleModel *PulseShaper::shape(const ITransmissionSymbolModel *symbolModel) const
+const IReceptionSampleModel *ScalarAnalogDigitalConverter::convertAnalogToDigital(const IReceptionAnalogModel *analogModel) const
 {
-    const int sampleLength = symbolModel->getSymbolLength() * samplePerSymbol;
-    const double sampleRate = symbolModel->getSymbolRate() * samplePerSymbol;
-    return new TransmissionSampleModel(sampleLength, sampleRate, NULL);
+    const simtime_t duration = analogModel->getDuration();
+    const int sampleLength = std::ceil(duration.dbl() / sampleRate);
+    return new ReceptionSampleModel(sampleLength, sampleRate, NULL, W(0));
 }
 
 } // namespace physicallayer

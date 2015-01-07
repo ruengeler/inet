@@ -15,15 +15,23 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/layered/DigitalAnalogConverter.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-void SignalSymbolModel::printToStream(std::ostream &stream) const
+ScalarDigitalAnalogConverter::ScalarDigitalAnalogConverter() :
+    power(W(sNaN)),
+    carrierFrequency(Hz(sNaN)),
+    bandwidth(Hz(sNaN)),
+    sampleRate(sNaN)
+{}
+
+const ITransmissionAnalogModel *ScalarDigitalAnalogConverter::convertDigitalToAnalog(const ITransmissionSampleModel *sampleModel) const
 {
-//    stream << modulation;
+    const simtime_t duration = sampleModel->getSampleLength() / sampleModel->getSampleRate();
+    return new ScalarTransmissionSignalAnalogModel(duration, power, carrierFrequency, bandwidth);
 }
 
 } // namespace physicallayer

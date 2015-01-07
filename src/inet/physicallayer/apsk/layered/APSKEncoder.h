@@ -23,8 +23,8 @@
 #include "inet/physicallayer/contract/layered/IFECCoder.h"
 #include "inet/physicallayer/contract/layered/IScrambler.h"
 #include "inet/physicallayer/contract/layered/IInterleaver.h"
-#include "inet/physicallayer/layered/SignalPacketModel.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
+#include "inet/physicallayer/common/layered/SignalBitModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/apsk/layered/APSKCode.h"
 

@@ -19,8 +19,8 @@
 #define __INET_APSKMODULATOR_H
 
 #include "inet/physicallayer/contract/layered/IModulator.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/layered/SignalBitModel.h"
+#include "inet/physicallayer/common/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 

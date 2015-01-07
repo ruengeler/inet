@@ -18,7 +18,7 @@
 #ifndef __INET_APSKLAYEREDRECEIVER_H
 #define __INET_APSKLAYEREDRECEIVER_H
 
-#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
 #include "inet/physicallayer/contract/IRadioMedium.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/base/SNIRReceiverBase.h"

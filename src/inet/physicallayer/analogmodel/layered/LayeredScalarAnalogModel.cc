@@ -22,7 +22,7 @@
 #include "inet/physicallayer/analogmodel/ScalarReception.h"
 #include "inet/physicallayer/analogmodel/ScalarNoise.h"
 #include "inet/physicallayer/analogmodel/layered/LayeredSNIR.h"
-#include "inet/physicallayer/layered/LayeredTransmission.h"
+#include "inet/physicallayer/common/layered/LayeredTransmission.h"
 
 namespace inet {
 

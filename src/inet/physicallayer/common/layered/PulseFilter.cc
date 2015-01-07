@@ -15,30 +15,23 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_PULSEFILTER_H
-#define __INET_PULSEFILTER_H
-
-#include "inet/physicallayer/contract/layered/IPulseFilter.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
-#include "inet/physicallayer/layered/SignalSampleModel.h"
+#include "inet/physicallayer/common/layered/PulseFilter.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API PulseFilter : public IPulseFilter
+PulseFilter::PulseFilter() :
+    samplePerSymbol(-1)
+{}
+
+const IReceptionSymbolModel *PulseFilter::filter(const IReceptionSampleModel *sampleModel) const
 {
-  protected:
-    const int samplePerSymbol;
-
-  public:
-    PulseFilter();
-
-    virtual const IReceptionSymbolModel *filter(const IReceptionSampleModel *sampleModel) const;
-};
+    const int symbolLength = sampleModel->getSampleLength() / samplePerSymbol;
+    const double symbolRate = sampleModel->getSampleRate() / samplePerSymbol;
+    return new ReceptionSymbolModel(symbolLength, symbolRate, NULL);
+}
 
 } // namespace physicallayer
 
 } // namespace inet
-
-#endif // ifndef __INET_PULSEFILTER_H

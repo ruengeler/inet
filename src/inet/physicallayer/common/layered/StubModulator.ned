@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-package inet.physicallayer.layered;
+package inet.physicallayer.common.layered;
 
 import inet.physicallayer.contract.layered.IModulator;
 

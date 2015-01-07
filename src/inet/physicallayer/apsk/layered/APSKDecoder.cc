@@ -16,7 +16,7 @@
 //
 
 #include "inet/physicallayer/apsk/layered/APSKDecoder.h"
-#include "inet/physicallayer/layered/SignalPacketModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
 
 namespace inet {
 

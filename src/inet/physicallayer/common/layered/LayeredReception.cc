@@ -15,22 +15,11 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/PulseFilter.h"
+#include "inet/physicallayer/common/layered/LayeredReception.h"
 
 namespace inet {
 
 namespace physicallayer {
-
-PulseFilter::PulseFilter() :
-    samplePerSymbol(-1)
-{}
-
-const IReceptionSymbolModel *PulseFilter::filter(const IReceptionSampleModel *sampleModel) const
-{
-    const int symbolLength = sampleModel->getSampleLength() / samplePerSymbol;
-    const double symbolRate = sampleModel->getSampleRate() / samplePerSymbol;
-    return new ReceptionSymbolModel(symbolLength, symbolRate, NULL);
-}
 
 } // namespace physicallayer
 

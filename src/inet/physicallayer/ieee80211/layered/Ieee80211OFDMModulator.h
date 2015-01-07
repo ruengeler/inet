@@ -19,8 +19,8 @@
 #define __INET_IEEE80211OFDMMODULATOR_H
 
 #include "inet/physicallayer/contract/layered/IModulator.h"
-#include "inet/physicallayer/layered/SignalBitModel.h"
-#include "inet/physicallayer/layered/SignalSymbolModel.h"
+#include "inet/physicallayer/common/layered/SignalBitModel.h"
+#include "inet/physicallayer/common/layered/SignalSymbolModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMSymbol.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"

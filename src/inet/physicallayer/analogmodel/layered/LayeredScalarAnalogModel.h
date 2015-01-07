@@ -20,7 +20,7 @@
 
 #include "inet/physicallayer/base/AnalogModelBase.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
-#include "inet/physicallayer/layered/LayeredReception.h"
+#include "inet/physicallayer/common/layered/LayeredReception.h"
 
 namespace inet {
 

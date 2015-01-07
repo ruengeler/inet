@@ -15,14 +15,15 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "inet/physicallayer/layered/SignalSampleModel.h"
+#include "inet/physicallayer/common/layered/SignalPacketModel.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-void SignalSampleModel::printToStream(std::ostream &stream) const
+void SignalPacketModel::printToStream(std::ostream &stream) const
 {
+    stream << packet;
 }
 
 } // namespace physicallayer
