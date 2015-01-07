@@ -19,4 +19,6 @@ package inet.physicallayer.contract.layered;
 
 moduleinterface ISerializer
 {
+    parameters:
+        @display("i=block/cogwheel");
 }

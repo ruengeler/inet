@@ -22,5 +22,6 @@ import inet.physicallayer.base.ErrorModelBase;
 module LayeredAPSKErrorModel extends ErrorModelBase
 {
     parameters:
+        @display("i=block/cogwheel");
         @class(LayeredAPSKErrorModel);
 }

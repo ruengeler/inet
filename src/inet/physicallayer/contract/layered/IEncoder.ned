@@ -19,4 +19,6 @@ package inet.physicallayer.contract.layered;
 
 moduleinterface IEncoder
 {
+    parameters:
+        @display("i=block/cogwheel");
 }

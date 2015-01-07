@@ -19,4 +19,6 @@ package inet.physicallayer.contract.layered;
 
 moduleinterface IScrambler
 {
+    parameters:
+        @display("i=block/cogwheel");
 }
