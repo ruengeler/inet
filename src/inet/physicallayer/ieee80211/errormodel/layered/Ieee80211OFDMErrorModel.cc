@@ -57,7 +57,7 @@ const IReceptionBitModel* Ieee80211OFDMErrorModel::computeBitModel(const Layered
     }
     else
         throw cRuntimeError("Unknown modulation");
-    return new const ReceptionBitModel(signalBitLength, dataBitLength, signalBitRate, dataBitRate, corruptedBits, modulation);
+    return new const ReceptionBitModel(signalBitLength, dataBitLength, signalBitRate, dataBitRate, corruptedBits);
 }
 
 const IReceptionSymbolModel* Ieee80211OFDMErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const

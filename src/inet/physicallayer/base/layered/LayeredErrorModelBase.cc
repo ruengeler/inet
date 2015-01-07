@@ -31,7 +31,7 @@ const IReceptionBitModel *LayeredErrorModelBase::computeBitModel(const LayeredTr
 {
     if (bitErrorRate == 0) {
         const TransmissionBitModel *transmissionBitModel = check_and_cast<const TransmissionBitModel *>(transmission->getBitModel());
-        return new const ReceptionBitModel(transmissionBitModel->getHeaderBitLength(), transmissionBitModel->getPayloadBitLength(), transmissionBitModel->getHeaderBitRate(), transmissionBitModel->getPayloadBitRate(), transmissionBitModel->getBits(), NULL);
+        return new const ReceptionBitModel(transmissionBitModel->getHeaderBitLength(), transmissionBitModel->getPayloadBitLength(), transmissionBitModel->getHeaderBitRate(), transmissionBitModel->getPayloadBitRate(), transmissionBitModel->getBits());
     }
     else
         throw cRuntimeError("Not yet implemented");

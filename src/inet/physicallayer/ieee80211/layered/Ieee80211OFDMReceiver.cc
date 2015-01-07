@@ -148,7 +148,7 @@ const IReceptionBitModel* Ieee80211OFDMReceiver::createSignalFieldReceptionBitMo
     const BitVector *bits = receptionBitModel->getBits();
     for (unsigned int i = 0; i < ENCODED_SIGNAL_FIELD_LENGTH; i++)
         headerBits->appendBit(bits->getBit(i));
-    return new ReceptionBitModel(ENCODED_SIGNAL_FIELD_LENGTH, -1, receptionBitModel->getHeaderBitRate(), -1, headerBits, receptionBitModel->getModulation());
+    return new ReceptionBitModel(ENCODED_SIGNAL_FIELD_LENGTH, -1, receptionBitModel->getHeaderBitRate(), -1, headerBits);
 }
 
 const IReceptionBitModel* Ieee80211OFDMReceiver::createDataFieldReceptionBitModel(const APSKModulationBase *demodulationScheme, const ConvolutionalCode *convCode, const IReceptionBitModel* receptionBitModel, const IReceptionPacketModel *signalFieldReceptionPacketModel) const
@@ -164,7 +164,7 @@ const IReceptionBitModel* Ieee80211OFDMReceiver::createDataFieldReceptionBitMode
     BitVector *dataBits = new BitVector();
     for (unsigned int i = 0; i < encodedDataFieldLengthInBits; i++)
         dataBits->appendBit(bits->getBit(ENCODED_SIGNAL_FIELD_LENGTH+i));
-    return new ReceptionBitModel(-1, encodedDataFieldLengthInBits, -1, receptionBitModel->getPayloadBitRate(), dataBits, receptionBitModel->getModulation());
+    return new ReceptionBitModel(-1, encodedDataFieldLengthInBits, -1, receptionBitModel->getPayloadBitRate(), dataBits);
 }
 
 const IReceptionPacketModel *Ieee80211OFDMReceiver::demodulateAndDecodeSignalField(const IRadioMedium *medium, const IRadio *receiver, const LayeredTransmission *transmission, const IReceptionSymbolModel *&receptionSymbolModel, const IReceptionBitModel *&receptionBitModel) const

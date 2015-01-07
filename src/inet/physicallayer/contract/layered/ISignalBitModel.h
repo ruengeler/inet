@@ -60,11 +60,6 @@ class INET_API ITransmissionBitModel : public virtual ISignalBitModel
 
 class INET_API IReceptionBitModel : public virtual ISignalBitModel
 {
-  public:
-    /*
-     * Returns the modulation type used by the actual demodulator.
-     */
-    virtual const IModulation *getModulation() const = 0;
 };
 
 } // namespace physicallayer

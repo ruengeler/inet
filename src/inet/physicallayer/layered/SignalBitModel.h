@@ -91,21 +91,14 @@ class INET_API TransmissionBitModel : public SignalBitModel, public virtual ITra
 
 class INET_API ReceptionBitModel : public SignalBitModel, public virtual IReceptionBitModel
 {
-  protected:
-    const IModulation *modulation;
-
   public:
     ReceptionBitModel() :
-        SignalBitModel(),
-        modulation(NULL)
+        SignalBitModel()
     {}
 
-    ReceptionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits, const IModulation *modulation) :
-        SignalBitModel(headerBitLength, payloadBitLength, headerBitRate, payloadBitRate, bits),
-        modulation(modulation)
+    ReceptionBitModel(int headerBitLength, int payloadBitLength, double headerBitRate, double payloadBitRate, const BitVector *bits) :
+        SignalBitModel(headerBitLength, payloadBitLength, headerBitRate, payloadBitRate, bits)
     {}
-
-    const IModulation *getModulation() const { return modulation; }
 };
 
 } // namespace physicallayer
