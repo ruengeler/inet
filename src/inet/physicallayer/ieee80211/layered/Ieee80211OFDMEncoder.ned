@@ -17,11 +17,10 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.contract.IEncoder;
-import inet.physicallayer.contract.IFECCoder;
-import inet.physicallayer.contract.IInterleaver;
-import inet.physicallayer.contract.IScrambler;
-
+import inet.physicallayer.contract.layered.IEncoder;
+import inet.physicallayer.contract.layered.IFECCoder;
+import inet.physicallayer.contract.layered.IInterleaver;
+import inet.physicallayer.contract.layered.IScrambler;
 
 module Ieee80211OFDMEncoder like IEncoder
 {

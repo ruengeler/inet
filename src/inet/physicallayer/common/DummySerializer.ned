@@ -17,7 +17,7 @@
 
 package inet.physicallayer.common;
 
-import inet.physicallayer.contract.ISerializer;
+import inet.physicallayer.contract.layered.ISerializer;
 
 simple DummySerializer like ISerializer
 {

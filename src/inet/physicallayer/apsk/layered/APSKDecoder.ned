@@ -17,10 +17,10 @@
 
 package inet.physicallayer.apsk.layered;
 
-import inet.physicallayer.contract.IDecoder;
-import inet.physicallayer.contract.IFECCoder;
-import inet.physicallayer.contract.IInterleaver;
-import inet.physicallayer.contract.IScrambler;
+import inet.physicallayer.contract.layered.IDecoder;
+import inet.physicallayer.contract.layered.IFECCoder;
+import inet.physicallayer.contract.layered.IInterleaver;
+import inet.physicallayer.contract.layered.IScrambler;
 
 module APSKDecoder like IDecoder
 {

@@ -15,14 +15,8 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-package inet.physicallayer.ieee80211.layered;
+package inet.physicallayer.contract.layered;
 
-import inet.physicallayer.contract.layered.IInterleaver;
-
-module Ieee80211Interleaver like IInterleaver
+moduleinterface IInterleaver
 {
-    parameters:
-        int numberOfCodedBitsPerSymbol;
-        int numberOfCodedBitsPerSubcarrier;
-        @class("Ieee80211InterleaverModule");
 }

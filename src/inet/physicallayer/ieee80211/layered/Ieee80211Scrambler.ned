@@ -17,7 +17,7 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.contract.IScrambler;
+import inet.physicallayer.contract.layered.IScrambler;
 
 // Scrambler module converts an input string into a seemingly random
 // output string of the same length.

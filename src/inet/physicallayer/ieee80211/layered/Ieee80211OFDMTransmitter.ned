@@ -17,12 +17,11 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.contract.IDigitalAnalogConverter;
-import inet.physicallayer.contract.IEncoder;
-import inet.physicallayer.contract.IModulator;
-import inet.physicallayer.contract.IPulseShaper;
 import inet.physicallayer.contract.ITransmitter;
-
+import inet.physicallayer.contract.layered.IDigitalAnalogConverter;
+import inet.physicallayer.contract.layered.IEncoder;
+import inet.physicallayer.contract.layered.IModulator;
+import inet.physicallayer.contract.layered.IPulseShaper;
 
 module Ieee80211OFDMTransmitter like ITransmitter
 {

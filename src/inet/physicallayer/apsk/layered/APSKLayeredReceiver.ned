@@ -17,12 +17,12 @@
 
 package inet.physicallayer.apsk.layered;
 
-import inet.physicallayer.contract.IAnalogDigitalConverter;
-import inet.physicallayer.contract.IDecoder;
-import inet.physicallayer.contract.IDemodulator;
-import inet.physicallayer.contract.IErrorModel;
-import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
+import inet.physicallayer.contract.layered.IAnalogDigitalConverter;
+import inet.physicallayer.contract.layered.IDecoder;
+import inet.physicallayer.contract.layered.IDemodulator;
+import inet.physicallayer.contract.layered.ILayeredErrorModel;
+import inet.physicallayer.contract.layered.IPulseFilter;
 
 module APSKLayeredReceiver like IReceiver
 {
@@ -53,7 +53,7 @@ module APSKLayeredReceiver like IReceiver
         analogDigitalConverter: <analogDigitalConverterType> like IAnalogDigitalConverter if analogDigitalConverterType != "" {
             @display("p=100,350");
         }
-        errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
+        errorModel: <errorModelType> like ILayeredErrorModel if errorModelType != "" {
             @display("p=100,450");
         }
 }

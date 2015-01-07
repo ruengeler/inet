@@ -17,7 +17,7 @@
 
 package inet.physicallayer.apsk.layered;
 
-import inet.physicallayer.contract.IDemodulator;
+import inet.physicallayer.contract.layered.IDemodulator;
 
 simple APSKDemodulator like IDemodulator
 {

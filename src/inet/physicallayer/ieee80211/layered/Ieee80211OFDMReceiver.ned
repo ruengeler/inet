@@ -17,14 +17,12 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.contract.IAnalogDigitalConverter;
-import inet.physicallayer.contract.IDecoder;
-import inet.physicallayer.contract.IDemodulator;
-import inet.physicallayer.contract.IErrorModel;
-import inet.physicallayer.contract.IPulseFilter;
 import inet.physicallayer.contract.IReceiver;
-import inet.physicallayer.contract.ISerializer;
-
+import inet.physicallayer.contract.layered.IAnalogDigitalConverter;
+import inet.physicallayer.contract.layered.IDecoder;
+import inet.physicallayer.contract.layered.IDemodulator;
+import inet.physicallayer.contract.layered.ILayeredErrorModel;
+import inet.physicallayer.contract.layered.IPulseFilter;
 
 module Ieee80211OFDMReceiver like IReceiver
 {
@@ -47,7 +45,7 @@ module Ieee80211OFDMReceiver like IReceiver
         @class(Ieee80211OFDMReceiver);
 
     submodules:
-        errorModel: <errorModelType> like IErrorModel if errorModelType != "" {
+        errorModel: <errorModelType> like ILayeredErrorModel if errorModelType != "" {
             @display("p=240,350");
         }
         decoder: <decoderType> like IDecoder if decoderType != "" {

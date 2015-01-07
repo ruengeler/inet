@@ -17,8 +17,7 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.contract.IModulator;
-
+import inet.physicallayer.contract.layered.IModulator;
 
 simple Ieee80211OFDMModulator like IModulator
 {

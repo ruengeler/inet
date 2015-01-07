@@ -17,8 +17,7 @@
 
 package inet.physicallayer.ieee80211.layered;
 
-import inet.physicallayer.contract.IDemodulator;
-
+import inet.physicallayer.contract.layered.IDemodulator;
 
 simple Ieee80211OFDMDemodulator like IDemodulator
 {

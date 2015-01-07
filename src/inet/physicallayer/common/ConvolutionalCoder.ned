@@ -17,8 +17,7 @@
 
 package inet.physicallayer.common;
 
-import inet.physicallayer.contract.IFECCoder;
-
+import inet.physicallayer.contract.layered.IFECCoder;
 
 // Transfer function (octal) matrix
 // ================================

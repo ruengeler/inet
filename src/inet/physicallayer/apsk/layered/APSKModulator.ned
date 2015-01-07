@@ -17,7 +17,7 @@
 
 package inet.physicallayer.apsk.layered;
 
-import inet.physicallayer.contract.IModulator;
+import inet.physicallayer.contract.layered.IModulator;
 
 simple APSKModulator like IModulator
 {

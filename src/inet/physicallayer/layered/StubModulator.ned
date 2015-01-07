@@ -17,7 +17,7 @@
 
 package inet.physicallayer.layered;
 
-import inet.physicallayer.contract.IModulator;
+import inet.physicallayer.contract.layered.IModulator;
 
 //
 // This module, in fact, doesn't modulate its input. It creates
