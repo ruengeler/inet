@@ -22,7 +22,7 @@
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/contract/IAPSKModulation.h"
-#include "inet/physicallayer/common/DummySerializer.h"
+#include "inet/physicallayer/common/layered/DummySerializer.h"
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDefs.h"
 

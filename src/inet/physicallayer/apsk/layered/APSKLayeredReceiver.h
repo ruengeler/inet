@@ -22,7 +22,7 @@
 #include "inet/physicallayer/contract/IRadioMedium.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/base/SNIRReceiverBase.h"
-#include "inet/physicallayer/common/ConvolutionalCode.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCode.h"
 #include "inet/physicallayer/contract/layered/IDecoder.h"
 #include "inet/physicallayer/contract/layered/IDemodulator.h"
 #include "inet/physicallayer/contract/layered/IPulseFilter.h"

@@ -18,7 +18,7 @@
 #ifndef __INET_IEEE80211BITDOMAINTEST_H_
 #define __INET_IEEE80211BITDOMAINTEST_H_
 
-#include "inet/physicallayer/common/ConvolutionalCoderModule.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCoderModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211InterleaverModule.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ScramblerModule.h"
 #include "inet/common/INETDefs.h"

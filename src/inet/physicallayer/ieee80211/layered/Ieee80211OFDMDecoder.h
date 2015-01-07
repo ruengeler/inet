@@ -22,7 +22,7 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
-#include "inet/physicallayer/common/ConvolutionalCoder.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCoder.h"
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMCode.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"

@@ -16,7 +16,7 @@
 //
 
 #include "Ieee80211OFDMDecoderModule.h"
-#include "inet/physicallayer/common/DummySerializer.h"
+#include "inet/physicallayer/common/layered/DummySerializer.h"
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 #include "inet/physicallayer/modulation/QAM16Modulation.h"

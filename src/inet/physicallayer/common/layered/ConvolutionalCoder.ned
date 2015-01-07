@@ -15,7 +15,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-package inet.physicallayer.common;
+package inet.physicallayer.common.layered;
 
 import inet.physicallayer.contract.layered.IFECCoder;
 
@@ -73,5 +73,6 @@ module ConvolutionalCoder like IFECCoder
         int punctureK = default(1);
         int punctureN = default(2);
         string constraintLengthVector = default("7");
+        @display("i=block/cogwheel");
         @class(ConvolutionalCoderModule);
 }

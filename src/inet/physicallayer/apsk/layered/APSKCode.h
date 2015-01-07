@@ -20,7 +20,7 @@
 
 #include "inet/physicallayer/contract/layered/IScrambler.h"
 #include "inet/physicallayer/contract/layered/IInterleaver.h"
-#include "inet/physicallayer/common/ConvolutionalCode.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCode.h"
 
 namespace inet {
 

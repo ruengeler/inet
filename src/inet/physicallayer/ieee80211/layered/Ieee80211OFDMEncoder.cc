@@ -25,7 +25,7 @@
 #include "inet/physicallayer/ieee80211/Ieee80211OFDMModulation.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambler.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaver.h"
-#include "inet/physicallayer/common/ConvolutionalCoder.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCoder.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211OFDMDefs.h"
 
 namespace inet {

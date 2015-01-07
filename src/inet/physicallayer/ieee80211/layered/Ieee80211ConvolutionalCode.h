@@ -18,8 +18,8 @@
 #ifndef __INET_IEEE80211CONVOLUTIONALCODE_H
 #define __INET_IEEE80211CONVOLUTIONALCODE_H
 
-#include "inet/physicallayer/common/ConvolutionalCoder.h"
-#include "inet/physicallayer/common/ConvolutionalCode.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCoder.h"
+#include "inet/physicallayer/common/layered/ConvolutionalCode.h"
 
 namespace inet {
 namespace physicallayer {
