@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 #ifndef __INET_ILAYEREDERRORMODEL_H
 #define __INET_ILAYEREDERRORMODEL_H
@@ -23,6 +23,7 @@
 #include "inet/physicallayer/contract/ISNIR.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API ILayeredErrorModel : public IPrintableObject
@@ -34,7 +35,7 @@ class INET_API ILayeredErrorModel : public IPrintableObject
     virtual const IReceptionSampleModel *computeSampleModel(const LayeredTransmission *transmission, const ISNIR *snir) const = 0;
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+} // namespace inet
 
-#endif /* __INET_ILAYEREDERRORMODEL_H */
+#endif // ifndef __INET_ILAYEREDERRORMODEL_H

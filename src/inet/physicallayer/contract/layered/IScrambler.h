@@ -15,13 +15,14 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_ISCRAMBLER_H_
-#define __INET_ISCRAMBLER_H_
+#ifndef __INET_ISCRAMBLER_H
+#define __INET_ISCRAMBLER_H
 
 #include "inet/physicallayer/contract/IPrintableObject.h"
 #include "inet/common/BitVector.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API IScrambling : public IPrintableObject
@@ -40,7 +41,9 @@ class INET_API IScrambler
         virtual ~IScrambler() {};
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_ISCRAMBLER_H_ */
+} // namespace inet
+
+#endif // ifndef __INET_ISCRAMBLER_H
+

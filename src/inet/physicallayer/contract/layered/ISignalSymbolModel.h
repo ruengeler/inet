@@ -23,6 +23,7 @@
 #include "inet/physicallayer/contract/IModulation.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 /**

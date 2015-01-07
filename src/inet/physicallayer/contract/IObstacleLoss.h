@@ -25,7 +25,6 @@ namespace inet {
 
 namespace physicallayer {
 
-// TODO: merge with path loss?
 class INET_API IObstacleLoss : public IPrintableObject
 {
   public:
