@@ -263,18 +263,24 @@ void Ieee8021dRelay::stop()
 
 InterfaceEntry *Ieee8021dRelay::chooseInterface()
 {
-    // TODO: Currently, we assume that the first non-loopback interface is an Ethernet interface
+    // TODO: Currently, we assume that the first ethg interface is an Ethernet interface
     //       since relays work on EtherSwitches.
-    //       NOTE that, we don't check if the returning interface is an Ethernet interface!
-    IInterfaceTable *ift = check_and_cast<IInterfaceTable *>(getModuleByPath(par("interfaceTablePath")));
+    cModule *node = getContainingNode(this);
+    int gateId = node->findGate("ethg$o", 0);
+    if (gateId == -1)
+        return nullptr;
+    InterfaceEntry *gateIfEntry = ifTable->getInterfaceByNodeOutputGateId(gateId);
 
-    for (int i = 0; i < ift->getNumInterfaces(); i++) {
-        InterfaceEntry *current = ift->getInterface(i);
+    return gateIfEntry;
+#if 0
+    for (int i = 0; i < ifTable->getNumInterfaces(); i++) {
+        InterfaceEntry *current = ifTable->getInterface(i);
         if (!current->isLoopback())
             return current;
     }
 
     return nullptr;
+#endif
 }
 
 void Ieee8021dRelay::finish()
