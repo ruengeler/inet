@@ -26,7 +26,7 @@
 #include "inet/physicallayer/layered/SignalPacketModel.h"
 #include "inet/physicallayer/layered/SignalBitModel.h"
 #include "inet/physicallayer/base/APSKModulationBase.h"
-#include "inet/physicallayer/apsk/APSKCode.h"
+#include "inet/physicallayer/apsk/layered/APSKCode.h"
 
 namespace inet {
 

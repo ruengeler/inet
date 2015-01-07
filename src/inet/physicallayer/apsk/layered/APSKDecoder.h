@@ -19,7 +19,7 @@
 #define __INET_APSKDECODER_H
 
 #include "inet/physicallayer/contract/layered/IDecoder.h"
-#include "inet/physicallayer/apsk/APSKCode.h"
+#include "inet/physicallayer/apsk/layered/APSKCode.h"
 
 namespace inet {
 
