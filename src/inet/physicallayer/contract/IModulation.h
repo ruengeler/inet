@@ -18,20 +18,21 @@
 #ifndef __INET_IMODULATION_H
 #define __INET_IMODULATION_H
 
-#include "inet/common/INETDefs.h"
+#include "inet/physicallayer/contract/IPrintableObject.h"
 
 namespace inet {
+
 namespace physicallayer {
 
-class INET_API IModulation
+class INET_API IModulation : public IPrintableObject
 {
     public:
-        virtual ~IModulation() {}
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
         virtual double calculateSER(double snir) const = 0;
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_IMODULATION_H */
+} // namespace inet
+
+#endif // ifndef __INET_IMODULATION_H

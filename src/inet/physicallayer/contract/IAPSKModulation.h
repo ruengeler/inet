@@ -15,27 +15,25 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_IAPSKMODULATION_H_
-#define __INET_IAPSKMODULATION_H_
+#ifndef __INET_IAPSKMODULATION_H
+#define __INET_IAPSKMODULATION_H
 
-#include "inet/physicallayer/contract/IPrintableObject.h"
 #include "inet/physicallayer/contract/IModulation.h"
 
 namespace inet {
+
 namespace physicallayer {
 
-class INET_API IAPSKModulation : public IPrintableObject, public IModulation
+class INET_API IAPSKModulation : public IModulation
 {
-    public:
-        virtual void printToStream(std::ostream &stream) const = 0;
-        virtual int getCodeWordLength() const = 0;
-        virtual int getConstellationSize() const = 0;
-        virtual double getNormalizationFactor() const = 0;
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
-        virtual double calculateSER(double snir) const = 0;
+  public:
+    virtual int getCodeWordLength() const = 0;
+    virtual int getConstellationSize() const = 0;
+    virtual double getNormalizationFactor() const = 0;
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_IAPSKMODULATION_H_ */
+} // namespace inet
+
+#endif // ifndef __INET_IAPSKMODULATION_H

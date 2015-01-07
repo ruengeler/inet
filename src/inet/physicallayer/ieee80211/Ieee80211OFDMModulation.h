@@ -48,6 +48,7 @@ class INET_API Ieee80211OFDMModulation : public IModulation
         simtime_t computeGuardInterval(Hz channelSpacing) const;
 
     public:
+        virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMModulation"; }
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const { return modulationScheme->calculateBER(snir, bandwidth, bitrate); }
         virtual double calculateSER(double snir) const { return modulationScheme->calculateSER(snir); }
         virtual Hz getChannelSpacing() const { return channelSpacing; }
