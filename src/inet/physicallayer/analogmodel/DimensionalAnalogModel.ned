@@ -24,5 +24,6 @@ module DimensionalAnalogModel like IAnalogModel
     parameters:
         bool attenuateWithCarrierFrequency = default(true);
         string interpolationMode @enum("linear", "sample-hold") = default("sample-hold");
+        @display("i=block/cogwheel");
         @class(DimensionalAnalogModel);
 }
