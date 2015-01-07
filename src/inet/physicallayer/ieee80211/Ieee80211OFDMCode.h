@@ -25,14 +25,13 @@
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Scrambling.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211Interleaving.h"
 #include "inet/physicallayer/ieee80211/layered/Ieee80211ConvolutionalCode.h"
-#include "inet/physicallayer/contract/layered/IIeee80211Code.h"
 
 namespace inet {
 namespace physicallayer {
 
 using namespace units::values;
 
-class INET_API Ieee80211OFDMCode : public IIeee80211Code
+class INET_API Ieee80211OFDMCode
 {
     protected:
         Hz channelSpacing;
