@@ -18,6 +18,7 @@
 #include "inet/physicallayer/modulation/QPSKModulation.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 const double QPSKModulation::kMOD = 1 / sqrt(2);
@@ -30,14 +31,18 @@ QPSKModulation::QPSKModulation() : APSKModulationBase(encodingTable, 2, 4, kMOD)
 
 double QPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
-    throw cRuntimeError("Unimplemented");
+    // TODO:
+    throw cRuntimeError("Unimplemented.");
 }
 
 double QPSKModulation::calculateSER(double snir) const
 {
+    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(4)) * c - (1 - 2.0 / sqrt(4) + 1.0 / 4) * c * c;
+    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
 }
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+
+} // namespace inet
+

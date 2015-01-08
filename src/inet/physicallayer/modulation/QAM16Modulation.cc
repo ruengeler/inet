@@ -18,10 +18,10 @@
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 
 namespace inet {
+
 namespace physicallayer {
 
-const double QAM16Modulation::kMOD = 1/sqrt(10);
-const int QAM16Modulation::m = 16;
+const double QAM16Modulation::kMOD = 1 / sqrt(10);
 const APSKSymbol QAM16Modulation::encodingTable[] = {kMOD * APSKSymbol(-3, -3), kMOD * APSKSymbol(3, -3), kMOD * APSKSymbol(-1, -3),
                                                      kMOD * APSKSymbol(1, -3), kMOD * APSKSymbol(-3, 3), kMOD * APSKSymbol(3, 3),
                                                      kMOD * APSKSymbol(-1, 3), kMOD * APSKSymbol(1, 3), kMOD * APSKSymbol(-3, -1),
@@ -30,9 +30,9 @@ const APSKSymbol QAM16Modulation::encodingTable[] = {kMOD * APSKSymbol(-3, -3), 
                                                      kMOD * APSKSymbol(1, 1)};
 
 const QAM16Modulation QAM16Modulation::singleton;
-QAM16Modulation::QAM16Modulation() : APSKModulationBase(encodingTable, 4,16, kMOD)
-{
 
+QAM16Modulation::QAM16Modulation() : APSKModulationBase(encodingTable, 4, 16, kMOD)
+{
 }
 
 double QAM16Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
@@ -42,10 +42,12 @@ double QAM16Modulation::calculateBER(double snir, double bandwidth, double bitra
 
 double QAM16Modulation::calculateSER(double snir) const
 {
-    // TODO: revise
+    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(m)) * c - (1 - 2.0 / sqrt(m) + 1.0 / m) * c * c;
+    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
 }
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+
+} // namespace inet
+

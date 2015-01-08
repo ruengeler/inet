@@ -17,8 +17,8 @@
 
 #include "inet/physicallayer/modulation/BPSKModulation.h"
 
-
 namespace inet {
+
 namespace physicallayer {
 
 const double BPSKModulation::kMOD = 1;
@@ -31,15 +31,18 @@ BPSKModulation::BPSKModulation() : APSKModulationBase(encodingTable, 1, 2, kMOD)
 
 double BPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
+    // TODO: review 1/2*erfc(sqrt(snir))? according to http://www.dsplog.com/2007/08/05/bit-error-probability-for-bpsk-modulation/
     return 0.5 * exp(-snir * bandwidth / bitrate);
 }
 
 double BPSKModulation::calculateSER(double snir) const
 {
-    // TODO: revise
+    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
     double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(2)) * c - (1 - 2.0 / sqrt(2) + 1.0 / 2) * c * c;
+    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
 }
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+
+} // namespace inet
+

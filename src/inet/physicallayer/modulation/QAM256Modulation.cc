@@ -18,12 +18,10 @@
 #include "inet/physicallayer/modulation/QAM256Modulation.h"
 
 namespace inet {
+
 namespace physicallayer {
 
-// TODO: fill in
-const double QAM256Modulation::kMOD = NaN;
-const int QAM256Modulation::m = 256;
-
+const double QAM256Modulation::kMOD = 1 / sqrt(170);
 // TODO: fill in
 const APSKSymbol QAM256Modulation::encodingTable[] = {};
 const QAM256Modulation QAM256Modulation::singleton;
@@ -39,8 +37,12 @@ double QAM256Modulation::calculateBER(double snir, double bandwidth, double bitr
 
 double QAM256Modulation::calculateSER(double snir) const
 {
-    throw cRuntimeError("Unimplemented.");
+    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
+    double c = erfc(kMOD * sqrt(snir));
+    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
 }
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
+
+} // namespace inet
+

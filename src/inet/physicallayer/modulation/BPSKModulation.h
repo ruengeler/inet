@@ -21,6 +21,7 @@
 #include "inet/physicallayer/base/APSKModulationBase.h"
 
 namespace inet {
+
 namespace physicallayer {
 
 class INET_API BPSKModulation : public APSKModulationBase
@@ -38,7 +39,9 @@ class INET_API BPSKModulation : public APSKModulationBase
         double calculateSER(double snir) const;
 };
 
-} /* namespace physicallayer */
-} /* namespace inet */
+} // namespace physicallayer
 
-#endif /* __INET_BPSKMODULATION_H */
+} // namespace inet
+
+#endif // ifndef __INET_BPSKMODULATION_H
+
