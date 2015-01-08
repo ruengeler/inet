@@ -31,5 +31,6 @@ module InterpolatingAntenna like IAntenna
         string headingGains = default("0 0");   // sequence of angle [degree] and gain [dB] pairs
         string elevationGains = default("0 0"); // sequence of angle [degree] and gain [dB] pairs
         string bankGains = default("0 0");      // sequence of angle [degree] and gain [dB] pairs
+        @display("i=device/antennatower");
         @class(InterpolatingAntenna);
 }

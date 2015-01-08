@@ -23,4 +23,5 @@ simple APSKModulator like IModulator
 {
     parameters:
         string modulation; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
+        @display("i=block/cogwheel");
 }

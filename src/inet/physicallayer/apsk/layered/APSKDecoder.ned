@@ -28,6 +28,7 @@ module APSKDecoder like IDecoder
         string deinterleaverType = default("");
         string fecType = default("");
         string descramblerType = default("");
+        @display("i=block/cogwheel");
         @class(APSKDecoder);
 
     submodules:

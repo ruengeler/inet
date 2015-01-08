@@ -23,4 +23,5 @@ simple APSKDemodulator like IDemodulator
 {
     parameters:
         string modulation; // BPSK, QPSK, QAM-16, QAM-64, QAM-256
+        @display("i=block/cogwheel");
 }

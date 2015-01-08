@@ -35,6 +35,7 @@ module APSKLayeredTransmitter like ITransmitter
         double power @unit(W);
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
+        @display("i=block/wtx");
         @class(APSKLayeredTransmitter);
 
     submodules:

@@ -22,5 +22,6 @@ import inet.physicallayer.contract.IAntenna;
 module IsotropicAntenna like IAntenna
 {
     parameters:
+        @display("i=device/antennatower");
         @class(IsotropicAntenna);
 }

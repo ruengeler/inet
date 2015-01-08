@@ -23,5 +23,6 @@ module ConstantGainAntenna like IAntenna
 {
     parameters:
         double gain @unit(dB); // antenna gain in any direction
+        @display("i=device/antennatower");
         @class(ConstantGainAntenna);
 }

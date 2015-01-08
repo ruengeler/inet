@@ -23,5 +23,6 @@ module DipoleAntenna like IAntenna
 {
     parameters:
         double length @unit(m); // the length of the dipole antenna
+        @display("i=device/antennatower");
         @class(DipoleAntenna);
 }

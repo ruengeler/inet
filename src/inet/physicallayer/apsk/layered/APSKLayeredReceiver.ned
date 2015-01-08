@@ -38,6 +38,7 @@ module APSKLayeredReceiver like IReceiver
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
         double snirThreshold @unit(dB);
+        @display("i=block/wrx");
         @class(APSKLayeredReceiver);
 
     submodules:

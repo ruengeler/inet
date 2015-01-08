@@ -28,6 +28,7 @@ module APSKEncoder like IEncoder
         string scramblerType = default("");
         string fecType = default("");
         string interleaverType = default("");
+        @display("i=block/cogwheel");
         @class(APSKEncoder);
 
     submodules:
