@@ -35,6 +35,7 @@
 #include "inet/physicallayer/analogmodel/ScalarAnalogModel.h"
 #include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
+#include "inet/common/serializer/headerserializers/EthernetCRC.h"
 
 namespace inet {
 
@@ -96,14 +97,31 @@ APSKRadioFrame *APSKLayeredReceiver::deserialize(const BitVector *bits) const
 {
     Ieee80211Serializer deserializer;
     const std::vector<uint8>& bytes = bits->getFields();
-    unsigned int macFrameLength = bytes[0] * 256 + bytes[1];
+    uint16_t macFrameLength = (bytes[0] << 8) + bytes[1];
+    uint32_t crc = (bytes[2] << 24) + (bytes[3] << 16) + (bytes[4] << 8) + bytes[5];
     unsigned char *buffer = new unsigned char[macFrameLength];
     for (unsigned int i = 0; i < macFrameLength; i++)
-        buffer[i] = bytes[i + 2];
-    cPacket *macFrame = deserializer.parse(buffer, macFrameLength);
-    delete [] buffer;
+        buffer[i] = bytes[i + 6];
+    uint32_t computedCrc = ethernetCRC(buffer, macFrameLength / 2); // KLUDGE: remove the / 2
+    cPacket *macFrame = nullptr;
     APSKRadioFrame *radioFrame = new APSKRadioFrame();
-    radioFrame->setByteLength(2);
+    if (crc != computedCrc) {
+        EV_DEBUG << "CRC check failed" << endl;
+        macFrame = new cPacket();
+        radioFrame->setBitError(true);
+    }
+    else {
+        try {
+            macFrame = deserializer.parse(buffer, macFrameLength);
+        }
+        catch (cRuntimeError& e) {
+            EV_ERROR << "Deserializing packet failed" << endl;
+            macFrame = new cPacket();
+            radioFrame->setBitError(true);
+        }
+    }
+    delete [] buffer;
+    radioFrame->setByteLength(6);
     radioFrame->encapsulate(macFrame);
     return radioFrame;
 }

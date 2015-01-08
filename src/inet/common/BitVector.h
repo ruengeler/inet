@@ -46,6 +46,7 @@ class INET_API BitVector
         void toggleBit(int pos);
         bool getBit(int pos) const;
         bool isUndef() const { return undef; }
+        void appendByte(uint8_t value);
         unsigned int getSize() const { return size; }
         unsigned int getNumOfFields() const { return fields.size(); }
         const std::vector<uint8>& getFields() const { return fields; }

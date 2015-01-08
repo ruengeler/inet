@@ -24,6 +24,7 @@
 #include "inet/physicallayer/apsk/layered/APSKModulator.h"
 #include "inet/physicallayer/common/layered/LayeredTransmission.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
+#include "inet/common/serializer/headerserializers/EthernetCRC.h"
 
 namespace inet {
 
@@ -94,16 +95,21 @@ const ITransmissionAnalogModel* APSKLayeredTransmitter::createAnalogModel(const 
 BitVector *APSKLayeredTransmitter::serialize(const APSKRadioFrame *radioFrame) const
 {
     Ieee80211Frame *macFrame = check_and_cast<Ieee80211Frame*>(radioFrame->getEncapsulatedPacket());
-    int macFrameLength = macFrame->getByteLength();
-    BitVector *bits = new BitVector(macFrameLength, 16);
+    uint16_t macFrameLength = macFrame->getByteLength();
+    BitVector *bits = new BitVector();
+    bits->appendByte(macFrameLength >> 8);
+    bits->appendByte(macFrameLength >> 0);
     Ieee80211Serializer ieee80211Serializer;
-    unsigned char *buffer = new unsigned char[macFrameLength];
-    unsigned int numOfWrittenBytes = ieee80211Serializer.serialize(macFrame, buffer, macFrameLength);
-    for (unsigned int i = 0; i < numOfWrittenBytes; i++) {
-        unsigned int byte = buffer[i];
-        for (unsigned int j = 0; j < 8; j++)
-            bits->appendBit(byte & (1 << j));
-    }
+    unsigned char *buffer = new unsigned char[macFrameLength + 10000]; // KLUDGE: serializer vs macFrameLength sux
+    unsigned int serializedLength = ieee80211Serializer.serialize(macFrame, buffer, macFrameLength);
+    // TODO: ASSERT(serializedLength == macFrameLength);
+    uint32_t crc = ethernetCRC(buffer, macFrameLength / 2); // KLUDGE: remove the / 2
+    bits->appendByte(crc >> 24);
+    bits->appendByte(crc >> 16);
+    bits->appendByte(crc >> 8);
+    bits->appendByte(crc >> 0);
+    for (unsigned int i = 0; i < serializedLength; i++)
+        bits->appendByte(buffer[i]);
     delete [] buffer;
     return bits;
 }

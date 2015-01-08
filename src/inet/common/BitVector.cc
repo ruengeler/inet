@@ -95,6 +95,12 @@ void BitVector::appendBit(bool value, int n)
         appendBit(value);
 }
 
+void BitVector::appendByte(uint8_t value)
+{
+    for (unsigned int i = 0; i < 8; i++)
+        appendBit(value & (1 << i));
+}
+
 std::string BitVector::toString() const
 {
     if (undef)
