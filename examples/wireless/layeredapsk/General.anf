@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/inet/examples/wireless/layeredapsk/results/General-*.vec"/>
+    <inputs name="/inet/examples/wireless/layeredapsk/results/General-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Packet loss">
+      <items xsi:type="scave:Add" filterPattern="symbolErrorRate"/>
+      <items xsi:type="scave:Add" filterPattern="&quot;ping loss rate (%)&quot;"/>
+      <items xsi:type="scave:ScatterChart" name="Packet loss vs symbol error rate" xDataPattern="module(.) AND name(symbolErrorRate)">
+        <filters xsi:type="scave:Select" filterPattern="symbolErrorRate OR &quot;ping loss rate (%)&quot;"/>
+        <properties name="X.Axis.Title" value="Symbol error rate [probability]"/>
+        <properties name="Y.Axis.Title" value="Packet loss [%]"/>
+        <isoDataPattern>fecType(*)</isoDataPattern>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2"/>
+  </chartSheets>
+</scave:Analysis>
