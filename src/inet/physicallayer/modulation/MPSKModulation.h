@@ -24,12 +24,20 @@ namespace inet {
 
 namespace physicallayer {
 
+/**
+ * This modulation implements parameterized phase-shift keying that arranges
+ * symbols evenly on a circle.
+ */
 class INET_API MPSKModulation : public APSKModulationBase
 {
     public:
-        MPSKModulation(int codeWordLength);
-        double calculateBER(double snir, double bandwidth, double bitrate) const;
-        double calculateSER(double snir) const;
+        MPSKModulation(unsigned int codeWordSize);
+        virtual ~MPSKModulation();
+
+        virtual void printToStream(std::ostream &stream) const;
+
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
+        virtual double calculateSER(double snir) const;
 };
 
 } // namespace physicallayer

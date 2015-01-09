@@ -69,17 +69,17 @@ const IReceptionSymbolModel* Ieee80211OFDMErrorModel::computeSymbolModel(const L
     unsigned int signalFieldConstellationSize = BPSKModulation::singleton.getConstellationSize();
     double headerSER = BPSKModulation::singleton.calculateSER(snir->getMin());
     double dataSER = dataModulation->calculateSER(snir->getMin());
-    const APSKSymbol *constellationDiagramForDataField = dataModulation->getEncodingTable();
-    const APSKSymbol *constellationDiagramForSignalField = BPSKModulation::singleton.getEncodingTable();
+    const std::vector<APSKSymbol> *constellationForDataField = dataModulation->getConstellation();
+    const std::vector<APSKSymbol> *constellationForSignalField = BPSKModulation::singleton.getConstellation();
     const std::vector<const ISymbol*> *symbols = transmissionSymbolModel->getSymbols();
     std::vector<const ISymbol*> *corruptedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
     // Only the first symbol is signal field symbol
-    corruptedSymbols->push_back(corruptOFDMSymbol(check_and_cast<const Ieee80211OFDMSymbol *>(symbols->at(0)), headerSER, signalFieldConstellationSize, constellationDiagramForSignalField));
+    corruptedSymbols->push_back(corruptOFDMSymbol(check_and_cast<const Ieee80211OFDMSymbol *>(symbols->at(0)), headerSER, signalFieldConstellationSize, constellationForSignalField));
     // The remaining are all data field symbols
     for (unsigned int i = 1; i < symbols->size(); i++)
     {
         Ieee80211OFDMSymbol *corruptedOFDMSymbol = corruptOFDMSymbol(check_and_cast<const Ieee80211OFDMSymbol *>(symbols->at(i)), dataSER,
-                                                            dataFieldConstellationSize, constellationDiagramForDataField);
+                                                            dataFieldConstellationSize, constellationForDataField);
         corruptedSymbols->push_back(corruptedOFDMSymbol);
     }
     return new ReceptionSymbolModel(transmissionSymbolModel->getSymbolLength(), transmissionSymbolModel->getSymbolRate(), corruptedSymbols);
@@ -95,7 +95,7 @@ void Ieee80211OFDMErrorModel::corruptBits(BitVector *bits, double ber, int begin
     }
 }
 
-Ieee80211OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const Ieee80211OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const
+Ieee80211OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const Ieee80211OFDMSymbol *symbol, double ser, int constellationSize, const std::vector<APSKSymbol> *constellation) const
 {
     std::vector<const APSKSymbol *> subcarrierSymbols = symbol->getSubCarrierSymbols();
     for (int j = 0; j < symbol->symbolSize(); j++)
@@ -104,7 +104,7 @@ Ieee80211OFDMSymbol *Ieee80211OFDMErrorModel::corruptOFDMSymbol(const Ieee80211O
         if (p <= ser)
         {
             int corruptedSubcarrierSymbolIndex = intuniform(0, constellationSize - 1); // TODO: it can be equal to the current symbol
-            const APSKSymbol *corruptedSubcarrierSymbol = &constellationDiagram[corruptedSubcarrierSymbolIndex];
+            const APSKSymbol *corruptedSubcarrierSymbol = &constellation->at(corruptedSubcarrierSymbolIndex);
             subcarrierSymbols[j] = corruptedSubcarrierSymbol;
         }
     }

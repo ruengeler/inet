@@ -30,7 +30,7 @@ class INET_API Ieee80211OFDMErrorModel : public ILayeredErrorModel, public cSimp
         virtual int numInitStages() const { return NUM_INIT_STAGES; }
         virtual void initialize(int stage);
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
-        Ieee80211OFDMSymbol *corruptOFDMSymbol(const Ieee80211OFDMSymbol *symbol, double ser, int constellationSize, const APSKSymbol *constellationDiagram) const;
+        Ieee80211OFDMSymbol *corruptOFDMSymbol(const Ieee80211OFDMSymbol *symbol, double ser, int constellationSize, const std::vector<APSKSymbol> *constellation) const;
         void corruptBits(BitVector *bits, double ber, int begin, int end) const;
 
     public:

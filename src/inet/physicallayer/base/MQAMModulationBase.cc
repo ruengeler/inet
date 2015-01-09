@@ -15,38 +15,30 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_QAM256MODULATION_H
-#define __INET_QAM256MODULATION_H
-
 #include "inet/physicallayer/base/MQAMModulationBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-/**
- * This modulation implements gray coded rectangular quadrature amplitude
- * modulation with 256 symbols.
- */
-class INET_API QAM256Modulation : public MQAMModulationBase
+MQAMModulationBase::MQAMModulationBase(const std::vector<APSKSymbol> *constellation, double normalizationFactor) :
+        APSKModulationBase(constellation, normalizationFactor)
 {
-    public:
-        static const QAM256Modulation singleton;
+}
 
-    protected:
-        static const std::vector<APSKSymbol> constellation;
-
-    public:
-        QAM256Modulation();
-
-        virtual void printToStream(std::ostream &stream) const { stream << "QAM256Modulation"; }
-
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
-};
+double MQAMModulationBase::calculateSER(double snir) const
+{
+    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
+    // http://en.wikipedia.org/wiki/Eb/N0
+    double bandwidth = 0; // TODO:
+    double bitrate = 0; // TODO:
+    double EbN0 = snir * bandwidth / bitrate;
+    double EsN0 = EbN0 * log2(constellationSize);
+    double c = erfc(normalizationFactor * sqrt(EsN0));
+    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
+}
 
 } // namespace physicallayer
 
 } // namespace inet
-
-#endif // ifndef __INET_QAM256MODULATION_H
 

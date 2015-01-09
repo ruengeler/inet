@@ -18,25 +18,30 @@
 #ifndef __INET_BPSKMODULATION_H
 #define __INET_BPSKMODULATION_H
 
-#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/base/MQAMModulationBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API BPSKModulation : public APSKModulationBase
+/**
+ * This modulation implements binary phase-shift keying.
+ */
+class INET_API BPSKModulation : public MQAMModulationBase
 {
     public:
         static const BPSKModulation singleton;
 
     protected:
-        static const APSKSymbol encodingTable[2];
-        static const double kMOD;
+        static const std::vector<APSKSymbol> constellation;
 
     public:
         BPSKModulation();
-        double calculateBER(double snir, double bandwidth, double bitrate) const;
-        double calculateSER(double snir) const;
+
+        virtual void printToStream(std::ostream &stream) const { stream << "BPSKModulation"; }
+
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
+        virtual double calculateSER(double snir) const;
 };
 
 } // namespace physicallayer

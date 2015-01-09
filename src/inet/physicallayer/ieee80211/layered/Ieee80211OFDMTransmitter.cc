@@ -230,7 +230,7 @@ void Ieee80211OFDMTransmitter::padding(BitVector* serializedPacket, unsigned int
     {
         Ieee80211OFDMModulation ofdmModulation(rate, channelSpacing);
         const APSKModulationBase *modulationScheme = ofdmModulation.getModulationScheme();
-        codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * 48;
+        codedBitsPerOFDMSymbol = modulationScheme->getCodeWordSize() * 48;
     }
     else
         codedBitsPerOFDMSymbol = interleaving->getNumberOfCodedBitsPerSymbol();

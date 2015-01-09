@@ -21,22 +21,36 @@ namespace inet {
 
 namespace physicallayer {
 
-// TODO: symbols
-MQAMModulation::MQAMModulation(int codeWordLength) : APSKModulationBase(NULL, codeWordLength, pow(2, codeWordLength), 1 / sqrt(2 * (pow(2, codeWordLength) - 1) / 3))
+static std::vector<APSKSymbol> *createConstellation(unsigned int codeWordSize)
 {
+    auto symbols = new std::vector<APSKSymbol>();
+    unsigned int constellationSize = pow(2, codeWordSize);
+    for (unsigned int i = 0; i < constellationSize; i++) {
+        throw cRuntimeError("Not implemented");
+        // TODO: symbols->push_back(APSKSymbol(cos(alpha), sin(alpha)));
+    }
+    return symbols;
+}
+
+MQAMModulation::MQAMModulation(int codeWordSize) : MQAMModulationBase(createConstellation(codeWordSize), 1 / sqrt(2 * (pow(2, codeWordSize) - 1) / 3))
+{
+}
+
+MQAMModulation::~MQAMModulation()
+{
+    delete constellation;
+}
+
+void MQAMModulation::printToStream(std::ostream &stream) const
+{
+    stream << "MQAMModulation, ";
+    APSKModulationBase::printToStream(stream);
 }
 
 double MQAMModulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
     // TODO:
     throw cRuntimeError("Unimplemented");
-}
-
-double MQAMModulation::calculateSER(double snir) const
-{
-    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double c = erfc(normalizationFactor * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
 }
 
 } // namespace physicallayer

@@ -41,14 +41,14 @@ void APSKModulator::initialize(int stage)
 const ITransmissionSymbolModel *APSKModulator::modulate(const ITransmissionBitModel *bitModel) const
 {
     const BitVector *bits = bitModel->getBits();
-    unsigned int codeWordLength = modulation->getCodeWordLength();
-    int symbolLength = (bitModel->getHeaderBitLength() + bitModel->getPayloadBitLength() + codeWordLength - 1) / codeWordLength;
+    unsigned int codeWordSize = modulation->getCodeWordSize();
+    int symbolLength = (bitModel->getHeaderBitLength() + bitModel->getPayloadBitLength() + codeWordSize - 1) / codeWordSize;
 //    const double symbolRate = bitModel->getBitRate() / nBPSC;
     ShortBitVector symbolBits;
     std::vector<const ISymbol*> *symbols = new std::vector<const ISymbol*>(); // FIXME: Sample model should delete it
     for (unsigned int i = 0; i < bits->getSize(); i++) {
-        symbolBits.setBit(i % codeWordLength, bits->getBit(i));
-        if (i % codeWordLength == codeWordLength - 1)
+        symbolBits.setBit(i % codeWordSize, bits->getBit(i));
+        if (i % codeWordSize == codeWordSize - 1)
             symbols->push_back(modulation->mapToConstellationDiagram(symbolBits));
     }
     return new TransmissionSymbolModel(symbolLength, 0, symbols, modulation); // FIXME: symbol length, symbol rate

@@ -82,7 +82,7 @@ const ITransmissionSymbolModel *Ieee80211OFDMModulator::modulate(const ITransmis
     std::vector<const ISymbol*> *ofdmSymbols = new std::vector<const ISymbol*>(); // FIXME: Sample model should delete it
     const BitVector *bits = bitModel->getBits();
     // Divide the resulting coded and interleaved data string into groups of N_BPSC bits.
-    unsigned int nBPSC = modulationScheme->getCodeWordLength();
+    unsigned int nBPSC = modulationScheme->getCodeWordSize();
 // TODO:    const int symbolLength = preambleSymbolLength + (bitModel->getBitLength() + nBPSC - 1) / nBPSC;
 //    const double symbolRate = bitModel->getBitRate() / nBPSC;
     ShortBitVector bitGroup;

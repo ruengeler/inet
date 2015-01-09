@@ -116,7 +116,7 @@ unsigned int Ieee80211OFDMReceiver::getSignalFieldLength(const BitVector *signal
 unsigned int Ieee80211OFDMReceiver::calculatePadding(unsigned int dataFieldLengthInBits, const APSKModulationBase *modulationScheme, const ConvolutionalCode *fec) const
 {
     ASSERT(modulationScheme != NULL);
-    unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
+    unsigned int codedBitsPerOFDMSymbol = modulationScheme->getCodeWordSize() * OFDM_SYMBOL_SIZE;
     unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
 }

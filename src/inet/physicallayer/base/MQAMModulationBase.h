@@ -15,38 +15,29 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef __INET_QAM256MODULATION_H
-#define __INET_QAM256MODULATION_H
+#ifndef __INET_MQAMMODULATIONBASE_H
+#define __INET_MQAMMODULATIONBASE_H
 
-#include "inet/physicallayer/base/MQAMModulationBase.h"
+#include "inet/physicallayer/base/APSKModulationBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
 /**
- * This modulation implements gray coded rectangular quadrature amplitude
- * modulation with 256 symbols.
+ * Base class for gray coded rectangular quadrature amplitude modulations.
  */
-class INET_API QAM256Modulation : public MQAMModulationBase
+class INET_API MQAMModulationBase : public APSKModulationBase
 {
-    public:
-        static const QAM256Modulation singleton;
+     public:
+        MQAMModulationBase(const std::vector<APSKSymbol> *constellation, double normalizationFactor);
 
-    protected:
-        static const std::vector<APSKSymbol> constellation;
-
-    public:
-        QAM256Modulation();
-
-        virtual void printToStream(std::ostream &stream) const { stream << "QAM256Modulation"; }
-
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
+        virtual double calculateSER(double snir) const;
 };
 
 } // namespace physicallayer
 
 } // namespace inet
 
-#endif // ifndef __INET_QAM256MODULATION_H
+#endif // ifndef __INET_MQAMMODULATIONBASE_H
 

@@ -21,37 +21,30 @@ namespace inet {
 
 namespace physicallayer {
 
-const double QAM64Modulation::kMOD = 1 / sqrt(42);
-const APSKSymbol QAM64Modulation::encodingTable[] = {kMOD * APSKSymbol(-7, -7), kMOD * APSKSymbol(7, -7), kMOD * APSKSymbol(-1, -7), kMOD * APSKSymbol(1, -7), kMOD * APSKSymbol(-5, -7),
-                                                     kMOD * APSKSymbol(5, -7), kMOD * APSKSymbol(-3, -7), kMOD * APSKSymbol(3, -7), kMOD * APSKSymbol(-7, 7), kMOD * APSKSymbol(7, 7),
-                                                     kMOD * APSKSymbol(-1, 7), kMOD * APSKSymbol(1, 7), kMOD * APSKSymbol(-5, 7), kMOD * APSKSymbol(5, 7), kMOD * APSKSymbol(-3, 7),
-                                                     kMOD * APSKSymbol(3, 7), kMOD * APSKSymbol(-7, -1), kMOD * APSKSymbol(7, -1), kMOD * APSKSymbol(-1, -1), kMOD * APSKSymbol(1, -1),
-                                                     kMOD * APSKSymbol(-5, -1), kMOD * APSKSymbol(5, -1), kMOD * APSKSymbol(-3, -1), kMOD * APSKSymbol(3, -1), kMOD * APSKSymbol(-7, 1),
-                                                     kMOD * APSKSymbol(7, 1), kMOD * APSKSymbol(-1, 1), kMOD * APSKSymbol(1, 1), kMOD * APSKSymbol(-5, 1), kMOD * APSKSymbol(5, 1),
-                                                     kMOD * APSKSymbol(-3, 1), kMOD * APSKSymbol(3, 1), kMOD * APSKSymbol(-7, -5), kMOD * APSKSymbol(7, -5), kMOD * APSKSymbol(-1, -5),
-                                                     kMOD * APSKSymbol(1, -5), kMOD * APSKSymbol(-5, -5), kMOD * APSKSymbol(5, -5), kMOD * APSKSymbol(-3, -5), kMOD * APSKSymbol(3, -5),
-                                                     kMOD * APSKSymbol(-7, 5), kMOD * APSKSymbol(7, 5), kMOD * APSKSymbol(-1, 5), kMOD * APSKSymbol(1, 5), kMOD * APSKSymbol(-5, 5),
-                                                     kMOD * APSKSymbol(5, 5), kMOD * APSKSymbol(-3, 5), kMOD * APSKSymbol(3, 5), kMOD * APSKSymbol(-7, -3), kMOD * APSKSymbol(7, -3),
-                                                     kMOD * APSKSymbol(-1, -3), kMOD * APSKSymbol(1, -3), kMOD * APSKSymbol(-5, -3), kMOD * APSKSymbol(5, -3), kMOD * APSKSymbol(-3, -3),
-                                                     kMOD * APSKSymbol(3, -3), kMOD * APSKSymbol(-7, 3), kMOD * APSKSymbol(7, 3), kMOD * APSKSymbol(-1, 3), kMOD * APSKSymbol(1, 3),
-                                                     kMOD * APSKSymbol(-5, 3), kMOD * APSKSymbol(5, 3), kMOD * APSKSymbol(-3, 3), kMOD * APSKSymbol(3, 3)};
+const std::vector<APSKSymbol> QAM64Modulation::constellation = {APSKSymbol(-7, -7), APSKSymbol(7, -7), APSKSymbol(-1, -7), APSKSymbol(1, -7), APSKSymbol(-5, -7),
+                                                                APSKSymbol(5, -7), APSKSymbol(-3, -7), APSKSymbol(3, -7), APSKSymbol(-7, 7), APSKSymbol(7, 7),
+                                                                APSKSymbol(-1, 7), APSKSymbol(1, 7), APSKSymbol(-5, 7), APSKSymbol(5, 7), APSKSymbol(-3, 7),
+                                                                APSKSymbol(3, 7), APSKSymbol(-7, -1), APSKSymbol(7, -1), APSKSymbol(-1, -1), APSKSymbol(1, -1),
+                                                                APSKSymbol(-5, -1), APSKSymbol(5, -1), APSKSymbol(-3, -1), APSKSymbol(3, -1), APSKSymbol(-7, 1),
+                                                                APSKSymbol(7, 1), APSKSymbol(-1, 1), APSKSymbol(1, 1), APSKSymbol(-5, 1), APSKSymbol(5, 1),
+                                                                APSKSymbol(-3, 1), APSKSymbol(3, 1), APSKSymbol(-7, -5), APSKSymbol(7, -5), APSKSymbol(-1, -5),
+                                                                APSKSymbol(1, -5), APSKSymbol(-5, -5), APSKSymbol(5, -5), APSKSymbol(-3, -5), APSKSymbol(3, -5),
+                                                                APSKSymbol(-7, 5), APSKSymbol(7, 5), APSKSymbol(-1, 5), APSKSymbol(1, 5), APSKSymbol(-5, 5),
+                                                                APSKSymbol(5, 5), APSKSymbol(-3, 5), APSKSymbol(3, 5), APSKSymbol(-7, -3), APSKSymbol(7, -3),
+                                                                APSKSymbol(-1, -3), APSKSymbol(1, -3), APSKSymbol(-5, -3), APSKSymbol(5, -3), APSKSymbol(-3, -3),
+                                                                APSKSymbol(3, -3), APSKSymbol(-7, 3), APSKSymbol(7, 3), APSKSymbol(-1, 3), APSKSymbol(1, 3),
+                                                                APSKSymbol(-5, 3), APSKSymbol(5, 3), APSKSymbol(-3, 3), APSKSymbol(3, 3)};
+
 const QAM64Modulation QAM64Modulation::singleton;
 
-QAM64Modulation::QAM64Modulation() : APSKModulationBase(encodingTable, 6, 64, kMOD)
+QAM64Modulation::QAM64Modulation() : MQAMModulationBase(&constellation, 1 / sqrt(42))
 {
 }
 
 double QAM64Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
     // TODO:
-    throw cRuntimeError("Unimplemented.");
-}
-
-double QAM64Modulation::calculateSER(double snir) const
-{
-    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
+    throw cRuntimeError("Not implemented");
 }
 
 } // namespace physicallayer

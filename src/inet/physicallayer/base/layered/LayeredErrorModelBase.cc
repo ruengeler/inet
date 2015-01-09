@@ -47,13 +47,13 @@ const IReceptionSymbolModel *LayeredErrorModelBase::computeSymbolModel(const Lay
         const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
         const APSKModulationBase *modulation = check_and_cast<const APSKModulationBase *>(transmissionSymbolModel->getModulation());
         unsigned int constellationSize = modulation->getConstellationSize();
-        const APSKSymbol *constellationDiagram = modulation->getEncodingTable();
+        const std::vector<APSKSymbol> *constellation = modulation->getConstellation();
         const std::vector<const ISymbol*> *transmittedSymbols = transmissionSymbolModel->getSymbols();
         std::vector<const ISymbol*> *receivedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
         for (unsigned int i = 0; i < transmittedSymbols->size(); i++) {
             if (uniform(0, 1) <= symbolErrorRate) {
                 int receivedSymbolIndex = intuniform(0, constellationSize - 1); // TODO: it can be equal to the current symbol
-                const APSKSymbol *receivedSymbol = &constellationDiagram[receivedSymbolIndex];
+                const APSKSymbol *receivedSymbol = &constellation->at(receivedSymbolIndex);
                 receivedSymbols->push_back(receivedSymbol);
             }
             else

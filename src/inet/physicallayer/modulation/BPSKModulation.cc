@@ -21,11 +21,11 @@ namespace inet {
 
 namespace physicallayer {
 
-const double BPSKModulation::kMOD = 1;
-const APSKSymbol BPSKModulation::encodingTable[] = {APSKSymbol(-1,0), APSKSymbol(1,0)};
+const std::vector<APSKSymbol> BPSKModulation::constellation = {APSKSymbol(-1,0), APSKSymbol(1,0)};
+
 const BPSKModulation BPSKModulation::singleton;
 
-BPSKModulation::BPSKModulation() : APSKModulationBase(encodingTable, 1, 2, kMOD)
+BPSKModulation::BPSKModulation() : MQAMModulationBase(&constellation, 1)
 {
 }
 
@@ -33,13 +33,6 @@ double BPSKModulation::calculateBER(double snir, double bandwidth, double bitrat
 {
     // TODO: review 1/2*erfc(sqrt(snir))? according to http://www.dsplog.com/2007/08/05/bit-error-probability-for-bpsk-modulation/
     return 0.5 * exp(-snir * bandwidth / bitrate);
-}
-
-double BPSKModulation::calculateSER(double snir) const
-{
-    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
 }
 
 } // namespace physicallayer

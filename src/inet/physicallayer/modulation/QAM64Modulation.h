@@ -18,26 +18,30 @@
 #ifndef __INET_QAM64MODULATION_H
 #define __INET_QAM64MODULATION_H
 
-#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/base/MQAMModulationBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API QAM64Modulation : public APSKModulationBase
+/**
+ * This modulation implements gray coded rectangular quadrature amplitude
+ * modulation with 64 symbols.
+ */
+class INET_API QAM64Modulation : public MQAMModulationBase
 {
     public:
         static const QAM64Modulation singleton;
 
     protected:
-        static const APSKSymbol encodingTable[64];
-        static const double kMOD;
-        static const int m;
+        static const std::vector<APSKSymbol> constellation;
 
     public:
         QAM64Modulation();
-        double calculateBER(double snir, double bandwidth, double bitrate) const;
-        double calculateSER(double snir) const;
+
+        virtual void printToStream(std::ostream &stream) const { stream << "QAM64Modulation"; }
+
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

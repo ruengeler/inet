@@ -21,15 +21,37 @@ namespace inet {
 
 namespace physicallayer {
 
-// TODO: symbols
-MPSKModulation::MPSKModulation(int codeWordLength) : APSKModulationBase(NULL, codeWordLength, pow(2, codeWordLength), 1)
+static std::vector<APSKSymbol> *createConstellation(unsigned int codeWordSize)
 {
+    auto symbols = new std::vector<APSKSymbol>();
+    unsigned int constellationSize = pow(2, codeWordSize);
+    for (unsigned int i = 0; i < constellationSize; i++) {
+        // TODO: gray code?
+        double alpha = 2 * M_PI * i / constellationSize;
+        symbols->push_back(APSKSymbol(cos(alpha), sin(alpha)));
+    }
+    return symbols;
+}
+
+MPSKModulation::MPSKModulation(unsigned int codeWordSize) : APSKModulationBase(createConstellation(codeWordSize), 1)
+{
+}
+
+MPSKModulation::~MPSKModulation()
+{
+    delete constellation;
+}
+
+void MPSKModulation::printToStream(std::ostream &stream) const
+{
+    stream << "MPSKModulaiton, ";
+    APSKModulationBase::printToStream(stream);
 }
 
 double MPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
     // http://www.dsplog.com/2008/05/18/bit-error-rate-for-16psk-modulation-using-gray-mapping/
-    return erfc(sqrt(snir) * sin(M_PI / constellationSize)) / codeWordLength;
+    return erfc(sqrt(snir) * sin(M_PI / constellationSize)) / codeWordSize;
 }
 
 double MPSKModulation::calculateSER(double snir) const

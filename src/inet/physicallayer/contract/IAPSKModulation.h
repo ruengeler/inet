@@ -27,7 +27,7 @@ namespace physicallayer {
 class INET_API IAPSKModulation : public IModulation
 {
   public:
-    virtual int getCodeWordLength() const = 0;
+    virtual int getCodeWordSize() const = 0;
     virtual int getConstellationSize() const = 0;
     virtual double getNormalizationFactor() const = 0;
 };

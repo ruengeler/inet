@@ -26,24 +26,28 @@ namespace inet {
 
 namespace physicallayer {
 
+/**
+ * Base class for modulations using various amplitude and phase-shift keying.
+ */
 class INET_API APSKModulationBase : public IAPSKModulation
 {
     protected:
-        const APSKSymbol *encodingTable; // TODO: maybe rename to constellationDiagram
-        const int codeWordLength;
+        const std::vector<APSKSymbol> *constellation;
+        const int codeWordSize;
         const int constellationSize;
-        double normalizationFactor;
+        const double normalizationFactor;
 
     public:
-        APSKModulationBase(const APSKSymbol *encodingTable, int codeWordLength, int constellationSize, double normalizationFactor);
+        APSKModulationBase(const std::vector<APSKSymbol> *constellation, double normalizationFactor);
 
         virtual void printToStream(std::ostream &stream) const;
         const static APSKModulationBase *findModulation(const char *name);
 
-        virtual const APSKSymbol *getEncodingTable() const { return encodingTable; }
-        virtual int getCodeWordLength() const { return codeWordLength; }
+        virtual const std::vector<APSKSymbol> *getConstellation() const { return constellation; }
         virtual int getConstellationSize() const { return constellationSize; }
+        virtual int getCodeWordSize() const { return codeWordSize; }
         virtual double getNormalizationFactor() const { return normalizationFactor; }
+
         virtual const APSKSymbol *mapToConstellationDiagram(const ShortBitVector& symbol) const;
         virtual ShortBitVector demapToBitRepresentation(const APSKSymbol *symbol) const;
 };

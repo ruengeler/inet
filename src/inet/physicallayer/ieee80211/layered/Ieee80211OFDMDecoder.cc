@@ -115,7 +115,7 @@ unsigned int Ieee80211OFDMDecoder::calculatePadding(unsigned int dataFieldLength
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
-    unsigned int codedBitsPerOFDMSymbol = dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE;
+    unsigned int codedBitsPerOFDMSymbol = dataModulationScheme->getCodeWordSize() * OFDM_SYMBOL_SIZE;
     unsigned int dataBitsPerOFDMSymbol = codedBitsPerOFDMSymbol * fec->getCodeRatePuncturingK() / fec->getCodeRatePuncturingN();
     return dataBitsPerOFDMSymbol - dataFieldLengthInBits % dataBitsPerOFDMSymbol;
 }

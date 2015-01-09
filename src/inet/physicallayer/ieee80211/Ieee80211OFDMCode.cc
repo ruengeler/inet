@@ -41,7 +41,7 @@ const Ieee80211Interleaving* Ieee80211OFDMCode::computeInterleaving(const IModul
 {
     const IAPSKModulation *dataModulationScheme = dynamic_cast<const IAPSKModulation*>(modulationScheme);
     ASSERT(dataModulationScheme != NULL);
-    return new Ieee80211Interleaving(dataModulationScheme->getCodeWordLength() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordLength()); // FIXME: memory leak
+    return new Ieee80211Interleaving(dataModulationScheme->getCodeWordSize() * OFDM_SYMBOL_SIZE, dataModulationScheme->getCodeWordSize()); // FIXME: memory leak
 }
 
 Ieee80211OFDMCode::Ieee80211OFDMCode(uint8_t signalFieldRate, Hz channelSpacing) :

@@ -18,18 +18,25 @@
 #ifndef __INET_MQAMMODULATION_H
 #define __INET_MQAMMODULATION_H
 
-#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/base/MQAMModulationBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API MQAMModulation : public APSKModulationBase
+/**
+ * This class implements gray coded quadrature amplitude modulation that arranges
+ * symbols evenly on a square.
+ */
+class INET_API MQAMModulation : public MQAMModulationBase
 {
     public:
-        MQAMModulation(int codeWordLength);
-        double calculateBER(double snir, double bandwidth, double bitrate) const;
-        double calculateSER(double snir) const;
+        MQAMModulation(int codeWordSize);
+        virtual ~MQAMModulation();
+
+        virtual void printToStream(std::ostream &stream) const;
+
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

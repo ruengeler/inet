@@ -21,13 +21,13 @@ namespace inet {
 
 namespace physicallayer {
 
-const double QAM256Modulation::kMOD = 1 / sqrt(170);
-// TODO: fill in
-const APSKSymbol QAM256Modulation::encodingTable[] = {};
+const std::vector<APSKSymbol> QAM256Modulation::constellation = {}; // TODO:
+
 const QAM256Modulation QAM256Modulation::singleton;
 
-QAM256Modulation::QAM256Modulation() : APSKModulationBase(encodingTable, 8, 256, kMOD)
+QAM256Modulation::QAM256Modulation() : MQAMModulationBase(&constellation, 1 / sqrt(170))
 {
+    throw cRuntimeError("Not implemented");
 }
 
 double QAM256Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
@@ -35,12 +35,6 @@ double QAM256Modulation::calculateBER(double snir, double bandwidth, double bitr
     return 0.25 * (1 - 1 / sqrt(pow(2.0, 8))) * erfc(snir * bandwidth / bitrate);
 }
 
-double QAM256Modulation::calculateSER(double snir) const
-{
-    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
-}
 
 } // namespace physicallayer
 

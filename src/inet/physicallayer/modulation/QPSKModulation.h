@@ -18,25 +18,29 @@
 #ifndef __INET_QPSKMODULATION_H
 #define __INET_QPSKMODULATION_H
 
-#include "inet/physicallayer/base/APSKModulationBase.h"
+#include "inet/physicallayer/base/MQAMModulationBase.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-class INET_API QPSKModulation : public APSKModulationBase
+/**
+ * This modulation implements quadrature phase-shift keying.
+ */
+class INET_API QPSKModulation : public MQAMModulationBase
 {
     public:
         static const QPSKModulation singleton;
 
     protected:
-        static const APSKSymbol encodingTable[4];
-        static const double kMOD;
+        static const std::vector<APSKSymbol> constellation;
 
     public:
         QPSKModulation();
-        double calculateBER(double snir, double bandwidth, double bitrate) const;
-        double calculateSER(double snir) const;
+
+        virtual void printToStream(std::ostream &stream) const { stream << "QPSKModulation"; }
+
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

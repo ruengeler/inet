@@ -21,25 +21,18 @@ namespace inet {
 
 namespace physicallayer {
 
-const double QPSKModulation::kMOD = 1 / sqrt(2);
-const APSKSymbol QPSKModulation::encodingTable[] = {kMOD * APSKSymbol(-1,-1), kMOD * APSKSymbol(1,-1), kMOD * APSKSymbol(-1, 1), kMOD * APSKSymbol(1,1)};
+const std::vector<APSKSymbol> QPSKModulation::constellation = {APSKSymbol(-1,-1), APSKSymbol(1,-1), APSKSymbol(-1, 1), APSKSymbol(1,1)};
+
 const QPSKModulation QPSKModulation::singleton;
 
-QPSKModulation::QPSKModulation() : APSKModulationBase(encodingTable, 2, 4, kMOD)
+QPSKModulation::QPSKModulation() : MQAMModulationBase(&constellation, 1 / sqrt(2))
 {
 }
 
 double QPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
     // TODO:
-    throw cRuntimeError("Unimplemented.");
-}
-
-double QPSKModulation::calculateSER(double snir) const
-{
-    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
-    double c = erfc(kMOD * sqrt(snir));
-    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
+    throw cRuntimeError("Not implemented");
 }
 
 } // namespace physicallayer

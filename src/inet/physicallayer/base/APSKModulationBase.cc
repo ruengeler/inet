@@ -21,25 +21,27 @@
 #include "inet/physicallayer/modulation/QAM16Modulation.h"
 #include "inet/physicallayer/modulation/QAM64Modulation.h"
 #include "inet/physicallayer/modulation/QAM256Modulation.h"
+#include "inet/physicallayer/modulation/MQAMModulation.h"
+#include "inet/physicallayer/modulation/MPSKModulation.h"
 #include "inet/common/Complex.h"
 
 namespace inet {
 
 namespace physicallayer {
 
-APSKModulationBase::APSKModulationBase(const APSKSymbol *encodingTable, int codeWordLength, int constellationSize, double normalizationFactor) :
-    encodingTable(encodingTable),
-    codeWordLength(codeWordLength),
-    constellationSize(constellationSize),
+APSKModulationBase::APSKModulationBase(const std::vector<APSKSymbol> *constellation, double normalizationFactor) :
+    constellation(constellation),
+    codeWordSize(log2(constellation->size())),
+    constellationSize(constellation->size()),
     normalizationFactor(normalizationFactor)
 {
 }
 
 void APSKModulationBase::printToStream(std::ostream &stream) const
 {
-    stream << "APSK modulation with";
-    stream << " constellation size = " << constellationSize << " codeword length = " << codeWordLength;
-    stream << " normalization factor = " << normalizationFactor << endl;
+    stream << "constellationSize = " << constellationSize << ", "
+           << "codeWordSize = " << codeWordSize << ", "
+           << "normalizationFactor = " << normalizationFactor;
 }
 
 const APSKModulationBase *APSKModulationBase::findModulation(const char *modulation)
@@ -54,16 +56,20 @@ const APSKModulationBase *APSKModulationBase::findModulation(const char *modulat
         return &QAM64Modulation::singleton;
     else if (!strcmp("QAM-256", modulation))
         return &QAM256Modulation::singleton;
+    else if (!strncmp("MQAM-", modulation, 5))
+        return new MQAMModulation(atoi(modulation + 5));
+    else if (!strncmp("MPSK-", modulation, 5))
+        return new MPSKModulation(atoi(modulation + 5));
     else
         throw cRuntimeError("Unknown modulation = %s", modulation);
 }
 
 const APSKSymbol *APSKModulationBase::mapToConstellationDiagram(const ShortBitVector& symbol) const
 {
-    int decimalSymbol = symbol.toDecimal();
+    unsigned int decimalSymbol = symbol.toDecimal();
     if (decimalSymbol >= constellationSize)
         throw cRuntimeError("Unknown input: %d", decimalSymbol);
-    return &encodingTable[decimalSymbol];
+    return &constellation->at(decimalSymbol);
 }
 
 ShortBitVector APSKModulationBase::demapToBitRepresentation(const APSKSymbol* symbol) const
@@ -73,9 +79,9 @@ ShortBitVector APSKModulationBase::demapToBitRepresentation(const APSKSymbol* sy
     double symbolI = symbol->getImaginary();
     double minDist = DBL_MAX;
     int nearestNeighborIndex = -1;
-    for (int i = 0; i < constellationSize; i++)
+    for (unsigned int i = 0; i < constellationSize; i++)
     {
-        const APSKSymbol *constellationSymbol = &encodingTable[i];
+        const APSKSymbol *constellationSymbol = &constellation->at(i);
         double cQ = constellationSymbol->getReal();
         double cI = constellationSymbol->getImaginary();
         double dist = (symbolQ - cQ) * (symbolQ - cQ) + (symbolI - cI) * (symbolI - cI);
@@ -86,7 +92,7 @@ ShortBitVector APSKModulationBase::demapToBitRepresentation(const APSKSymbol* sy
         }
     }
     ASSERT(nearestNeighborIndex != -1);
-    return ShortBitVector(nearestNeighborIndex, codeWordLength);
+    return ShortBitVector(nearestNeighborIndex, codeWordSize);
 }
 
 } // namespace physicallayer
