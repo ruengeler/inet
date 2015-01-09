@@ -25,6 +25,8 @@
 namespace inet {
 namespace physicallayer {
 
+Define_Module(StubModulator);
+
 void StubModulator::initialize(int stage)
 {
     if (stage == INITSTAGE_LOCAL)

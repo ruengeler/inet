@@ -35,6 +35,7 @@ class INET_API StubModulator : public cSimpleModule, public IModulator
         virtual void handleMessage(cMessage *msg) { throw cRuntimeError("The module doesn't handle self messages"); }
 
     public:
+        virtual void printToStream(std::ostream& stream) const { stream << "StubModulator"; }
         virtual const ITransmissionSymbolModel *modulate(const ITransmissionBitModel *bitModel) const;
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
