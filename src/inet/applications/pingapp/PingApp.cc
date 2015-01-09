@@ -241,13 +241,13 @@ void PingApp::processPingResponse(PingPayload *msg)
     for (int i = 0; i < timeLength; i++)
         time[i] = msg->getData(i);
     time[timeLength] = '\0';
-    simtime_t sendTime = STR_SIMTIME(time);    // Why converting to/from string?
-
-    if (sendTime < lastStart) {
-        EV_WARN << "Received response was not sent since last application start, dropping packet\n";
-        delete msg;
-        return;
-    }
+//    simtime_t sendTime = STR_SIMTIME(time);    // Why converting to/from string?
+//
+//    if (sendTime < lastStart) {
+//        EV_WARN << "Received response was not sent since last application start, dropping packet\n";
+//        delete msg;
+//        return;
+//    }
 
     // get src, hopCount etc from packet, and print them
     INetworkProtocolControlInfo *ctrl = check_and_cast<INetworkProtocolControlInfo *>(msg->getControlInfo());

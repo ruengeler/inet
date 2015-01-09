@@ -214,7 +214,9 @@ void ICMP::processICMPMessage(ICMPMessage *icmpmsg)
             break;
 
         default:
-            throw cRuntimeError("Unknown ICMP type %d", icmpmsg->getType());
+            delete icmpmsg;
+            break;
+//            throw cRuntimeError("Unknown ICMP type %d", icmpmsg->getType());
     }
 }
 
