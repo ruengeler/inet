@@ -26,12 +26,10 @@ MQAMModulationBase::MQAMModulationBase(const std::vector<APSKSymbol> *constellat
 {
 }
 
-double MQAMModulationBase::calculateSER(double snir) const
+double MQAMModulationBase::calculateSER(double snir, double bandwidth, double bitrate) const
 {
     // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
     // http://en.wikipedia.org/wiki/Eb/N0
-    double bandwidth = 0; // TODO:
-    double bitrate = 0; // TODO:
     double EbN0 = snir * bandwidth / bitrate;
     double EsN0 = EbN0 * log2(constellationSize);
     double c = erfc(normalizationFactor * sqrt(EsN0));

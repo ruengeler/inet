@@ -37,7 +37,7 @@ class INET_API MPSKModulation : public APSKModulationBase
         virtual void printToStream(std::ostream &stream) const;
 
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
-        virtual double calculateSER(double snir) const;
+        virtual double calculateSER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

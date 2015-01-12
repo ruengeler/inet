@@ -17,11 +17,12 @@
 
 package inet.physicallayer.ieee80211.errormodel.layered;
 
-import inet.physicallayer.contract.IErrorModel;
+import inet.physicallayer.contract.layered.ILayeredErrorModel;
 
 
-module Ieee80211OFDMErrorModel like IErrorModel
+module Ieee80211OFDMErrorModel like ILayeredErrorModel
 {
     parameters:
+        double symbolErrorRate = default(0/0);
         @class(Ieee80211OFDMErrorModel);
 }

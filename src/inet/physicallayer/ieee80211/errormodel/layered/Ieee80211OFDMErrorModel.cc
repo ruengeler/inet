@@ -31,7 +31,8 @@ Define_Module(Ieee80211OFDMErrorModel);
 
 void Ieee80211OFDMErrorModel::initialize(int stage)
 {
-
+    if (stage == INITSTAGE_LOCAL)
+        symbolErrorRate = par("symbolErrorRate");
 }
 
 const IReceptionBitModel* Ieee80211OFDMErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR* snir) const
@@ -62,15 +63,17 @@ const IReceptionBitModel* Ieee80211OFDMErrorModel::computeBitModel(const Layered
 
 const IReceptionSymbolModel* Ieee80211OFDMErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR* snir) const
 {
+    const ITransmissionBitModel *transmissionBitModel = transmission->getBitModel();
     const TransmissionSymbolModel *transmissionSymbolModel = check_and_cast<const TransmissionSymbolModel *>(transmission->getSymbolModel());
     const IModulation *modulation = transmissionSymbolModel->getModulation();
     const APSKModulationBase *dataModulation = check_and_cast<const APSKModulationBase *>(modulation);
     unsigned int dataFieldConstellationSize = dataModulation->getConstellationSize();
     unsigned int signalFieldConstellationSize = BPSKModulation::singleton.getConstellationSize();
-    double headerSER = BPSKModulation::singleton.calculateSER(snir->getMin());
-    double dataSER = dataModulation->calculateSER(snir->getMin());
     const std::vector<APSKSymbol> *constellationForDataField = dataModulation->getConstellation();
     const std::vector<APSKSymbol> *constellationForSignalField = BPSKModulation::singleton.getConstellation();
+    const ScalarTransmissionSignalAnalogModel *analogModel = dynamic_cast<const ScalarTransmissionSignalAnalogModel *>(transmission->getAnalogModel());
+    double headerSER = isNaN(symbolErrorRate) ? BPSKModulation::singleton.calculateSER(snir->getMin(), analogModel->getBandwidth().get(), transmissionBitModel->getHeaderBitRate()) : symbolErrorRate;
+    double dataSER = isNaN(symbolErrorRate) ? dataModulation->calculateSER(snir->getMin(), analogModel->getBandwidth().get(), transmissionBitModel->getPayloadBitRate()) : symbolErrorRate;
     const std::vector<const ISymbol*> *symbols = transmissionSymbolModel->getSymbols();
     std::vector<const ISymbol*> *corruptedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
     // Only the first symbol is signal field symbol

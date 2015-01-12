@@ -50,7 +50,7 @@ class INET_API Ieee80211OFDMModulation : public IModulation
     public:
         virtual void printToStream(std::ostream& stream) const { stream << "Ieee80211OFDMModulation"; }
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const { return modulationScheme->calculateBER(snir, bandwidth, bitrate); }
-        virtual double calculateSER(double snir) const { return modulationScheme->calculateSER(snir); }
+        virtual double calculateSER(double snir, double bandwidth, double bitrate) const { return modulationScheme->calculateSER(snir, bandwidth, bitrate); }
         virtual Hz getChannelSpacing() const { return channelSpacing; }
         const bps getBitrate() const { return bitrate; }
         uint8_t getSignalRateField() const { return signalRateField; }

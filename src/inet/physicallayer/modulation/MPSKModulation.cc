@@ -54,7 +54,7 @@ double MPSKModulation::calculateBER(double snir, double bandwidth, double bitrat
     return erfc(sqrt(snir) * sin(M_PI / constellationSize)) / codeWordSize;
 }
 
-double MPSKModulation::calculateSER(double snir) const
+double MPSKModulation::calculateSER(double snir, double bandwidth, double bitrate) const
 {
     // http://www.dsplog.com/2008/03/18/symbol-error-rate-for-16psk/
     return erfc(sqrt(snir) * sin(M_PI / constellationSize));

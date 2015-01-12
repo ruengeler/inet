@@ -28,7 +28,7 @@ class INET_API IModulation : public IPrintableObject
 {
     public:
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const = 0;
-        virtual double calculateSER(double snir) const = 0;
+        virtual double calculateSER(double snir, double bandwidth, double bitrate) const = 0;
 };
 
 } // namespace physicallayer

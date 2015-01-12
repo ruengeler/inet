@@ -41,7 +41,6 @@ class INET_API BPSKModulation : public MQAMModulationBase
         virtual void printToStream(std::ostream &stream) const { stream << "BPSKModulation"; }
 
         virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
-        virtual double calculateSER(double snir) const;
 };
 
 } // namespace physicallayer
