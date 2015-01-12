@@ -29,12 +29,20 @@ namespace physicallayer {
 
 const IReceptionBitModel *LayeredErrorModelBase::computeBitModel(const LayeredTransmission *transmission, double bitErrorRate) const
 {
+    const TransmissionBitModel *transmissionBitModel = check_and_cast<const TransmissionBitModel *>(transmission->getBitModel());
     if (bitErrorRate == 0) {
-        const TransmissionBitModel *transmissionBitModel = check_and_cast<const TransmissionBitModel *>(transmission->getBitModel());
         return new const ReceptionBitModel(transmissionBitModel->getHeaderBitLength(), transmissionBitModel->getPayloadBitLength(), transmissionBitModel->getHeaderBitRate(), transmissionBitModel->getPayloadBitRate(), transmissionBitModel->getBits());
     }
     else
-        throw cRuntimeError("Not yet implemented");
+    {
+        BitVector *receivedBits = new BitVector(*transmissionBitModel->getBits());
+        for (unsigned int i = 0; i < receivedBits->getSize(); i++)
+        {
+            if (uniform(0, 1) <= bitErrorRate)
+                receivedBits->toggleBit(i);
+        }
+        return new const ReceptionBitModel(transmissionBitModel->getHeaderBitLength(), transmissionBitModel->getPayloadBitLength(), transmissionBitModel->getHeaderBitRate(), transmissionBitModel->getPayloadBitRate(), receivedBits);
+    }
 }
 
 const IReceptionSymbolModel *LayeredErrorModelBase::computeSymbolModel(const LayeredTransmission *transmission, double symbolErrorRate) const
@@ -52,8 +60,14 @@ const IReceptionSymbolModel *LayeredErrorModelBase::computeSymbolModel(const Lay
         std::vector<const ISymbol*> *receivedSymbols = new std::vector<const ISymbol *>(); // FIXME: memory leak
         for (unsigned int i = 0; i < transmittedSymbols->size(); i++) {
             if (uniform(0, 1) <= symbolErrorRate) {
-                int receivedSymbolIndex = intuniform(0, constellationSize - 1); // TODO: it can be equal to the current symbol
-                const APSKSymbol *receivedSymbol = &constellation->at(receivedSymbolIndex);
+                const ISymbol *receivedSymbol = nullptr;
+                const ISymbol *transmittedSymbol = transmittedSymbols->at(i);
+                do
+                {
+                    int receivedSymbolIndex = intuniform(0, constellationSize - 1);
+                    receivedSymbol = &constellation->at(receivedSymbolIndex);
+                }
+                while (receivedSymbol == transmittedSymbol);
                 receivedSymbols->push_back(receivedSymbol);
             }
             else
