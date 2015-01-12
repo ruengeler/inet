@@ -23,6 +23,9 @@
 #include "inet/physicallayer/base/APSKModulationBase.h"
 #include "inet/physicallayer/apsk/layered/APSKSymbol.h"
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
+#include "inet/physicallayer/apsk/layered/APSKLayeredTransmission.h"
+#include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
+#include "inet/physicallayer/modulation/BPSKModulation.h"
 
 namespace inet {
 
@@ -36,14 +39,20 @@ LayeredAPSKErrorModel::LayeredAPSKErrorModel()
 
 const IReceptionPacketModel *LayeredAPSKErrorModel::computePacketModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
-    throw cRuntimeError("Not yet implemented");
+    const ITransmissionPacketModel *packetModel = transmission->getPacketModel();
+    const IReceptionPacketModel *receptionPacketModel = nullptr;
+    const APSKRadioFrame *apskRadioFrame = check_and_cast<const APSKRadioFrame *>(packetModel->getPacket());
+    int bitLength = apskRadioFrame->getBitLength();
+    // TODO: incomplete
+    return nullptr;
 }
 const IReceptionBitModel *LayeredAPSKErrorModel::computeBitModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
     const ITransmissionBitModel* bitModel = transmission->getBitModel();
     const ITransmissionSymbolModel* symbolModel = transmission->getSymbolModel();
     const ScalarTransmissionSignalAnalogModel *analogModel = check_and_cast<const ScalarTransmissionSignalAnalogModel *>(transmission->getAnalogModel());
-    const IModulation* modulation = symbolModel->getModulation();
+    const APSKLayeredTransmission *apskLayeredTransmission = check_and_cast<const APSKLayeredTransmission *>(transmission);
+    const IModulation* modulation = apskLayeredTransmission->getModulation();
     double bitErrorRate = modulation->calculateBER(snir->getMin(), analogModel->getBandwidth().get(), bitModel->getPayloadBitRate());
     return LayeredErrorModelBase::computeBitModel(transmission, bitErrorRate);
 }
@@ -51,7 +60,10 @@ const IReceptionBitModel *LayeredAPSKErrorModel::computeBitModel(const LayeredTr
 const IReceptionSymbolModel *LayeredAPSKErrorModel::computeSymbolModel(const LayeredTransmission *transmission, const ISNIR *snir) const
 {
     const IModulation* modulation = transmission->getSymbolModel()->getModulation();
-    double symbolErrorRate = modulation->calculateSER(snir->getMin());
+    const ScalarTransmissionSignalAnalogModel *transmissionAnalogModel = dynamic_cast<const ScalarTransmissionSignalAnalogModel *>(transmission->getAnalogModel());
+    const ITransmissionBitModel* bitModel = transmission->getBitModel();
+    double bandwidth = transmissionAnalogModel->getBandwidth().get();
+    double symbolErrorRate = modulation->calculateSER(snir->getMin(), bandwidth, bitModel->getPayloadBitRate());
     return LayeredErrorModelBase::computeSymbolModel(transmission, symbolErrorRate);
 }
 
