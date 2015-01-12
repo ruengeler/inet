@@ -39,8 +39,6 @@ class INET_API QPSKModulation : public MQAMModulationBase
         QPSKModulation();
 
         virtual void printToStream(std::ostream &stream) const { stream << "QPSKModulation"; }
-
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

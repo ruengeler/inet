@@ -29,11 +29,18 @@ BPSKModulation::BPSKModulation() : MQAMModulationBase(&constellation, 1)
 {
 }
 
+double BPSKModulation::calculateSER(double snir, double bandwidth, double bitrate) const
+{
+    return 0.5 * erfc(sqrt(snir * bandwidth / bitrate));
+}
+
 double BPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
 {
-    // TODO: review 1/2*erfc(sqrt(snir))? according to http://www.dsplog.com/2007/08/05/bit-error-probability-for-bpsk-modulation/
-    return 0.5 * exp(-snir * bandwidth / bitrate);
+    // http://en.wikipedia.org/wiki/Phase-shift_keying#Bit_error_rate
+    return calculateSER(snir, bandwidth, bitrate);
 }
+
+
 
 } // namespace physicallayer
 

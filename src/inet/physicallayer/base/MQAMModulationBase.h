@@ -33,6 +33,7 @@ class INET_API MQAMModulationBase : public APSKModulationBase
         MQAMModulationBase(const std::vector<APSKSymbol> *constellation, double normalizationFactor);
 
         virtual double calculateSER(double snir, double bandwidth, double bitrate) const;
+        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

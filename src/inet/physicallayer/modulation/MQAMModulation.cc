@@ -47,12 +47,6 @@ void MQAMModulation::printToStream(std::ostream &stream) const
     APSKModulationBase::printToStream(stream);
 }
 
-double MQAMModulation::calculateBER(double snir, double bandwidth, double bitrate) const
-{
-    // TODO:
-    throw cRuntimeError("Unimplemented");
-}
-
 } // namespace physicallayer
 
 } // namespace inet

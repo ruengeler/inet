@@ -28,12 +28,20 @@ MQAMModulationBase::MQAMModulationBase(const std::vector<APSKSymbol> *constellat
 
 double MQAMModulationBase::calculateSER(double snir, double bandwidth, double bitrate) const
 {
-    // http://www.dsplog.com/2012/01/01/symbol-error-rate-16qam-64qam-256qam/
     // http://en.wikipedia.org/wiki/Eb/N0
     double EbN0 = snir * bandwidth / bitrate;
     double EsN0 = EbN0 * log2(constellationSize);
-    double c = erfc(normalizationFactor * sqrt(EsN0));
-    return 2 * (1 - 1.0 / sqrt(constellationSize)) * c - (1 - 2.0 / sqrt(constellationSize) + 1.0 / constellationSize) * c * c;
+    // http://en.wikipedia.org/wiki/Quadrature_amplitude_modulation#Rectangular_QAM
+    double Psc = 2 * (1 - 1 / sqrt(constellationSize)) * 0.5 * erfc(1 / sqrt(2) * sqrt(3.0 / (constellationSize - 1) * EsN0));
+    return 1 - (1-Psc) * (1-Psc);
+}
+
+double MQAMModulationBase::calculateBER(double snir, double bandwidth, double bitrate) const
+{
+    double EbN0 = snir * bandwidth / bitrate;
+    // http://en.wikipedia.org/wiki/Quadrature_amplitude_modulation#Rectangular_QAM
+    double Pbc = 4.0 / codeWordSize * (1 - 1 / sqrt(constellationSize)) * 0.5 * erfc(1 / sqrt(2) * sqrt(3.0 * codeWordSize / (constellationSize - 1) * EbN0));
+    return Pbc;
 }
 
 } // namespace physicallayer

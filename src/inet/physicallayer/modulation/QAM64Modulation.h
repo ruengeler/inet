@@ -40,8 +40,6 @@ class INET_API QAM64Modulation : public MQAMModulationBase
         QAM64Modulation();
 
         virtual void printToStream(std::ostream &stream) const { stream << "QAM64Modulation"; }
-
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer

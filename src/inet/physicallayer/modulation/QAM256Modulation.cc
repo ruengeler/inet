@@ -27,12 +27,7 @@ const QAM256Modulation QAM256Modulation::singleton;
 
 QAM256Modulation::QAM256Modulation() : MQAMModulationBase(&constellation, 1 / sqrt(170))
 {
-    throw cRuntimeError("Not implemented");
-}
-
-double QAM256Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
-{
-    return 0.25 * (1 - 1 / sqrt(pow(2.0, 8))) * erfc(snir * bandwidth / bitrate);
+//    throw cRuntimeError("Not implemented");
 }
 
 

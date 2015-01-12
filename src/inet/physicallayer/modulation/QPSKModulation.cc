@@ -29,11 +29,6 @@ QPSKModulation::QPSKModulation() : MQAMModulationBase(&constellation, 1 / sqrt(2
 {
 }
 
-double QPSKModulation::calculateBER(double snir, double bandwidth, double bitrate) const
-{
-    // TODO:
-    throw cRuntimeError("Not implemented");
-}
 
 } // namespace physicallayer
 

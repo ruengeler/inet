@@ -41,11 +41,6 @@ QAM64Modulation::QAM64Modulation() : MQAMModulationBase(&constellation, 1 / sqrt
 {
 }
 
-double QAM64Modulation::calculateBER(double snir, double bandwidth, double bitrate) const
-{
-    // TODO:
-    throw cRuntimeError("Not implemented");
-}
 
 } // namespace physicallayer
 

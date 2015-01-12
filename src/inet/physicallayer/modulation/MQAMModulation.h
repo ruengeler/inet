@@ -35,8 +35,6 @@ class INET_API MQAMModulation : public MQAMModulationBase
         virtual ~MQAMModulation();
 
         virtual void printToStream(std::ostream &stream) const;
-
-        virtual double calculateBER(double snir, double bandwidth, double bitrate) const;
 };
 
 } // namespace physicallayer
