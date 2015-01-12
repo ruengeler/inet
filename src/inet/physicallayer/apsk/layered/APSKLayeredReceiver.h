@@ -40,6 +40,7 @@ class INET_API APSKLayeredReceiver : public SNIRReceiverBase
     public:
         enum LevelOfDetail
         {
+            PACKET_DOMAIN,
             BIT_DOMAIN,
             SYMBOL_DOMAIN,
             SAMPLE_DOMAIN,

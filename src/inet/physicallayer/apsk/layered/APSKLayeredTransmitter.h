@@ -35,6 +35,7 @@ class INET_API APSKLayeredTransmitter : public ITransmitter, public cSimpleModul
     public:
         enum LevelOfDetail
         {
+            PACKET_DOMAIN,
             BIT_DOMAIN,
             SYMBOL_DOMAIN,
             SAMPLE_DOMAIN,
@@ -46,6 +47,7 @@ class INET_API APSKLayeredTransmitter : public ITransmitter, public cSimpleModul
         const IModulator *modulator;
         const IPulseShaper *pulseShaper;
         const IDigitalAnalogConverter *digitalAnalogConverter;
+        const IModulation *modulation;
 
         W power;
         bps bitrate;

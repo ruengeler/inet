@@ -22,7 +22,7 @@
 #include "inet/physicallayer/analogmodel/layered/SignalAnalogModel.h"
 #include "inet/physicallayer/apsk/layered/APSKEncoder.h"
 #include "inet/physicallayer/apsk/layered/APSKModulator.h"
-#include "inet/physicallayer/common/layered/LayeredTransmission.h"
+#include "inet/physicallayer/apsk/layered/APSKLayeredTransmission.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
 #include "inet/common/serializer/headerserializers/EthernetCRC.h"
 
@@ -40,6 +40,7 @@ APSKLayeredTransmitter::APSKLayeredTransmitter() :
     modulator(nullptr),
     pulseShaper(nullptr),
     digitalAnalogConverter(nullptr),
+    modulation(nullptr),
     power(W(NaN)),
     bitrate(bps(NaN)),
     bandwidth(Hz(NaN)),
@@ -55,6 +56,7 @@ void APSKLayeredTransmitter::initialize(int stage)
         modulator = dynamic_cast<const IModulator *>(getSubmodule("modulator"));
         pulseShaper = dynamic_cast<const IPulseShaper *>(getSubmodule("pulseShaper"));
         digitalAnalogConverter = dynamic_cast<const IDigitalAnalogConverter *>(getSubmodule("digitalAnalogConverter"));
+        modulation = APSKModulationBase::findModulation(par("modulation"));
         power = W(par("power"));
         bitrate = bps(par("bitrate"));
         bandwidth = Hz(par("bandwidth"));
@@ -66,6 +68,8 @@ void APSKLayeredTransmitter::initialize(int stage)
             levelOfDetail = SYMBOL_DOMAIN;
         else if (strcmp("sample", levelOfDetailStr) == 0)
             levelOfDetail = SAMPLE_DOMAIN;
+        else if (strcmp("packet", levelOfDetailStr) == 0)
+            levelOfDetail = PACKET_DOMAIN;
         else
             throw cRuntimeError("Unknown level of detail='%s'", levelOfDetailStr);
         if (levelOfDetail >= BIT_DOMAIN && !encoder)
@@ -82,7 +86,9 @@ const ITransmissionPacketModel* APSKLayeredTransmitter::createPacketModel(const 
     APSKRadioFrame * radioFrame = new APSKRadioFrame();
     radioFrame->setByteLength(4);
     radioFrame->encapsulate(macFrame->dup()); // TODO: fix this memory leak
-    BitVector *bits = serialize(radioFrame);
+    BitVector *bits = nullptr;
+    if (levelOfDetail != PACKET_DOMAIN)
+        bits = serialize(radioFrame);
     return new TransmissionPacketModel(radioFrame, bits);
 }
 
@@ -119,7 +125,11 @@ const ITransmission *APSKLayeredTransmitter::createTransmission(const IRadio *tr
     const ITransmissionPacketModel *packetModel = createPacketModel(macFrame);
     const ITransmissionBitModel *bitModel = nullptr;
     if (levelOfDetail >= BIT_DOMAIN)
-        bitModel = encoder->encode(packetModel);
+    {
+        const ITransmissionBitModel *bitModel2 = encoder->encode(packetModel);
+        // FIXME: Kludge
+        bitModel = new TransmissionBitModel(48, bitModel2->getBits()->getSize() - 48, bitrate.get(), bitrate.get(), bitModel2->getBits(), bitModel2->getForwardErrorCorrection(), bitModel2->getScrambling(), bitModel2->getInterleaving());
+    }
     const ITransmissionSymbolModel *symbolModel = nullptr;
     if (levelOfDetail >= SYMBOL_DOMAIN)
         symbolModel = modulator->modulate(bitModel);
@@ -142,7 +152,7 @@ const ITransmission *APSKLayeredTransmitter::createTransmission(const IRadio *tr
     const Coord endPosition = mobility->getCurrentPosition();
     const EulerAngles startOrientation = mobility->getCurrentAngularPosition();
     const EulerAngles endOrientation = mobility->getCurrentAngularPosition();
-    return new LayeredTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation);
+    return new APSKLayeredTransmission(packetModel, bitModel, symbolModel, sampleModel, analogModel, transmitter, macFrame, modulation, startTime, endTime, startPosition, endPosition, startOrientation, endOrientation);
 }
 
 } // namespace physicallayer

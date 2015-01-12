@@ -34,6 +34,7 @@
 #include "inet/physicallayer/common/ListeningDecision.h"
 #include "inet/physicallayer/analogmodel/ScalarAnalogModel.h"
 #include "inet/physicallayer/apsk/layered/APSKRadioFrame_m.h"
+#include "inet/physicallayer/apsk/layered/APSKLayeredTransmission.h"
 #include "inet/common/serializer/headerserializers/ieee80211/Ieee80211Serializer.h"
 #include "inet/common/serializer/headerserializers/EthernetCRC.h"
 
@@ -82,6 +83,8 @@ void APSKLayeredReceiver::initialize(int stage)
             levelOfDetail = SYMBOL_DOMAIN;
         else if (strcmp("sample", levelOfDetailStr) == 0)
             levelOfDetail = SAMPLE_DOMAIN;
+        else if (strcmp("packet", levelOfDetailStr) == 0)
+            levelOfDetail = PACKET_DOMAIN;
         else
             throw cRuntimeError("Unknown level of detail='%s'", levelOfDetailStr);
         if (levelOfDetail >= BIT_DOMAIN && !decoder)
@@ -131,7 +134,7 @@ const IReceptionDecision *APSKLayeredReceiver::computeReceptionDecision(const IL
     const IRadio *receiver = reception->getReceiver();
     const IRadioMedium *medium = receiver->getMedium();
     const LayeredReception *layeredReception = dynamic_cast<const LayeredReception*>(reception);
-    const LayeredTransmission *layeredTransmission = dynamic_cast<const LayeredTransmission*>(reception->getTransmission());
+    const LayeredTransmission *layeredTransmission = dynamic_cast<const APSKLayeredTransmission*>(reception->getTransmission());
     const IReceptionAnalogModel *analogModel = layeredReception->getAnalogModel();
     const IReceptionSampleModel *sampleModel = nullptr;
     const IReceptionSymbolModel *symbolModel = nullptr;
@@ -160,11 +163,24 @@ const IReceptionDecision *APSKLayeredReceiver::computeReceptionDecision(const IL
             bitModel = errorModel->computeBitModel(layeredTransmission, snir);
         packetModel = decoder->decode(bitModel);
     }
+    if (levelOfDetail >= PACKET_DOMAIN) {
+        if (!packetModel)
+            packetModel = errorModel->computePacketModel(layeredTransmission, snir);
+    }
     receptionIndication->setPacketErrorRate(packetModel->getPER());
     const BitVector* serializedPacket = packetModel->getSerializedPacket();
-    cPacket *deserializedPacket = deserialize(serializedPacket);
-    cPacket *macFrame = deserializedPacket->decapsulate();
-    const ReceptionPacketModel *receptionPacketModel = new ReceptionPacketModel(macFrame, serializedPacket, NULL, NULL, NULL, 0, true);
+    const cPacket *macFrame = nullptr;
+    if (serializedPacket != nullptr)
+    {
+        cPacket *deserializedPacket = deserialize(serializedPacket);
+        macFrame = deserializedPacket->decapsulate();
+    }
+    else
+    {
+        const APSKRadioFrame *apskRadioFrame = check_and_cast<const APSKRadioFrame *>(packetModel->getPacket());
+        macFrame = apskRadioFrame->getEncapsulatedPacket();
+    }
+    const ReceptionPacketModel *receptionPacketModel = new ReceptionPacketModel(macFrame, serializedPacket, nullptr, nullptr, nullptr, 0, true);
     return new LayeredReceptionDecision(reception, receptionIndication, receptionPacketModel, nullptr, nullptr, nullptr, nullptr, true, true, receptionPacketModel->isPacketErrorless());
 }
 

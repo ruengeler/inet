@@ -26,15 +26,17 @@ import inet.physicallayer.contract.layered.IPulseShaper;
 module APSKLayeredTransmitter like ITransmitter
 {
     parameters:
-        string levelOfDetail @enum("bit","symbol","sample") = default("symbol");
+        string levelOfDetail @enum("packet","bit","symbol","sample") = default("symbol");
         string encoderType = default("");
         string modulatorType = default("");
         string pulseShaperType = default("");
         string digitalAnalogConverterType = default("");
+        string modulation;
         double bitrate @unit(bps);
         double power @unit(W);
         double carrierFrequency @unit(Hz);
         double bandwidth @unit(Hz);
+        *.modulation = modulation;
         @display("i=block/wtx");
         @class(APSKLayeredTransmitter);
 
